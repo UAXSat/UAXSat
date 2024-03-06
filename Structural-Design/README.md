@@ -1,4 +1,3 @@
-# Hardware
+# Structural design
 
 Enter the instructions
-
