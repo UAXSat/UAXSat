@@ -16,7 +16,7 @@ UAXSat IV is a microsatellite project developed by the students of 2nd and 3rd y
 ## Community
 Join our community to stay updated and connect with other contributors:
 
-[Link to Community Forum/Discussions]
+[Link to Community Forum/Discussions](https://github.com/JaviLendi/UAXSat/discussions)
 [Other Community Resources]
 
 ## License
