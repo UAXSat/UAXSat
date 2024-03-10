@@ -46,21 +46,21 @@ with open(file_path, mode='a', newline='') as file:
     # Escribe el encabezado solo si el archivo está vacío
     if os.stat(file_path).st_size == 0:
         writer.writerow(['Hour', 'Min', 'Second', 'DS18B20 [°C]', 'BMP280 [°C]', 'Pressure [hPa]'])
-        print("Hour, Min, Second, DS18B20 [°C], BMP280 [°C], Pressure [hPa]")
+        print("Hour, DS18B20 [°C], BMP280 [°C], Pressure [hPa]")
 
     # Inicio del temporizador
     start_time = time.time()
     # Duración deseada del script en segundos
-    duration = 1 * 60 * 60 # Hours * Minutes * Seconds
+    duration = 5 * 60 * 60 # Hours * Minutes * Seconds
 
     while time.time() - start_time < duration:
         now = time.localtime() # Obtiene la hora actual
         temperature_ds18b20 = read_temp()
-        temperature_bmp280 = bmp280.temperature
-        pressure = bmp280.pressure
+        temperature_bmp280 = round(bmp280.temperature, 2)  # Round to two decimal places
+        pressure = round(bmp280.pressure, 2)  # Round to two decimal places
         # Escribe los datos en el archivo CSV
         writer.writerow([now.tm_hour, now.tm_min, now.tm_sec, temperature_ds18b20, temperature_bmp280, pressure])
         file.flush()  # Flush the buffer to ensure immediate writing to disk
         os.fsync(file.fileno())  # Force write to disk
-        print("{},{},{},{:.1f},{:.1f},{:.1f}".format(now.tm_hour, now.tm_min, now.tm_sec, temperature_ds18b20, temperature_bmp280, pressure))
-        time.sleep(5)  # Espera antes de la próxima lectura
+        print("{},{:.1f},{:.1f},{:.1f}".format(time.strftime("%H:%M:%S", time.localtime()), temperature_ds18b20, temperature_bmp280, pressure))
+        time.sleep(2)  # Espera antes de la próxima lectura
