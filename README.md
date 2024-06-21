@@ -23,9 +23,9 @@ Join our community to stay updated and connect with other contributors:
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Developers and organizators
+## Developers and organizers
 
-### Organizators
+### Organizers
 
 - Javier Bolaños ([github](https://github.com/javierbolanosllano)) ([linkedin](https://www.linkedin.com/in/javierbolanosllano/))
 - Javier Lendínez ([github](https://github.com/JaviLendi)) ([linkedin](https://www.linkedin.com/in/javierlendinez/))
