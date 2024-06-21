@@ -27,8 +27,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ### Organizators
 
-- Javier Bolaños ([github]()) ([linkedin](https://www.linkedin.com/in/javierbolanosllano/))
-- Javier Lendínez ([github]()) ([linkedin](https://www.linkedin.com/in/javierlendinez/))
+- Javier Bolaños ([github](https://github.com/javierbolanosllano)) ([linkedin](https://www.linkedin.com/in/javierbolanosllano/))
+- Javier Lendínez ([github](https://github.com/JaviLendi)) ([linkedin](https://www.linkedin.com/in/javierlendinez/))
 
 ### Developers
 
@@ -43,8 +43,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### Acknowledgements
 We would like to thank the following individuals/organizations for their contributions and support:
 
-- Alfonso X El Sabio University [website](https://www.uax.com/)
-- B2Space [website](https://b2-space.com/)
-- Ricardo Atienza [linkedin](https://www.linkedin.com/in/ricardo-atienza)
-- Jesús Jiménez [linkedin](https://www.linkedin.com/in/jesus-jimenez)
+- Alfonso X El Sabio University ([website](https://www.uax.com/))
+- B2Space ([website](https://b2-space.com/))
+- Ricardo Atienza ([linkedin](https://www.linkedin.com/in/ricardo-atienza))
+- Jesús Jiménez ([linkedin](https://www.linkedin.com/in/jesus-jimenez))
   
