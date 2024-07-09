@@ -27,7 +27,7 @@ class BMP3XXSensor:
             self.sensor.sea_level_pressure = 1013.25
             self.sensor.pressure_oversampling = 8
             self.sensor.temperature_oversampling = 2
-            print("Sensor BMP3XX conectado exitosamente.")
+            print("Sensor BMP3XX conectado.")
         except Exception as e:
             self.sensor = None
             print(f"Error al conectar con el sensor: {e}")
