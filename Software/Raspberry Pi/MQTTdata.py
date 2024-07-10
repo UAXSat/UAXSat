@@ -105,7 +105,7 @@ def read_CPU():
     try:
         cpu = CPUTemperature().temperature
         log_status("CPUTemperature", "OK")
-        return {"CPUTemperature": cpu}
+        return cpu
     except Exception as e:
         log_status("CPUTemperature", "Err")
         logging.error(f"Error al leer CPUTemperature: {e}")
@@ -113,7 +113,7 @@ def read_CPU():
 
 ## Prepara los datos de los sensores para ser enviados
 def prepare_sensor_data(readings):
-    sensors_data = {"fecha": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}
+    sensors_data = {"fecha": time.strftime("%H:%M:%S", time.localtime())}
     for sensor, data in readings.items():
         sensors_data[sensor] = data if data else "Error"
     return sensors_data
