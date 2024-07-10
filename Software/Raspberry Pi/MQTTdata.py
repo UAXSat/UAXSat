@@ -86,7 +86,7 @@ def read_neom9n():
     try:
         geo_coords = neom9n.get_geo_coords()
         log_status("NEOM9N", "OK")
-        return {geo_coords}
+        return {"Coordenadas": geo_coords}
     except Exception as e:
         log_status("NEOM9N", "Disconnected")
         return None
@@ -95,7 +95,7 @@ def read_ds18b20():
     try:
         ds18b20_temp = ds18b20.read_temp()
         log_status("DS18B20", "OK")
-        return {ds18b20_temp}
+        return {"temperatura": ds18b20_temp}
     except Exception as e:
         log_status("DS18B20", "Disconnected")
         return None
@@ -105,7 +105,7 @@ def read_CPU():
     try:
         cpu = CPUTemperature().temperature
         log_status("CPUTemperature", "OK")
-        return {cpu}
+        return {"CPUTemperature": cpu}
     except Exception as e:
         log_status("CPUTemperature", "Err")
         logging.error(f"Error al leer CPUTemperature: {e}")
