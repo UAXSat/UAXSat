@@ -16,7 +16,7 @@ import bmp390
 import icm20948
 import neo_m9n as neom9n
 import ds18b20
-from dallassensor import get_temp_ds18b20_interior, get_temp_ds18b20_exterior
+#from dallassensor import get_temp_ds18b20_interior, get_temp_ds18b20_exterior
 from gpiozero import CPUTemperature
 
 import paho.mqtt.publish as publish  # Importa el módulo para publicar mensajes MQTT
