@@ -21,7 +21,7 @@ from gpiozero import CPUTemperature
 
 import paho.mqtt.publish as publish  # Importa el módulo para publicar mensajes MQTT
 
-logging.basicConfig(filename='errores_sensores.log', level=logging.DEBUG,
+logging.basicConfig(filename='/home/javil/error.log', level=logging.DEBUG,
                     format='%(asctime)s: %(levelname)s: %(message)s')
 
 def clear_screen():
