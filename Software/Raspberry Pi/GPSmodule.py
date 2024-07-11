@@ -231,5 +231,8 @@ def run():
         except Exception as e:
             print(f"Error closing serial port: {e}")
 
-if __name__ == '__main__':
+def main():
     run()
+
+if __name__ == '__main__':
+    main()
