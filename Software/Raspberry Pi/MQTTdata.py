@@ -10,13 +10,18 @@ import os
 import time
 import json
 import logging
-import mpu6050  # Importa el módulo para interactuar con el sensor MPU6050
-import bmp280   # Importa el módulo para interactuar con el sensor BMP280
-import neom9n   # Importa el módulo para interactuar con el sensor NEO-M9N GPS
-import ds18b20  # Importa el módulo para interactuar con el sensor DS18B20
+
+# Importar los módulos de los sensores
+import bmp390
+import icm20948
+import neo_m9n as neom9n
+import ds18b20
+#from dallassensor import get_temp_ds18b20_interior, get_temp_ds18b20_exterior
+from gpiozero import CPUTemperature
+
 import paho.mqtt.publish as publish  # Importa el módulo para publicar mensajes MQTT
 
-logging.basicConfig(filename='errores_sensores.log', level=logging.DEBUG,
+logging.basicConfig(filename='/home/javil/error.log', level=logging.DEBUG,
                     format='%(asctime)s: %(levelname)s: %(message)s')
 
 def clear_screen():
@@ -25,13 +30,14 @@ def clear_screen():
 
 def log_status(sensor_name, status):
     """
-    Imprime el estado del sensor con colores en la consola y registra en el log.
+    Imprime el estado del sensor y registra en el log.
 
     Parámetros:
     - sensor_name: Nombre del sensor (string).
     - status: Estado del sensor ('OK' o 'Disconnected') (string).
 
-    Usa colores para la salida en consola: verde para 'OK', rojo para 'Disconnected'.
+    Verde: 'OK'
+    Rojo:  'Disconnected'
     """
 
     RED     = "\033[91m"
@@ -45,34 +51,35 @@ def log_status(sensor_name, status):
         print(f"{RED}{status_message}{RESET}", end=" | ")
         logging.warning(status_message)
 
-def read_mpu6050():
+## Funciones para leer los datos de los sensores
+def read_icm20948():
     """
-    Intenta leer los datos del sensor MPU6050, incluyendo temperatura, aceleración y giroscopio.
+    Intenta leer los datos del sensor ICM20948, incluyendo temperatura, aceleración y giroscopio.
     """
     try:
-        mpu = mpu6050.create_mpu_instance(0x68)
-        log_status("MPU6050", "OK")
-        mpu_temp = mpu.get_temp()
-        mpu_accel = mpu.get_accel_data(g=False)
-        mpu_gyro = mpu.get_gyro_data()
-        return {"temperatura": mpu_temp, "aceleracion": mpu_accel, "giro": mpu_gyro}
+        imu = icm20948.create_imu_instance(0x68)
+        log_status("ICM20948", "OK")
+        imu_mag = imu.read_magnetic()
+        imu_accel = imu.read_acceleration(g=False)
+        imu_gyro = imu.read_gyro()
+        return {"magnetic": imu_mag, "acceleration": imu_accel, "gyro": imu_gyro}
     except Exception as e:
-        log_status("MPU6050", "Disconnected")
+        log_status("ICM20948", "Disconnected")
         return None
 
-def read_bmp280():
+def read_bmp390():
     """
-    Intenta leer los datos del sensor BMP280, incluyendo temperatura, la presión y altura.
+    Intenta leer los datos del sensor BMP390, incluyendo temperatura, la presión y altura.
     Registra el estado del sensor (conectado o desconectado).
     """
     try:
-        bmp_temp = bmp280.get_temperature()
-        bmp_press = bmp280.get_pressure()
-        bmp_alt = bmp280.get_altitude()
-        log_status("BMP280", "OK")
-        return {"temperatura": bmp_temp, "presion": bmp_press, "altura": bmp_alt}
+        bmp_temp = bmp390.read_temperature()
+        bmp_press = bmp390.read_pressure()
+        bmp_alt = bmp390.read_altitude()
+        log_status("BMP390", "OK")
+        return {"temperature": bmp_temp, "presion": bmp_press, "altitude": bmp_alt}
     except Exception as e:
-        log_status("BMP280", "Disconnected")
+        log_status("BMP390", "Disconnected")
         return None
 
 def read_neom9n():
@@ -93,22 +100,35 @@ def read_ds18b20():
         log_status("DS18B20", "Disconnected")
         return None
 
+def read_CPU():
+    """Lee las temperaturas de varios sensores."""
+    try:
+        cpu = CPUTemperature().temperature
+        log_status("CPUTemperature", "OK")
+        return cpu
+    except Exception as e:
+        log_status("CPUTemperature", "Err")
+        logging.error(f"Error al leer CPUTemperature: {e}")
+        return None
+
+## Prepara los datos de los sensores para ser enviados
 def prepare_sensor_data(readings):
-    sensors_data = {"fecha": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}
+    sensors_data = {"fecha": time.strftime("%H:%M:%S", time.localtime())}
     for sensor, data in readings.items():
         sensors_data[sensor] = data if data else "Error"
     return sensors_data
 
 def read_sensors():
     readings = {
-        "MPU6050": read_mpu6050(),
-        "BMP280": read_bmp280(),
+        "ICM20948": read_icm20948(),
+        "BMP390": read_bmp390(),
         "NEOM9N": read_neom9n(),
         "DS18B20": read_ds18b20(),
+        "CPUTemp": read_CPU(),
     }
     return prepare_sensor_data(readings)
 
-# Configuración de MQTT y el intervalo entre lecturas de sensores
+## Configuración de MQTT y el intervalo entre lecturas de sensores
 hostname_mqtt = "localhost"
 intervalo = 2
 
