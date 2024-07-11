@@ -179,49 +179,44 @@ def connect_gps():
             time.sleep(5)
     return None, None
 
-def run():
+def main():
     gps, port = connect_gps()
     
     try:
-        print("Listening for UBX Messages")
         while True:
-            try:
-                if gps and port:
-                    nmea_data = gps.stream_nmea().strip()
-                    print(f"Raw NMEA Data: {nmea_data}")  # Mostrar la cadena NMEA original
+            if gps and port:
+                nmea_data = gps.stream_nmea().strip()
+                print(f"Raw NMEA Data: {nmea_data}")  # Mostrar la cadena NMEA original
 
-                    for sentence in nmea_data.splitlines():
-                        try:
-                            data, error = parse_nmea_sentence(sentence)
-                            if error:
-                                print(f"Error parsing sentence: {error}")
-                            else:
-                                for key, value in data.items():
-                                    if key == 'Satellites Info':
-                                        print(f"{key}:")
-                                        for sat in value:
-                                            for sat_key, sat_value in sat.items():
-                                                print(f"    {sat_key}: {sat_value}")
-                                    else:
-                                        print(f"{key}: {value}")
-                                print()  # Línea en blanco para separar las sentencias
-                        except Exception as e:
-                            print(f"Error processing sentence: {e}")
+                for sentence in nmea_data.splitlines():
+                    try:
+                        data, error = parse_nmea_sentence(sentence)
+                        if error:
+                            print(f"Error parsing sentence: {error}")
+                        else:
+                            for key, value in data.items():
+                                if key == 'Satellites Info':
+                                    print(f"{key}:")
+                                    for sat in value:
+                                        for sat_key, sat_value in sat.items():
+                                            print(f"    {sat_key}: {sat_value}")
+                                else:
+                                    print(f"{key}: {value}")
+                            print()  # Línea en blanco para separar las sentencias
+                    except Exception as e:
+                        print(f"Error processing sentence: {e}")
 
-                else:
-                    print("No GPS connection. Reconnecting...")
-                    gps, port = connect_gps()
-
-            except (ValueError, IOError) as nmea_err:
-                print("Error streaming NMEA data:", nmea_err)
+            else:
+                print("No GPS connection. Reconnecting...")
                 gps, port = connect_gps()
 
-            except serial.SerialException as serial_err:
-                print("Serial port error:", serial_err)
-                gps, port = connect_gps()
+        except (ValueError, IOError) as nmea_err:
+            print("Error streaming NMEA data:", nmea_err)
+            gps, port = connect_gps()
 
-    except KeyboardInterrupt:
-        print("Exiting program.")
+        except serial.SerialException as serial_err:
+            print("Serial port error:", serial_err)
+            gps, port = connect_gps()
 
     finally:
         if gps:
@@ -231,4 +226,4 @@ def run():
         print("Serial port closed.")
 
 if __name__ == '__main__':
-    run()
+    main()

@@ -65,7 +65,7 @@ def read_CPU():
 def read_sensors():
     """Consolida la lectura de todos los sensores."""
     readings = {
-        "Presi  n BMP280": read_press_bmp(),
+        "Presion BMP280": read_press_bmp(),
         "Temperaturas": read_temp(),
         "Temperatura CPU": read_CPU(),
     }
