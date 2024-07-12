@@ -15,6 +15,7 @@ import logging
 # Import the modules to read the sensors
 from UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
 from GPSmodule import connect_gps, parse_nmea_sentence
+from GPSmodule_complicated import connect_gps, parse_nmea_sentence as parse_nmea_sentence_complicated
 from IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
 from DS18B20module import DallasSensor
 from BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
@@ -80,6 +81,24 @@ def read_gps_sensor():
                 if data:
                     log_status("GPS Sensor", "OK")
                     return data['latitude'], data['longitude']
+        log_status("GPS Sensor", "Disconnected")
+    except Exception as e:
+        log_status("GPS Sensor", "Disconnected")
+        logging.error(f"Error reading GPS Sensor: {e}")
+        return None
+    
+# GPS Sensor
+def read_gpscomplicated_sensor():
+    try:
+        port, gps = connect_gps()
+        data = None
+        while not data:
+            nmea_data = gps.stream_nmea().strip()
+            for sentence in nmea_data.splitlines():
+                data, error = parse_nmea_sentence_complicated(sentence)
+                if data:
+                    log_status("GPS Sensor", "OK")
+                    return data
         log_status("GPS Sensor", "Disconnected")
     except Exception as e:
         log_status("GPS Sensor", "Disconnected")
@@ -156,6 +175,7 @@ def read_sensors():
         "DallasSensor": read_dallas_sensor(),
         "BMP3XX": read_bmp3xx_sensor(),
         "CPUTemp": read_CPU(),
+        "GPS Sensor": read_gpscomplicated_sensor(),
     }
     return prepare_sensor_data(readings)
 
