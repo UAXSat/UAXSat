@@ -9,35 +9,39 @@
 import os
 import time
 import json
+import csv
 import logging
 
-# Importar los módulos de los sensores
-import bmp390
-import icm20948
-import neo_m9n as neom9n
-import ds18b20
-#from dallassensor import get_temp_ds18b20_interior, get_temp_ds18b20_exterior
+# Import the modules to read the sensors
+from UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
+from GPSmodule import connect_gps, parse_nmea_sentence
+from IMUmodule import ICM20948Sensor
+from DS18B20module import DallasSensor
+from BMPmodule import BMP3XXSensor
 from gpiozero import CPUTemperature
 
-import paho.mqtt.publish as publish  # Importa el módulo para publicar mensajes MQTT
+# Importa el módulo para publicar mensajes MQTT
+import paho.mqtt.publish as publish  
 
 logging.basicConfig(filename='/home/javil/error.log', level=logging.DEBUG,
                     format='%(asctime)s: %(levelname)s: %(message)s')
 
 def clear_screen():
-    """Limpia la pantalla de la consola."""
+    """Clears the console screen."""
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def log_status(sensor_name, status):
     """
-    Imprime el estado del sensor y registra en el log.
+    Prints the sensor status in the console with colors and logs it.
 
-    Parámetros:
-    - sensor_name: Nombre del sensor (string).
-    - status: Estado del sensor ('OK' o 'Disconnected') (string).
+    Parameters:
+    - sensor_name: Name of the sensor (string).
+    - status: Sensor status ('OK' or 'Disconnected') (string).
 
-    Verde: 'OK'
-    Rojo:  'Disconnected'
+    Uses colors for the console output:
+
+    Green: 'OK'
+    Red:  'Disconnected'
     """
 
     RED     = "\033[91m"
@@ -51,55 +55,74 @@ def log_status(sensor_name, status):
         print(f"{RED}{status_message}{RESET}", end=" | ")
         logging.warning(status_message)
 
-## Funciones para leer los datos de los sensores
-def read_icm20948():
-    """
-    Intenta leer los datos del sensor ICM20948, incluyendo temperatura, aceleración y giroscopio.
-    """
+## Functions to read the sensors
+
+# UV Sensor
+def read_uv_sensor():
     try:
-        imu = icm20948.create_imu_instance(0x68)
+        sensor = init_uv_sensor()
+        uv_data = read_uv_data(sensor)
+        log_status("UV Sensor", "OK")
+        return uv_data
+    except Exception as e:
+        log_status("UV Sensor", "Disconnected")
+        return None
+
+# GPS Sensor
+def read_gps_sensor():
+    try:
+        port, gps = connect_gps()
+        data = None
+        while not data:
+            nmea_data = gps.stream_nmea().strip()
+            for sentence in nmea_data.splitlines():
+                data, error = parse_nmea_sentence(sentence)
+                if data:
+                    log_status("GPS Sensor", "OK")
+                    return data
+        log_status("GPS Sensor", "Disconnected")
+    except Exception as e:
+        log_status("GPS Sensor", "Disconnected")
+        return None
+
+# ICM20948 Sensor
+def read_icm20948_sensor():
+    try:
+        icm20948 = ICM20948Sensor()
+        sensor_data = icm20948.read_all()
         log_status("ICM20948", "OK")
-        imu_mag = imu.read_magnetic()
-        imu_accel = imu.read_acceleration(g=False)
-        imu_gyro = imu.read_gyro()
-        return {"magnetic": imu_mag, "acceleration": imu_accel, "gyro": imu_gyro}
+        return sensor_data
     except Exception as e:
         log_status("ICM20948", "Disconnected")
         return None
 
-def read_bmp390():
-    """
-    Intenta leer los datos del sensor BMP390, incluyendo temperatura, la presión y altura.
-    Registra el estado del sensor (conectado o desconectado).
-    """
+# Dallas Sensor
+def read_dallas_sensor():
     try:
-        bmp_temp = bmp390.read_temperature()
-        bmp_press = bmp390.read_pressure()
-        bmp_alt = bmp390.read_altitude()
-        log_status("BMP390", "OK")
-        return {"temperature": bmp_temp, "presion": bmp_press, "altitude": bmp_alt}
+        dallas_sensor = DallasSensor()
+        sensor_info = dallas_sensor.get_sensor_info()
+        if sensor_info:
+            log_status("DallasSensor", "OK")
+            return sensor_info
+        else:
+            log_status("DallasSensor", "Disconnected")
+            return None
     except Exception as e:
-        log_status("BMP390", "Disconnected")
+        log_status("DallasSensor", "Disconnected")
         return None
 
-def read_neom9n():
+# BMP3XX Sensor
+def read_bmp3xx_sensor():
     try:
-        geo_coords = neom9n.get_geo_coords()
-        log_status("NEOM9N", "OK")
-        return {"Coordenadas": geo_coords}
+        bmp3xx_sensor = BMP3XXSensor()
+        sensor_data = bmp3xx_sensor.read_all()
+        log_status("BMP3XX", "OK")
+        return sensor_data
     except Exception as e:
-        log_status("NEOM9N", "Disconnected")
+        log_status("BMP3XX", "Disconnected")
         return None
 
-def read_ds18b20():
-    try:
-        ds18b20_temp = ds18b20.read_temp()
-        log_status("DS18B20", "OK")
-        return {"temperatura": ds18b20_temp}
-    except Exception as e:
-        log_status("DS18B20", "Disconnected")
-        return None
-
+# CPU Temperature
 def read_CPU():
     """Lee las temperaturas de varios sensores."""
     try:
@@ -111,39 +134,73 @@ def read_CPU():
         logging.error(f"Error al leer CPUTemperature: {e}")
         return None
 
-## Prepara los datos de los sensores para ser enviados
+## Prepare the data to be sent
 def prepare_sensor_data(readings):
     sensors_data = {"fecha": time.strftime("%H:%M:%S", time.localtime())}
     for sensor, data in readings.items():
         sensors_data[sensor] = data if data else "Error"
     return sensors_data
 
+## Read all the sensors
 def read_sensors():
     readings = {
-        "ICM20948": read_icm20948(),
-        "BMP390": read_bmp390(),
-        "NEOM9N": read_neom9n(),
-        "DS18B20": read_ds18b20(),
+        "UV Sensor": read_uv_sensor(),
+        "GPS Sensor": read_gps_sensor(),
+        "ICM20948": read_icm20948_sensor(),
+        "DallasSensor": read_dallas_sensor(),
+        "BMP3XX": read_bmp3xx_sensor(),
         "CPUTemp": read_CPU(),
     }
     return prepare_sensor_data(readings)
 
-## Configuración de MQTT y el intervalo entre lecturas de sensores
+## Save the data to a CSV file
+def save_json_to_csv(json_data, csv_file_path):
+    # Parse the JSON data
+    data = json.loads(json_data)
+
+    # Check if the CSV file already exists
+    file_exists = os.path.isfile(csv_file_path)
+
+    with open(csv_file_path, mode='a', newline='') as file:
+        writer = csv.writer(file)
+
+        # If the file doesn't exist, write the header
+        if not file_exists:
+            header = data.keys()
+            writer.writerow(header)
+
+        # Write the data
+        writer.writerow(data.values())
+
+
+## MQTT Configuration and interval between sensor readings
 hostname_mqtt = "localhost"
-intervalo = 2
+sensorReadingInterval = 2
+
+# Path to save the CSV file
+csv_file_path = "/home/javil/sensor_data.csv"
 
 if __name__ == "__main__":
     try:
         while True:
             clear_screen()
-            mensaje_json = json.dumps(read_sensors())
-            if mensaje_json:
-                publish.single("sensores/data", mensaje_json, hostname=hostname_mqtt)
-                print("Datos publicados con éxito.")
+            sensor_data = read_sensors()
+            sensorDataJSON = json.dumps(read_sensors())
+
+            if sensorDataJSON:
+                # Publish the data via MQTT
+                publish.single("data", sensorDataJSON, hostname=hostname_mqtt)
+                print("Data sent successfully.")
+
+                # Save the JSON data to CSV
+                save_json_to_csv(sensorDataJSON, csv_file_path)
+                print("Data saved to CSV successfully.")
             else:
-                print("No se pudo obtener datos de los sensores.")
-            time.sleep(intervalo)
+                print("Error sending data.")
+                
+            time.sleep(sensorReadingInterval)
     except KeyboardInterrupt:
-        print("Programa detenido manualmente.")
+        print("\n Program stopped by the user.")
     except Exception as e:
-        print(f"Error inesperado al publicar datos: {e}")
+        print(f"Unexpected error while publishing data: {e}")
+
