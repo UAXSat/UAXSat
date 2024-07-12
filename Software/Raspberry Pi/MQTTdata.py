@@ -187,7 +187,7 @@ def save_json_to_csv(json_data, csv_file_path):
     # Check if the CSV file already exists
     file_exists = os.path.isfile(csv_file_path)
 
-    with open(csv_file_path, mode='a', newline='') as file:
+    with open(csv_file_path, mode='w', newline='') as file:
         writer = csv.writer(file)
 
         # If the file doesn't exist, write the header
