@@ -89,9 +89,9 @@ def read_gps_sensor():
 def read_imu_sensor():
     try:
         sensor = init_icm_sensor()
-        imu_data = read_imu_data(sensor)
+        sensor_data = read_imu_data(sensor)
         log_status("ICM20948", "OK")
-        return imu_data
+        return sensor_data
     except Exception as e:
         log_status("ICM20948", "Disconnected")
         return None
@@ -99,8 +99,8 @@ def read_imu_sensor():
 # Dallas Sensor
 def read_dallas_sensor():
     try:
-        dallas_sensor = DallasSensor()
-        sensor_info = dallas_sensor.get_sensor_info()
+        sensor = DallasSensor()
+        sensor_info = sensor.get_sensor_info()
         if sensor_info:
             log_status("DallasSensor", "OK")
             return sensor_info
@@ -114,8 +114,8 @@ def read_dallas_sensor():
 # BMP3XX Sensor
 def read_bmp3xx_sensor():
     try:
-        bmp3xx_sensor = BMP3XXSensor()
-        sensor_data = bmp3xx_sensor.read_all()
+        sensor = BMP3XXSensor()
+        sensor_data = sensor.read_all()
         log_status("BMP3XX", "OK")
         return sensor_data
     except Exception as e:
