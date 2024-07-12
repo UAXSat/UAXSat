@@ -26,50 +26,24 @@ def initialize_bmp_sensor():
 
 # Función para obtener datos de presión, temperatura y altitud
 def read_sensor_data(bmp):
-    pressure = bmp.pressure
-    temperature = bmp.temperature
-    altitude = bmp.altitude
-    
-    return pressure, temperature, altitude
-
-# Función para imprimir los datos
-def print_sensor_data(pressure, temperature, altitude):
-    print("Pressure: {:6.4f}  Temperature: {:5.2f}".format(pressure, temperature))
-    print("Altitude: {} meters".format(altitude))
+    try:
+        pressure, temperature, altitude = bmp.pressure, bmp.temperature, bmp.altitude
+        return {"pressure": pressure, "temperature": temperature, "altitude": altitude}
+    except Exception as e:
+        print(f"Error reading sensor data: {e}")
+        return None
 
 # Función principal - inicializa el sensor y lee los datos
 def main():
     bmp = initialize_bmp_sensor()
-    
-    try:
-        while True:
-            pressure, temperature, altitude = read_sensor_data(bmp)
-            print_sensor_data(pressure, temperature, altitude)
-            time.sleep(1)
-    
-    except KeyboardInterrupt:
-        print("Program interrupted. Exiting...")
-
-if __name__ == "__main__":
-    main()
-
-
-"""
-# main.py
-
-from bmp390module import initialize_bmp_sensor, read_sensor_data as read_bmp
-import time
-
-def main():
-    bmp = initialize_bmp_sensor()
-    
     while True:
-        pressure, temperature, altitude = read_bmp(bmp)
-        if pressure is not None and temperature is not None and altitude is not None:
-            print("Pressure: {:6.4f}  Temperature: {:5.2f} Altitude: {} meters".format(pressure, temperature, altitude))
+        sensor_data = read_sensor_data(bmp)
+        if sensor_data:
+            print(f"Pressure: {sensor_data['pressure']} Pa, Temperature: {sensor_data['temperature']} C, Altitude: {sensor_data['altitude']} m")
+        else:
+            print("Error initializing the sensor")
         time.sleep(1)
 
 if __name__ == "__main__":
     main()
 
-"""

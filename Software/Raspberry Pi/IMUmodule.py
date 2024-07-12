@@ -39,7 +39,7 @@ def read_sensor_data(icm):
     
 # Función principal para ejecución continua
 def main():
-    icm = initialize_icm_sensor()
+    icm = initialize_sensor()
     while True:
         sensor_data = read_sensor_data(icm)
         if sensor_data:
