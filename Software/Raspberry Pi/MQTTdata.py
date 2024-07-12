@@ -146,7 +146,7 @@ def read_sensors():
     readings = {
         "UV Sensor": read_uv_sensor(),
         "GPS Sensor": read_gps_sensor(),
-        "ICM20948": read_icm20948_sensor(),
+        "ICM20948": read_imu_sensor(),
         "DallasSensor": read_dallas_sensor(),
         "BMP3XX": read_bmp3xx_sensor(),
         "CPUTemp": read_CPU(),
