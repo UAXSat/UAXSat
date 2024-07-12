@@ -14,7 +14,7 @@ import board
 import adafruit_bmp3xx
 
 # Función para inicializar el sensor BMP
-def initialize_bmp_sensor():
+def initialize_sensor():
     i2c = board.I2C()
     bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c)
     
