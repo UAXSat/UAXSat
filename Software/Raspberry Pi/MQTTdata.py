@@ -79,7 +79,7 @@ def read_gps_sensor():
                 data, error = parse_nmea_sentence(sentence)
                 if data:
                     log_status("GPS Sensor", "OK")
-                    return data
+                    return data['latitude'], data['longitude']
         log_status("GPS Sensor", "Disconnected")
     except Exception as e:
         log_status("GPS Sensor", "Disconnected")
@@ -147,9 +147,11 @@ def prepare_sensor_data(readings):
 
 ## Read all the sensors
 def read_sensors():
+    latitude, longitude = read_gps_sensor()
     readings = {
+        "latitude": latitude,
+        "longitude": longitude,
         "UV Sensor": read_uv_sensor(),
-        "GPS Sensor": read_gps_sensor(),
         "ICM20948": read_imu_sensor(),
         "DallasSensor": read_dallas_sensor(),
         "BMP3XX": read_bmp3xx_sensor(),
