@@ -46,19 +46,13 @@ def parse_nmea_sentence(nmea):
 
         if nmea.startswith('$GNGGA'):
             data = {
-                'Latitude': nmea_to_decimal(parts[2], parts[3]),
-                'Longitude': nmea_to_decimal(parts[4], parts[5]),
-                'Altitude': f"{parts[9]} {parts[10]}"
+                'latitude': nmea_to_decimal(parts[2], parts[3]),
+                'longitude': nmea_to_decimal(parts[4], parts[5])
             }
         elif nmea.startswith('$GNRMC'):
             data = {
-                'Latitude': nmea_to_decimal(parts[3], parts[4]),
-                'Longitude': nmea_to_decimal(parts[5], parts[6]),
-                'Speed (km/h)': knots_to_kmh(parts[7])
-            }
-        elif nmea.startswith('$GNVTG'):
-            data = {
-                'Speed (km/h)': parts[7].split('*')[0]
+                'latitude': nmea_to_decimal(parts[3], parts[4]),
+                'longitude': nmea_to_decimal(parts[5], parts[6])
             }
 
         return data, None
@@ -116,13 +110,9 @@ def run():
                         if error:
                             print(f"Error parsing sentence: {error}")
                         else:
-                            if 'Latitude' in data and 'Longitude' in data:
-                                print(f"Latitude: {data['Latitude']}")
-                                print(f"Longitude: {data['Longitude']}")
-                                if 'Altitude' in data:
-                                    print(f"Altitude: {data['Altitude']}")
-                                if 'Speed (km/h)' in data:
-                                    print(f"Speed (km/h): {data['Speed (km/h)']}")
+                            if 'latitude' in data and 'longitude' in data:
+                                print(f"latitude: {data['latitude']}")
+                                print(f"longitude: {data['longitude']}")
                                 print()  # Línea en blanco para separar las sentencias
                     except Exception as e:
                         print(f"Error processing sentence: {e}")
