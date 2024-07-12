@@ -15,7 +15,7 @@ import logging
 # Import the modules to read the sensors
 from UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
 from GPSmodule import connect_gps, parse_nmea_sentence
-from IMUmodule import ICM20948Sensor
+from IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
 from DS18B20module import DallasSensor
 from BMPmodule import BMP3XXSensor
 from gpiozero import CPUTemperature
@@ -86,12 +86,12 @@ def read_gps_sensor():
         return None
 
 # ICM20948 Sensor
-def read_icm20948_sensor():
+def read_imu_sensor():
     try:
-        icm20948 = ICM20948Sensor()
-        sensor_data = icm20948.read_all()
+        sensor = init_icm_sensor()
+        imu_data = read_imu_data(sensor)
         log_status("ICM20948", "OK")
-        return sensor_data
+        return imu_data
     except Exception as e:
         log_status("ICM20948", "Disconnected")
         return None
@@ -197,7 +197,7 @@ if __name__ == "__main__":
                 print("Data saved to CSV successfully.")
             else:
                 print("Error sending data.")
-                
+
             time.sleep(sensorReadingInterval)
     except KeyboardInterrupt:
         print("\n Program stopped by the user.")
