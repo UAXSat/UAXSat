@@ -68,8 +68,9 @@ def valid_checksum(nmea_sentence):
         for char in sentence:
             calc_checksum ^= ord(char)
         return f"{calc_checksum:02X}" == checksum.upper()
+    
     except Exception as e:
-        print(f"Error calculating checksum: {e}")
+        print(f"Error calculating checksum: {e}", nmea_sentence)
         return False
 
 def nmea_to_decimal(coord, direction):
@@ -83,16 +84,6 @@ def nmea_to_decimal(coord, direction):
         return decimal
     except Exception as e:
         print(f"Error converting NMEA to decimal: {e}")
-        return None
-    
-def knots_to_kmh(speed_knots):
-    try:
-        if speed_knots:
-            return str(round(float(speed_knots) * 1.852, 2))
-        else:
-            return None
-    except Exception as e:
-        print(f"Error converting knots to km/h: {e}")
         return None
 
 def run():
