@@ -44,25 +44,20 @@ def parse_nmea_sentence(nmea):
 
         parts = nmea.split(',')
 
-        if nmea.startswith('$GNGGA'):
-            data = {
-                'Latitude': nmea_to_decimal(parts[2], parts[3]),
-                'Longitude': nmea_to_decimal(parts[4], parts[5]),
-                'Altitude': f"{parts[9]} {parts[10]}"
-            }
-        elif nmea.startswith('$GNRMC'):
-            data = {
-                'Latitude': nmea_to_decimal(parts[3], parts[4]),
-                'Longitude': nmea_to_decimal(parts[5], parts[6]),
-                'Speed (km/h)': knots_to_kmh(parts[7])
-            }
+        if nmea.startswith('$GNRMC'):
+            return parse_rmc(parts)
         elif nmea.startswith('$GNVTG'):
-            data = {
-                'Speed (km/h)': parts[7].split('*')[0]
-            }
-
-        return data, None
-
+            return parse_vtg(parts)
+        elif nmea.startswith('$GNGGA'):
+            return parse_gga(parts)
+        elif nmea.startswith('$GNGSA'):
+            return parse_gsa(parts)
+        elif nmea.startswith('$GPGSV') or nmea.startswith('$GLGSV') or nmea.startswith('$GBGSV') or nmea.startswith('$GAGSV'):
+            return parse_gsv(parts)
+        elif nmea.startswith('$GNGLL'):
+            return parse_gll(parts)
+        else:
+            return None, "Unknown sentence type"
     except Exception as e:
         return None, f"Error parsing sentence: {e}"
 
@@ -77,6 +72,105 @@ def valid_checksum(nmea_sentence):
     except Exception as e:
         print(f"Error calculating checksum: {e}")
         return False
+
+def parse_gga(parts):
+    try:
+        data = {
+            'Sentence': 'GNGGA',
+            'Time (UTC)': parts[1],
+            'Latitude': nmea_to_decimal(parts[2], parts[3]),
+            'Longitude': nmea_to_decimal(parts[4], parts[5]),
+            'Fix Quality': parts[6],
+            'Number of Satellites': parts[7],
+            'Horizontal Dilution': parts[8],
+            'Altitude': f"{parts[9]} {parts[10]}",
+            'Height of Geoid': f"{parts[11]} {parts[12].split('*')[0]}"
+        }
+        return data, None
+    except Exception as e:
+        return None, f"Error parsing GGA: {e}"
+
+def parse_rmc(parts):
+    try:
+        data = {
+            'Sentence': 'GNRMC',
+            'Time (UTC)': parts[1],
+            'Status': parts[2],
+            'Latitude': nmea_to_decimal(parts[3], parts[4]),
+            'Longitude': nmea_to_decimal(parts[5], parts[6]),
+            'Speed (knots)': parts[7],
+            'Track Angle (degrees)': parts[8],
+            'Date': parts[9],
+            'Mode': parts[12].split('*')[0] if len(parts) > 12 else ""
+        }
+        return data, None
+    except Exception as e:
+        return None, f"Error parsing RMC: {e}"
+
+def parse_vtg(parts):
+    try:
+        data = {
+            'Sentence': 'GNVTG',
+            'Track Degrees (True)': parts[1],
+            'Track Degrees (Magnetic)': parts[3],
+            'Speed (knots)': parts[5],
+            'Speed (km/h)': parts[7].split('*')[0]
+        }
+        return data, None
+    except Exception as e:
+        return None, f"Error parsing VTG: {e}"
+
+def parse_gsa(parts):
+    try:
+        data = {
+            'Sentence': 'GNGSA',
+            'Mode': parts[1],
+            'Fix Type': parts[2],
+            'Satellites Used': [s for s in parts[3:15] if s],
+            'PDOP': parts[15],
+            'HDOP': parts[16],
+            'VDOP': parts[17].split('*')[0] if len(parts) > 17 else ""
+        }
+        return data, None
+    except Exception as e:
+        return None, f"Error parsing GSA: {e}"
+
+def parse_gsv(parts):
+    try:
+        satellites_info = []
+        for i in range(4, len(parts) - 4, 4):
+            satellite_info = {
+                'Satellite PRN': parts[i],
+                'Elevation (degrees)': parts[i + 1],
+                'Azimuth (degrees)': parts[i + 2],
+                'SNR (dB)': parts[i + 3].split('*')[0] if '*' in parts[i + 3] else parts[i + 3]
+            }
+            satellites_info.append(satellite_info)
+        data = {
+            'Sentence': 'GSV',
+            'Message Type': parts[0][1:4],
+            'Number of Sentences': parts[1],
+            'Sentence Number': parts[2],
+            'Satellites in View': parts[3],
+            'Satellites Info': satellites_info
+        }
+        return data, None
+    except Exception as e:
+        return None, f"Error parsing GSV: {e}"
+
+def parse_gll(parts):
+    try:
+        data = {
+            'Sentence': 'GNGLL',
+            'Latitude': nmea_to_decimal(parts[1], parts[2]),
+            'Longitude': nmea_to_decimal(parts[3], parts[4]),
+            'Time (UTC)': parts[5],
+            'Status': parts[6],
+            'Mode': parts[7].split('*')[0] if len(parts) > 7 else ""
+        }
+        return data, None
+    except Exception as e:
+        return None, f"Error parsing GLL: {e}"
 
 def nmea_to_decimal(coord, direction):
     try:
