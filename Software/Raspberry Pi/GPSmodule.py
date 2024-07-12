@@ -90,6 +90,16 @@ def nmea_to_decimal(coord, direction):
     except Exception as e:
         print(f"Error converting NMEA to decimal: {e}")
         return None
+    
+def knots_to_kmh(speed_knots):
+    try:
+        if speed_knots:
+            return str(round(float(speed_knots) * 1.852, 2))
+        else:
+            return None
+    except Exception as e:
+        print(f"Error converting knots to km/h: {e}")
+        return None
 
 def run():
     try:
@@ -106,15 +116,14 @@ def run():
                         if error:
                             print(f"Error parsing sentence: {error}")
                         else:
-                            for key, value in data.items():
-                                if key == 'Satellites Info':
-                                    print(f"{key}:")
-                                    for sat in value:
-                                        for sat_key, sat_value in sat.items():
-                                            print(f"    {sat_key}: {sat_value}")
-                                else:
-                                    print(f"{key}: {value}")
-                            print()  # Línea en blanco para separar las sentencias
+                            if 'Latitude' in data and 'Longitude' in data:
+                                print(f"Latitude: {data['Latitude']}")
+                                print(f"Longitude: {data['Longitude']}")
+                                if 'Altitude' in data:
+                                    print(f"Altitude: {data['Altitude']}")
+                                if 'Speed (km/h)' in data:
+                                    print(f"Speed (km/h): {data['Speed (km/h)']}")
+                                print()  # Línea en blanco para separar las sentencias
                     except Exception as e:
                         print(f"Error processing sentence: {e}")
 
