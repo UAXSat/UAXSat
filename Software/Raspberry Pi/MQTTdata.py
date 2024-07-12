@@ -17,7 +17,7 @@ from UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as re
 from GPSmodule import connect_gps, parse_nmea_sentence
 from IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
 from DS18B20module import DallasSensor
-from BMPmodule import BMP3XXSensor
+from BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
 from gpiozero import CPUTemperature
 
 # Importa el módulo para publicar mensajes MQTT
@@ -114,8 +114,8 @@ def read_dallas_sensor():
 # BMP3XX Sensor
 def read_bmp3xx_sensor():
     try:
-        sensor = BMP3XXSensor()
-        sensor_data = sensor.read_all()
+        sensor = init_bmp_sensor()
+        sensor_data = read_bmp_data(sensor)
         log_status("BMP3XX", "OK")
         return sensor_data
     except Exception as e:
