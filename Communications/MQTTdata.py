@@ -23,6 +23,7 @@ from Sensors.IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_
 from Sensors.DS18B20module import DallasSensor
 from Sensors.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
 from gpiozero import CPUTemperature
+from psutil import cpu_percent, virtual_memory
 
 # Importa el módulo para publicar mensajes MQTT
 import paho.mqtt.publish as publish  
@@ -150,7 +151,7 @@ def read_bmp3xx_sensor():
 
 # CPU Temperature
 def read_CPU():
-    """Lee las temperaturas de varios sensores."""
+    """Reads the CPU temperature."""
     try:
         cpu = CPUTemperature().temperature
         log_status("CPUTemperature", "OK")
@@ -158,6 +159,30 @@ def read_CPU():
     except Exception as e:
         log_status("CPUTemperature", "Err")
         logging.error(f"Error reading CPU Temperature: {e}")
+        return None
+    
+# CPU Usage
+def read_CPU_usage():
+    """Reads the CPU usage."""
+    try:
+        cpu = cpu_percent(interval=1)
+        log_status("CPU Usage", "OK")
+        return cpu
+    except Exception as e:
+        log_status("CPU Usage", "Err")
+        logging.error(f"Error reading CPU Usage: {e}")
+        return None
+    
+# RAM Usage
+def read_RAM_usage():
+    """Reads the RAM usage."""
+    try:
+        ram = virtual_memory().percent
+        log_status("RAM Usage", "OK")
+        return ram
+    except Exception as e:
+        log_status("RAM Usage", "Err")
+        logging.error(f"Error reading RAM Usage: {e}")
         return None
 
 ## Prepare the data to be sent
@@ -170,14 +195,19 @@ def prepare_sensor_data(readings):
 ## Read all the sensors
 def read_sensors():
     latitude, longitude = read_gps_sensor()
+    acceleration, gyro, magnetic = read_imu_sensor()
     readings = {
+        "CPUTemp": read_CPU(),
+        "CPU Usage": read_CPU_usage(),
+        "RAM Usage": read_RAM_usage(),
         "latitude": latitude,
         "longitude": longitude,
+        "Acceleration": acceleration,
+        "Gyro": gyro,
+        "Magnetic": magnetic,
         "UV Sensor": read_uv_sensor(),
-        "ICM20948": read_imu_sensor(),
         "DallasSensor": read_dallas_sensor(),
         "BMP3XX": read_bmp3xx_sensor(),
-        "CPUTemp": read_CPU(),
         "GPS Sensor": read_gpscomplicated_sensor(),
     }
     return prepare_sensor_data(readings)
