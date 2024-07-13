@@ -13,13 +13,9 @@ import adafruit_icm20x
 
 # Función para inicializar el sensor ICM
 def initialize_sensor():
-    try: 
-        i2c = board.I2C()  # Utiliza board.SCL y board.SDA por defecto
-        icm = adafruit_icm20x.ICM20948(i2c)
-        return icm
-    except Exception as e:
-        print(f"Error initializing sensor: {e}")
-        return None  # Devuelve None si ocurre un error durante la inicialización
+    i2c = board.I2C()  # Utiliza board.SCL y board.SDA por defecto
+    icm = adafruit_icm20x.ICM20948(i2c)
+    return icm
 
 # Función para obtener datos de aceleración
 def read_acceleration(icm):
