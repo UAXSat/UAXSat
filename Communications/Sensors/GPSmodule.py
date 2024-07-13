@@ -21,15 +21,20 @@ def find_serial_port():
     return None
 
 def connect_gps():
-    try:
+    while True:
         port_name = find_serial_port()
-        port = serial.Serial(port_name, baudrate=38400, timeout=1)
-        gps = UbloxGps(port)
-        print(f"Connected to GPS on {port_name}")
-        return port, gps
-    except serial.SerialException:
-        print(f"Failed to connect to {port_name}. Retrying in 5 seconds...")
-        time.sleep(5)
+        if port_name:
+            try:
+                port = serial.Serial(port_name, baudrate=38400, timeout=1)
+                gps = UbloxGps(port)
+                print(f"Connected to GPS on {port_name}")
+                return port, gps
+            except serial.SerialException:
+                print(f"Failed to connect to {port_name}. Retrying in 5 seconds...")
+                time.sleep(5)
+        else:
+            print("GPS device not found. Retrying in 5 seconds...")
+            time.sleep(5)
 
 def parse_nmea_sentence(nmea):
     try:
