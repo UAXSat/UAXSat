@@ -893,26 +893,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-
-"""
-Llamar a la función main() para ejecutar el programa.
-
-# main.py
-
-import time
-from uv_sensor import initialize_sensor as iniciate_uv, read_sensor_data as read_uv
-
-def main():
-    sensor_uv = iniciate_uv()
-    while True:
-        data_uv = read_uv(sensor_uv)
-        if data_uv:
-            print(f"UVA: {data_uv['UVA']}, UVB: {data_uv['UVB']}, UVC: {data_uv['UVC']}, Tem_UV: {data_uv['temp']}°C")
-        else:
-            print("Error al leer los datos del sensor.")
-        time.sleep(1)
-
-if __name__ == '__main__':
-    main()
-
-"""

@@ -163,14 +163,14 @@ def read_gps_sensor():
 def read_gpscomplicated_sensor():
     try:
         port, gps_complicated = connect_gps()
-        data = None
-        while not data:
+        data_complicated = None
+        while not data_complicated:
             nmea_data = gps_complicated.stream_nmea().strip()
             for sentence in nmea_data.splitlines():
-                data, error = parse_nmea_sentence_complicated(sentence)
-                if data:
+                data_complicated, error = parse_nmea_sentence_complicated(sentence)
+                if data_complicated:
                     log_status("GPS Sensor", "OK")
-                    return data
+                    return data_complicated
         log_status("GPS Sensor", "Disconnected")
     except Exception as e:
         log_status("GPS Sensor", "Disconnected")

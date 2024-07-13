@@ -85,28 +85,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-"""
-Llamar a la función main() para ejecutar el programa.
-
-# main.py
-
-import time
-from ds18b20module import DallasSensor
-
-def main():
-    dallas_sensor = DallasSensor()
-    
-    while True:
-        sensor_info = dallas_sensor.get_sensor_info()
-        if sensor_info:
-            for sensor_id, temperature in sensor_info.items():
-                print(f"Sensor ID: {sensor_id}, Temperature: {temperature:.2f} °C")
-        else:
-            print("No sensors found. Retrying in 5 seconds...")
-        
-        time.sleep(1)
-
-if __name__ == '__main__':
-    main()
-
-"""
