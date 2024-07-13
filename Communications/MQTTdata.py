@@ -70,6 +70,7 @@ def read_uv_sensor():
         return uv_data
     except Exception as e:
         log_status("UV Sensor", "Disconnected")
+        logging.error(f"Error reading UV Sensor: {e}")
         return None
 
 # ICM20948 Sensor
@@ -81,6 +82,7 @@ def read_imu_sensor():
         return sensor_data
     except Exception as e:
         log_status("IMU Sensor", "Disconnected")
+        logging.error(f"Error reading IMU Sensor: {e}")
         return None
 
 # Dallas Sensor
@@ -96,6 +98,7 @@ def read_dallas_sensor():
             return None
     except Exception as e:
         log_status("DallasSensor", "Disconnected")
+        logging.error(f"Error reading Dallas Sensor: {e}")
         return None
 
 # BMP3XX Sensor
@@ -107,6 +110,7 @@ def read_bmp3xx_sensor():
         return sensor_data
     except Exception as e:
         log_status("BMP3XX", "Disconnected")
+        logging.error(f"Error reading BMP3XX Sensor: {e}")
         return None
 
 # CPU Temperature
@@ -118,6 +122,7 @@ def read_CPU():
         return cpu
     except Exception as e:
         log_status("CPUTemperature", "Err")
+        logging.error(f"Error reading CPU Temperature: {e}")
         return None
     
 # CPU Usage
@@ -129,6 +134,7 @@ def read_CPU_usage():
         return cpu
     except Exception as e:
         log_status("CPU Usage", "Err")
+        logging.error(f"Error reading CPU Usage: {e}")
         return None
     
 # RAM Usage
@@ -140,6 +146,7 @@ def read_RAM_usage():
         return ram
     except Exception as e:
         log_status("RAM Usage", "Err")
+        logging.error(f"Error reading RAM Usage: {e}")
         return None
 
 # GPS Sensor
@@ -157,6 +164,7 @@ def read_gps_sensor():
         log_status("GPS Sensor", "Disconnected")
     except Exception as e:
         log_status("GPS Sensor", "Disconnected")
+        logging.error(f"Error reading GPS Sensor: {e}")
         return None
     
 # GPS Sensor
@@ -174,8 +182,8 @@ def read_gpscomplicated_sensor():
         log_status("GPS Sensor", "Disconnected")
     except Exception as e:
         log_status("GPS Sensor", "Disconnected")
+        logging.error(f"Error reading GPS Sensor: {e}")
         return None
-
 
 ## Prepare the data to be sent
 def prepare_sensor_data(readings):
