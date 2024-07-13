@@ -44,6 +44,7 @@ def read_magnetic(icm):
 def read_sensor_data(icm):
     try:
         acceleration, gyro, magnetic = read_acceleration(icm), read_gyro(icm), read_magnetic(icm)
+        print(acceleration, gyro, magnetic)
         return {"acceleration": acceleration, "gyro": gyro, "magnetic": magnetic}
     except Exception as e:
         print(f"Error reading sensor data: {e}")
