@@ -67,10 +67,11 @@ def valid_checksum(nmea_sentence):
         calc_checksum = 0
         for char in sentence:
             calc_checksum ^= ord(char)
-        return f"{calc_checksum:02X}" == checksum.upper()
+        return f"{calc_checksum:01X}" == checksum.upper()
     
     except Exception as e:
         print(f"Error calculating checksum: {e}", nmea_sentence)
+        time.sleep(5)
         return False
 
 def nmea_to_decimal(coord, direction):
