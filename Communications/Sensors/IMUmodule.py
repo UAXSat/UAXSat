@@ -59,6 +59,7 @@ def main():
             print(f"Acceleration: {sensor_data['acceleration']}, Gyro: {sensor_data['gyro']}, Magnetic: {sensor_data['magnetic']}")
         else:
             print("Error initializing the sensor")
+            print(f"Acceleration: {sensor_data['acceleration']}, Gyro: {sensor_data['gyro']}, Magnetic: {sensor_data['magnetic']}")
         time.sleep(1)
 
 # Ejecutar el sensor si se ejecuta como script principal
