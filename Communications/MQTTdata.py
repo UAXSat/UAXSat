@@ -16,12 +16,12 @@ import sys
 sys.path.append('../Software/RaspberryPi') # permite importar modulos de la carpeta vecinos
 
 # Import the modules to read the sensors
-from Software.RaspberryPi.UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
-from Software.RaspberryPi.GPSmodule import connect_gps, parse_nmea_sentence
-from Software.RaspberryPi.GPSmodule_complicated import connect_gps as connect_gps_complicated, parse_nmea_sentence as parse_nmea_sentence_complicated
-from Software.RaspberryPi.IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
-from Software.RaspberryPi.DS18B20module import DallasSensor
-from Software.RaspberryPi.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
+from UAXSat.Software.RaspberryPi.UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
+from UAXSat.Software.RaspberryPi.GPSmodule import connect_gps, parse_nmea_sentence
+from UAXSat.Software.RaspberryPi.GPSmodule_complicated import connect_gps as connect_gps_complicated, parse_nmea_sentence as parse_nmea_sentence_complicated
+from UAXSat.Software.RaspberryPi.IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
+from UAXSat.Software.RaspberryPi.DS18B20module import DallasSensor
+from UAXSat.Software.RaspberryPi.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
 from gpiozero import CPUTemperature
 
 # Importa el módulo para publicar mensajes MQTT
