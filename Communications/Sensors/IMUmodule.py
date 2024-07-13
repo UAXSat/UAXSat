@@ -26,8 +26,8 @@ def read_acceleration(icm):
     try:
         return icm.acceleration
     except Exception as e:
-        print(f"Error initializing sensor: {e}")
-        return None
+        #print(f"Error initializing sensor: {e}")
+        return e
 
 # Función para obtener datos de giroscopio
 def read_gyro(icm):
