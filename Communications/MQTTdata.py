@@ -13,7 +13,7 @@ import csv
 import logging
 
 import sys
-sys.path.append('../Software/RaspberryPi') # permite importar modulos de la carpeta vecinos
+sys.path.append('/home/javil/UAXSat') # permite importar modulos de la carpeta vecinos
 
 # Import the modules to read the sensors
 from UAXSat.Software.RaspberryPi.UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
