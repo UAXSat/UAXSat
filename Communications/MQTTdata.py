@@ -83,7 +83,8 @@ def read_imu_sensor():
     except Exception as e:
         log_status("IMU Sensor", "Disconnected")
         logging.error(f"Error reading IMU Sensor: {e}")
-        return None
+        acceleration, gyro, magnetic = None, None, None
+        return {"acceleration": acceleration, "gyro": gyro, "magnetic": magnetic}
 
 # Dallas Sensor
 def read_dallas_sensor():
