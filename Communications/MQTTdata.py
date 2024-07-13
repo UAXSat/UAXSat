@@ -162,10 +162,10 @@ def read_gps_sensor():
 # GPS Sensor
 def read_gpscomplicated_sensor():
     try:
-        port, gps = connect_gps()
+        port, gps_complicated = connect_gps()
         data = None
         while not data:
-            nmea_data = gps.stream_nmea().strip()
+            nmea_data = gps_complicated.stream_nmea().strip()
             for sentence in nmea_data.splitlines():
                 data, error = parse_nmea_sentence_complicated(sentence)
                 if data:
