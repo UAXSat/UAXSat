@@ -77,9 +77,9 @@ def read_uv_sensor():
 def read_imu_sensor():
     try:
         sensor = init_icm_sensor()
-        sensor_data = read_imu_data(sensor)
+        data = read_imu_data(sensor)
         log_status("IMU Sensor", "OK")
-        return sensor_data
+        return data['acceleration'], data['gyro'], data['magnetic']
     except Exception as e:
         log_status("IMU Sensor", "Disconnected")
         logging.error(f"Error reading IMU Sensor: {e}")
