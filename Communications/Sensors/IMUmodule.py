@@ -18,7 +18,7 @@ def initialize_sensor():
         icm = adafruit_icm20x.ICM20948(i2c)
         return icm
     except Exception as e:
-        #print(f"Error initializing sensor: {e}")
+        print(f"Error initializing sensor: {e}")
         return None  # Devuelve None si ocurre un error durante la inicialización
 
 # Función para obtener datos de aceleración
@@ -38,6 +38,7 @@ def read_sensor_data(icm):
         acceleration, gyro, magnetic = read_acceleration(icm), read_gyro(icm), read_magnetic(icm)
         return {"acceleration": acceleration, "gyro": gyro, "magnetic": magnetic}
     except Exception as e:
+        acceleration, gyro, magnetic = None, None, None
         print(f"Error reading sensor data: {e}")
 
 # Función principal para ejecución continua
