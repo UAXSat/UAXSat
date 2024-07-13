@@ -93,7 +93,6 @@ def run():
         while True:
             try:
                 nmea_data = gps.stream_nmea().strip()
-                print(f"Raw NMEA Data: {nmea_data}")  # Mostrar la cadena NMEA original
 
                 for sentence in nmea_data.splitlines():
                     try:
