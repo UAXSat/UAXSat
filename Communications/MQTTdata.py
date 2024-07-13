@@ -72,40 +72,6 @@ def read_uv_sensor():
         log_status("UV Sensor", "Disconnected")
         return None
 
-# GPS Sensor
-def read_gps_sensor():
-    try:
-        port, gps = connect_gps()
-        data = None
-        while not data:
-            nmea_data = gps.stream_nmea().strip()
-            for sentence in nmea_data.splitlines():
-                data, error = parse_nmea_sentence(sentence)
-                if data:
-                    log_status("GPS Sensor", "OK")
-                    return data['latitude'], data['longitude']
-        log_status("GPS Sensor", "Disconnected")
-    except Exception as e:
-        log_status("GPS Sensor", "Disconnected")
-        return None
-    
-# GPS Sensor
-def read_gpscomplicated_sensor():
-    try:
-        port, gps = connect_gps_complicated()
-        data = None
-        while not data:
-            nmea_data = gps.stream_nmea().strip()
-            for sentence in nmea_data.splitlines():
-                data, error = parse_nmea_sentence_complicated(sentence)
-                if data:
-                    log_status("GPS Sensor", "OK")
-                    return data
-        log_status("GPS Sensor", "Disconnected")
-    except Exception as e:
-        log_status("GPS Sensor", "Disconnected")
-        return None
-
 # ICM20948 Sensor
 def read_imu_sensor():
     try:
@@ -175,6 +141,41 @@ def read_RAM_usage():
     except Exception as e:
         log_status("RAM Usage", "Err")
         return None
+
+# GPS Sensor
+def read_gps_sensor():
+    try:
+        port, gps = connect_gps()
+        data = None
+        while not data:
+            nmea_data = gps.stream_nmea().strip()
+            for sentence in nmea_data.splitlines():
+                data, error = parse_nmea_sentence(sentence)
+                if data:
+                    log_status("GPS Sensor", "OK")
+                    return data['latitude'], data['longitude']
+        log_status("GPS Sensor", "Disconnected")
+    except Exception as e:
+        log_status("GPS Sensor", "Disconnected")
+        return None
+    
+# GPS Sensor
+def read_gpscomplicated_sensor():
+    try:
+        port, gps = connect_gps_complicated()
+        data = None
+        while not data:
+            nmea_data = gps.stream_nmea().strip()
+            for sentence in nmea_data.splitlines():
+                data, error = parse_nmea_sentence_complicated(sentence)
+                if data:
+                    log_status("GPS Sensor", "OK")
+                    return data
+        log_status("GPS Sensor", "Disconnected")
+    except Exception as e:
+        log_status("GPS Sensor", "Disconnected")
+        return None
+
 
 ## Prepare the data to be sent
 def prepare_sensor_data(readings):
