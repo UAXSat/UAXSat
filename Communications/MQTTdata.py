@@ -198,8 +198,8 @@ def read_sensors():
     acceleration, gyro, magnetic = read_imu_sensor()
     readings = {
         "CPUTemp": read_CPU(),
-        "CPU Usage": read_CPU_usage(),
-        "RAM Usage": read_RAM_usage(),
+        #"CPU Usage": read_CPU_usage(),
+        #"RAM Usage": read_RAM_usage(),
         "latitude": latitude,
         "longitude": longitude,
         "Acceleration": acceleration,
