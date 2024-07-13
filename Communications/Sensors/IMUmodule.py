@@ -38,8 +38,9 @@ def read_sensor_data(icm):
         acceleration, gyro, magnetic = read_acceleration(icm), read_gyro(icm), read_magnetic(icm)
         return {"acceleration": acceleration, "gyro": gyro, "magnetic": magnetic}
     except Exception as e:
-        acceleration, gyro, magnetic = None, None, None
         print(f"Error reading sensor data: {e}")
+        acceleration, gyro, magnetic = None, None, None
+        return {"acceleration": acceleration, "gyro": gyro, "magnetic": magnetic}
 
 # Función principal para ejecución continua
 def main():
