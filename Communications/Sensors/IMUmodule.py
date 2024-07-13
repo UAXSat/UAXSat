@@ -32,7 +32,7 @@ def read_magnetic(icm):
 def read_sensor_data(icm):
     try:
         acceleration, gyro, magnetic = read_acceleration(icm), read_gyro(icm), read_magnetic(icm)
-        return {"acceleration": acceleration, "gyro": gyro, "magnetic": magnetic}
+        return acceleration, gyro, magnetic
     except Exception as e:
         print(f"Error reading sensor data: {e}")
         return None
@@ -43,7 +43,7 @@ def main():
     while True:
         sensor_data = read_sensor_data(icm)
         if sensor_data:
-            print(f"Acceleration: {sensor_data['acceleration']}, Gyro: {sensor_data['gyro']}, Magnetic: {sensor_data['magnetic']}")
+            print(f"Acceleration: {read_acceleration(icm)}, Gyro: {read_gyro(icm)}, Magnetic: {read_magnetic(icm)}")
         else:
             print("Error initializing the sensor")
         time.sleep(1)
