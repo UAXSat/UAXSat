@@ -18,7 +18,7 @@ sys.path.append('../') # permite importar modulos de la carpeta vecinos
 # Import the modules to read the sensors
 from Sensors.UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
 from Sensors.GPSmodule import connect_gps, parse_nmea_sentence
-from Sensors.GPSmodule_complicated import connect_gps as connect_gps_complicated, parse_nmea_sentence as parse_nmea_sentence_complicated
+from Sensors.GPSmodule_complicated import parse_nmea_sentence as parse_nmea_sentence_complicated
 from Sensors.IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
 from Sensors.DS18B20module import DallasSensor
 from Sensors.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
@@ -162,7 +162,7 @@ def read_gps_sensor():
 # GPS Sensor
 def read_gpscomplicated_sensor():
     try:
-        port, gps = connect_gps_complicated()
+        port, gps = connect_gps()
         data = None
         while not data:
             nmea_data = gps.stream_nmea().strip()
