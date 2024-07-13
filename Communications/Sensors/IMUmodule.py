@@ -19,15 +19,27 @@ def initialize_sensor():
 
 # Función para obtener datos de aceleración
 def read_acceleration(icm):
-    return icm.acceleration
+    try:
+        return icm.acceleration
+    except Exception as e:
+        print(f"Error reading acceleration: {e}")
+        return None
 
 # Función para obtener datos de giroscopio
 def read_gyro(icm):
-    return icm.gyro
+    try:
+        return icm.gyro
+    except Exception as e:
+        print(f"Error reading gyro: {e}")
+        return None
 
 # Función para obtener datos del magnetómetro
 def read_magnetic(icm):
-    return icm.magnetic
+    try: 
+        return icm.magnetic
+    except Exception as e:
+        print(f"Error reading magnetic: {e}")
+        return None
 
 def read_sensor_data(icm):
     try:
