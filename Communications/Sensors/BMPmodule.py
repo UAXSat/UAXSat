@@ -35,7 +35,7 @@ def read_sensor_data(bmp):
 
 # Función principal - inicializa el sensor y lee los datos
 def main():
-    bmp = initialize_bmp_sensor()
+    bmp = initialize_sensor()
     while True:
         sensor_data = read_sensor_data(bmp)
         if sensor_data:
