@@ -209,7 +209,7 @@ def read_sensors():
         "UV Sensor": read_uv_sensor(),
         "DallasSensor": read_dallas_sensor(),
         "BMP3XX": read_bmp3xx_sensor(),
-        "GPS Sensor": read_gpscomplicated_sensor(),
+        #"GPS Sensor": read_gpscomplicated_sensor(),
     }
     return prepare_sensor_data(readings)
 
