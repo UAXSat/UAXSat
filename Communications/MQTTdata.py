@@ -194,17 +194,18 @@ def prepare_sensor_data(readings):
 
 ## Read all the sensors
 def read_sensors():
+    
     latitude, longitude = read_gps_sensor()
-    #acceleration, gyro, magnetic = read_imu_sensor()
+    acceleration, gyro, magnetic = read_imu_sensor()
     readings = {
         "CPUTemp": read_CPU(),
         "CPU Usage": read_CPU_usage(),
         "RAM Usage": read_RAM_usage(),
         "latitude": latitude,
         "longitude": longitude,
-        #"Acceleration": acceleration,
-        #"Gyro": gyro,
-        #"Magnetic": magnetic,
+        "Acceleration": acceleration,
+        "Gyro": gyro,
+        "Magnetic": magnetic,
         "UV Sensor": read_uv_sensor(),
         "DallasSensor": read_dallas_sensor(),
         "BMP3XX": read_bmp3xx_sensor(),
