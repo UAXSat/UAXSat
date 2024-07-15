@@ -65,13 +65,13 @@ def log_status(sensor_name, status):
 def read_uv_sensor():
     try:
         sensor = init_uv_sensor()
-        uv_data = read_uv_data(sensor)
+        data = read_uv_data(sensor)
         log_status("UV Sensor", "OK")
-        return uv_data
+        return data['UVA'], data['UVB'], data['UVC'], data['temp']
     except Exception as e:
         log_status("UV Sensor", "Disconnected")
         logging.error(f"Error reading UV Sensor: {e}")
-        return None
+        return None, None, None, None
 
 # ICM20948 Sensor
 def read_imu_sensor():
@@ -84,6 +84,19 @@ def read_imu_sensor():
         log_status("IMU Sensor", "Disconnected")
         logging.error(f"Error reading IMU Sensor: {e}")
         return None, None, None
+
+# BMP3XX Sensor
+def read_bmp3xx_sensor():
+    try:
+        sensor = init_bmp_sensor()
+        data = read_bmp_data(sensor)
+        log_status("BMP3XX", "OK")
+        return data['pressure'], data['temperature'], data['altitude']
+    except Exception as e:
+        log_status("BMP3XX", "Disconnected")
+        logging.error(f"Error reading BMP3XX Sensor: {e}")
+        return None, None, None
+
 
 # Dallas Sensor
 def read_dallas_sensor():
@@ -99,18 +112,6 @@ def read_dallas_sensor():
     except Exception as e:
         log_status("DallasSensor", "Disconnected")
         logging.error(f"Error reading Dallas Sensor: {e}")
-        return None
-
-# BMP3XX Sensor
-def read_bmp3xx_sensor():
-    try:
-        sensor = init_bmp_sensor()
-        sensor_data = read_bmp_data(sensor)
-        log_status("BMP3XX", "OK")
-        return sensor_data
-    except Exception as e:
-        log_status("BMP3XX", "Disconnected")
-        logging.error(f"Error reading BMP3XX Sensor: {e}")
         return None
 
 # CPU Temperature
@@ -197,18 +198,26 @@ def read_sensors():
     
     #latitude, longitude = read_gps_sensor()
     acceleration, gyro, magnetic = read_imu_sensor()
+    pressure, temperature, altitude = read_bmp3xx_sensor()
+    uva, uvb, uvc, uv_temp = read_uv_sensor()
+    
     readings = {
-        "CPUTemp": read_CPU(),
-        "CPU Usage": read_CPU_usage(),
-        "RAM Usage": read_RAM_usage(),
+        "CPUTemp"       : read_CPU(),
+        "CPU Usage"     : read_CPU_usage(),
+        "RAM Usage"     : read_RAM_usage(),
         #"latitude": latitude,
         #"longitude": longitude,
-        "Acceleration": acceleration,
-        "Gyro": gyro,
-        "Magnetic": magnetic,
-        "UV Sensor": read_uv_sensor(),
-        "DallasSensor": read_dallas_sensor(),
-        "BMP3XX": read_bmp3xx_sensor(),
+        "Acceleration"  : acceleration,
+        "Gyro"          : gyro,
+        "Magnetic"      : magnetic,
+        "Pressure"      : pressure,
+        "BMP Temp"      : temperature,
+        "Altitude"      : altitude,
+        "UVA"           : uva,
+        "UVB"           : uvb,
+        "UVC"           : uvc,
+        "UV Temp"       : uv_temp,
+        "Temperature"   : read_dallas_sensor(),
         #"GPS Sensor": read_gpscomplicated_sensor(),
     }
     return prepare_sensor_data(readings)
@@ -245,7 +254,7 @@ if __name__ == "__main__":
         while True:
             clear_screen()
             sensor_data = read_sensors()
-            sensorDataJSON = json.dumps(read_sensors())
+            sensorDataJSON = json.dumps(sensor_data)
 
             if sensorDataJSON:
                 # Publish the data via MQTT
