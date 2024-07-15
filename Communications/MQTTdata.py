@@ -6,8 +6,6 @@
 *                                                                                                          *
 *********************************************************************************************************"""
 
-# Install the necessary libraries
-
 import os
 import time
 import json
@@ -86,7 +84,7 @@ def read_imu_sensor():
         log_status("IMU Sensor", "Disconnected")
         logging.error(f"Error reading IMU Sensor: {e}")
         return None, None, None
-    
+
 # BMP3XX Sensor
 def read_bmp3xx_sensor():
     try:
@@ -98,6 +96,7 @@ def read_bmp3xx_sensor():
         log_status("BMP3XX", "Disconnected")
         logging.error(f"Error reading BMP3XX Sensor: {e}")
         return None, None, None
+
 
 # Dallas Sensor
 def read_dallas_sensor():
@@ -245,7 +244,7 @@ def save_json_to_csv(json_data, csv_file_path):
 
 ## MQTT Configuration and interval between sensor readings
 hostname_mqtt = "localhost"
-sensorReadingInterval = 1
+sensorReadingInterval = 2
 
 # Path to save the CSV file
 csv_file_path = "/home/javil/sensor_data.csv"
