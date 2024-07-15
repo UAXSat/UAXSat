@@ -245,7 +245,7 @@ def save_json_to_csv(json_data, csv_file_path):
 
 ## MQTT Configuration and interval between sensor readings
 hostname_mqtt = "localhost"
-sensorReadingInterval = 2
+sensorReadingInterval = 1
 
 # Path to save the CSV file
 csv_file_path = "/home/javil/sensor_data.csv"
