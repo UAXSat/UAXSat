@@ -71,3 +71,4 @@ sudo systemctl status mqttclient.service
 
 ## Grafana
 To be done...
+![graf](https://github.com/user-attachments/assets/c89a8089-0d4d-4fb3-bfcc-7217d1fd9937)
