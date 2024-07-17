@@ -46,5 +46,5 @@ We would like to thank the following individuals/organizations for their contrib
 - Alfonso X El Sabio University ([website](https://www.uax.com/))
 - B2Space ([website](https://b2-space.com/))
 - Ricardo Atienza ([LinkedIn](https://www.linkedin.com/in/ricardo-atienza))
-- Jesús Jiménez ([LinkedIn](https://www.linkedin.com/in/jesus-jimenez))
+- Jesús Isidro Jiménez ([LinkedIn](https://www.linkedin.com/in/jesus-isidro-jimenez-3577b8153/))
   
