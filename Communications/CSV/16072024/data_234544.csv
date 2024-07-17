@@ -1,0 +1,2 @@
+Date,CPUTemp,CPU Usage,RAM Usage,Latitude,Longitude,Altitude,Satellites,Elevation,Azimuth,UTC Time,Acceleration,Gyro,Magnetic,Pressure,BMP Temp,BMP Altitude,UVA,UVB,UVC,UV Temp,Temperature
+23:45:50,49.05,0.3,13.0,Error,Error,Error,Error,Error,Error,214545.00,"[0.6009446166992187, -2.042254016113281, -9.78031378173828]","[-0.00319754986259542, 0.01119142451908397, 0.0002664624885496183]","[68.1, 1.3499999999999999, -95.7]",Error,Error,Error,0.0518798828125,0.05767822265625,0.037994384765625,25.25,Error
