@@ -13,23 +13,28 @@ import csv
 import logging
 
 import sys
-sys.path.append('../') # permite importar modulos de la carpeta vecinos
+sys.path.append('../') 	# Permite importar modulos de la carpeta vecinos
 
 # Import the modules to read the sensors
 from Sensors.UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
-from Sensors.GPSmodule2 import run
-#from Sensors.GPSmodule_complicated import parse_nmea_sentence as parse_nmea_sentence_complicated
+from Sensors.GPSmodule import run as read_gps_data
 from Sensors.IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
 from Sensors.DS18B20module import DallasSensor
 from Sensors.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
 from gpiozero import CPUTemperature
 from psutil import cpu_percent, virtual_memory
 
-# Importa el módulo para publicar mensajes MQTT
+# Importa el m  dulo para publicar mensajes MQTT
 import paho.mqtt.publish as publish  
 
-logging.basicConfig(filename='/home/javil/error.log', level=logging.DEBUG,
+logging.basicConfig(filename='/home/cubesat/error.log', level=logging.DEBUG,
                     format='%(asctime)s: %(levelname)s: %(message)s')
+
+def initialize_csv_folder():
+    """Crea la carpeta 'csv' si no existe."""
+    if not os.path.exists(csv_folder):
+        os.makedirs(csv_folder)
+        print(f"Carpeta '{csv_folder}' creada.")
 
 def clear_screen():
     """Clears the console screen."""
@@ -59,6 +64,7 @@ def log_status(sensor_name, status):
     else:
         print(f"{RED}{status_message}{RESET}", end=" | ")
         logging.warning(status_message)
+
 
 ## Functions to read the sensors
 # UV Sensor
@@ -153,21 +159,18 @@ def read_RAM_usage():
 # GPS Sensor
 def read_gps_sensor():
     try:
-        port, gps = connect_gps()
-        data = None
-        while not data:
-            nmea_data = gps.stream_nmea().strip()
-            for sentence in nmea_data.splitlines():
-                data, error = parse_nmea_sentence(sentence)
-                if data:
+        data = read_gps_data()
+        if data:
+            for entry in data:
+                if entry['Sentence'] == 'GNRMC':
                     log_status("GPS Sensor", "OK")
-                    return data['latitude'], data['longitude']
+                    return entry['Latitude'], entry['Longitude']
         log_status("GPS Sensor", "Disconnected")
     except Exception as e:
         log_status("GPS Sensor", "Disconnected")
         logging.error(f"Error reading GPS Sensor: {e}")
-        return None
-    
+        return None, None
+
 # GPS Sensor
 '''
 def read_gpscomplicated_sensor():
@@ -197,18 +200,17 @@ def prepare_sensor_data(readings):
 
 ## Read all the sensors
 def read_sensors():
-    
-    #latitude, longitude = read_gps_sensor()
+    latitude, longitude = read_gps_sensor()
     acceleration, gyro, magnetic = read_imu_sensor()
     pressure, temperature, altitude = read_bmp3xx_sensor()
     uva, uvb, uvc, uv_temp = read_uv_sensor()
-    
+
     readings = {
         "CPUTemp"       : read_CPU(),
         "CPU Usage"     : read_CPU_usage(),
         "RAM Usage"     : read_RAM_usage(),
-        #"latitude": latitude,
-        #"longitude": longitude,
+        "Latitude"      : latitude,
+        "Longitude"     : longitude,
         "Acceleration"  : acceleration,
         "Gyro"          : gyro,
         "Magnetic"      : magnetic,
@@ -220,28 +222,30 @@ def read_sensors():
         "UVC"           : uvc,
         "UV Temp"       : uv_temp,
         "Temperature"   : read_dallas_sensor(),
-        #"GPS Sensor": read_gpscomplicated_sensor(),
     }
     return prepare_sensor_data(readings)
 
 ## Save the data to a CSV file
 def save_json_to_csv(json_data, csv_file_path):
-    # Parse the JSON data
-    data = json.loads(json_data)
+    try:
+        data = json.loads(json_data)
 
-    # Check if the CSV file already exists
-    file_exists = os.path.isfile(csv_file_path)
+        # Check if the CSV file already exists
+        file_exists = os.path.isfile(csv_file_path)
 
-    with open(csv_file_path, mode='w', newline='') as file:
-        writer = csv.writer(file)
+        with open(csv_file_path, mode='a', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=data.keys())
 
-        # If the file doesn't exist, write the header
-        if not file_exists:
-            header = data.keys()
-            writer.writerow(header)
+            # If the file doesn't exist, write the header
+            if not file_exists:
+                writer.writeheader()
 
-        # Write the data
-        writer.writerow(data.values())
+            # Write the data
+            writer.writerow(data)
+        
+        logging.info(f"Data appended to {csv_file_path} successfully.")
+    except Exception as e:
+        logging.error(f"Error saving data to CSV: {e}")
 
 
 ## MQTT Configuration and interval between sensor readings
@@ -249,29 +253,42 @@ hostname_mqtt = "localhost"
 sensorReadingInterval = 2
 
 # Path to save the CSV file
-csv_file_path = "/home/javil/sensor_data.csv"
+
 
 if __name__ == "__main__":
     try:
+        # Generar nombre único de archivo CSV
+        current_time = time.strftime("%H%M%S", time.localtime())
+        current_date = time.strftime("%d%m%Y", time.localtime())
+
+        csv_folder = f"CSV/{current_date}"  # Ruta a la carpeta donde se guardara el CSV
+        initialize_csv_folder()  # Asegura que la carpeta CSV exista
+        csv_filename = f"data_{current_time}.csv"
+        csv_file_path = os.path.join(csv_folder, csv_filename)
+
         while True:
-            clear_screen()
+            #clear_screen()
+            logging.debug("Reading sensor data...")
             sensor_data = read_sensors()
             sensorDataJSON = json.dumps(sensor_data)
 
             if sensorDataJSON:
                 # Publish the data via MQTT
+                logging.debug(f"Publishing data via MQTT: {sensorDataJSON}")
                 publish.single("data", sensorDataJSON, hostname=hostname_mqtt)
                 print("Data sent successfully.")
 
                 # Save the JSON data to CSV
+                logging.debug(f"Saving data to CSV: {sensorDataJSON}")
                 save_json_to_csv(sensorDataJSON, csv_file_path)
-                print("Data saved to CSV successfully.")
+                print(f"Data saved to {csv_filename} successfully.")
             else:
                 print("Error sending data.")
 
             time.sleep(sensorReadingInterval)
+
     except KeyboardInterrupt:
         print("\n Program stopped by the user.")
     except Exception as e:
+        logging.error(f"Unexpected error while publishing data: {e}")
         print(f"Unexpected error while publishing data: {e}")
-

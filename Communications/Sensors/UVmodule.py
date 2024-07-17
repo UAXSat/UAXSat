@@ -857,7 +857,7 @@ def initialize_sensor():
     sensor = AS7331(board.I2C())
     sensor.gain = GAIN_512X
     sensor.integration_time = INTEGRATION_TIME_128MS
-    print("Sensor UV inicializado con éxito.")
+    #print("Sensor UV inicializado con éxito.")
     return sensor
 
 def get_sensor_status(sensor):
@@ -886,8 +886,8 @@ def main():
         data = read_sensor_data(sensor)
         if data:
             print(f"UVA: {data['UVA']}, UVB: {data['UVB']}, UVC: {data['UVC']}, Tem: {data['temp']}°C")
-        else:
-            print("Error al leer los datos del sensor.")
+        #else:
+            #print("Error al leer los datos del sensor.")
         time.sleep(1)
 
 if __name__ == '__main__':

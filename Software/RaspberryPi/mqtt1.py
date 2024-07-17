@@ -13,6 +13,20 @@ from bmp390 import BMP3XXSensor
 logging.basicConfig(filename='errores_sensores.log', level=logging.DEBUG,
                     format='%(asctime)s: %(levelname)s: %(message)s')
 
+csv_folder = 'csv'  # Nombre de la carpeta donde se guardar   el CSV
+
+def initialize_csv_folder():
+    """Crea la carpeta 'csv' si no existe."""
+    if not os.path.exists(csv_folder):
+        os.makedirs(csv_folder)
+        print(f"Carpeta '{csv_folder}' creada.")
+
+def write_to_csv(data, filename):
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=data.keys())
+        writer.writeheader()
+        writer.writerow(data)
+
 def clear_screen():
     """Limpia la pantalla de la consola."""
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -123,9 +137,14 @@ if __name__ == "__main__":
         while True:
             clear_screen()
             mensaje_json = json.dumps(read_sensors())
+
+            # Generar el nombre del archivo CSV con la fecha y hora actual
+            timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+            filename = os.path.join(csv_folder, f'sensor_data_{timestamp}.csv')
+
             if mensaje_json:
                 publish.single("sensores/data", mensaje_json, hostname=hostname_mqtt)
-                print("Datos publicados con éxito.")
+                print("Datos publicados con exito.")
             else:
                 print("No se pudo obtener datos de los sensores.")
             time.sleep(intervalo)

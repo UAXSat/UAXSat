@@ -1,3 +1,13 @@
+"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                            *
+*                    Developed by Javier Bolaños                             *
+*                 https://github.com/javierbolanosllano                      *
+*                                                                            *
+*                      UAXSAT IV Project - 2024                              *
+*                   https://github.com/UAXSat/UAXSat                         *
+*                                                                            *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
+
 # GPSmodule.py
 import serial
 from ublox_gps import UbloxGps
@@ -13,15 +23,22 @@ class GPSParser:
         self.gps, self.serial_port = self.initialize_gps()
 
     def find_gps_port(self, description, hwid):
+        """
+        Encuentra el puerto serial basado en la descripción o HWID.
+        """
         ports = list_ports.comports()
         for port in ports:
             if description and description in port.description:
                 return port.device
             if hwid and hwid in port.hwid:
-return port.device
+                return port.device
+        print("No se encontró el puerto serial con la descripción o HWID proporcionados.")
         return None
 
     def initialize_gps(self):
+        """
+        Inicializa el puerto serie y el objeto GPS.
+        """
         if not self.port:
             return None, None
         try:
@@ -34,7 +51,7 @@ return port.device
 
     def valid_checksum(self, nmea_sentence):
         sentence, checksum = nmea_sentence.split('*')
-        sentence = sentence[1:]
+        sentence = sentence[1:]  # Eliminar el símbolo de inicio $
         calc_checksum = 0
         for char in sentence:
             calc_checksum ^= ord(char)
@@ -193,3 +210,34 @@ return port.device
         if self.serial_port:
             self.serial_port.close()
             print("Serial port closed.")
+
+"""
+# main.py
+from GPSmodule import GPSParser
+
+BAUDRATE = 38400
+TIMEOUT = 1
+DESCRIPTION = "u-blox GNSS receiver"
+HWID = "1546:01A9"
+
+def main():
+    gps_parser = GPSParser(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
+    if not gps_parser.gps or not gps_parser.serial_port:
+        return
+    
+    print("Listening for UBX Messages. Press Ctrl+C to exit.")
+    try:
+        while True:
+            nmea_data = gps_parser.read_nmea_data()
+            if nmea_data:
+                print(f"Raw NMEA Data: {nmea_data}")
+                extracted_data = gps_parser.extract_relevant_data(nmea_data)
+                print(f"Extracted Data: {extracted_data}")
+    except KeyboardInterrupt:
+        print("Exiting program.")
+    finally:
+        gps_parser.close()
+
+if __name__ == '__main__':
+    main()
+"""
