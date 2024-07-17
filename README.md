@@ -27,24 +27,24 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ### Organizers
 
-- Javier Bolaños ([github](https://github.com/javierbolanosllano)) ([linkedin](https://www.linkedin.com/in/javierbolanosllano/))
-- Javier Lendínez ([github](https://github.com/JaviLendi)) ([linkedin](https://www.linkedin.com/in/javierlendinez/))
+- Javier Bolaños ([GitHub](https://github.com/javierbolanosllano)) ([LinkedIn](https://www.linkedin.com/in/javierbolanosllano/))
+- Javier Lendínez ([GitHub](https://github.com/JaviLendi)) ([LinkedIn](https://www.linkedin.com/in/javierlendinez/))
 
 ### Developers
 
-- Laura Rodriguez ([linkedin](https://www.linkedin.com/in/laura-rodr%C3%ADguez-sotillo-3711811a5/))
-- Mario Barrio ([linkedin](https://www.linkedin.com/in/mario-barrio-alonso/))
-- Juan Coleto ([linkedin](https://www.linkedin.com/in/juan-coleto-arteche-4b2600309/))
-- Alba Herrero ([linkedin](https://www.linkedin.com/in/alba-herrero-prado-515102257/))
-- Pablo del Rio Torrecilla ([linkedin]())
-- Álvaro Rodríguez ([linkedin]())
-- Mónica Martín ([linkedin]())
+- Laura Rodriguez ([LinkedIn](https://www.linkedin.com/in/laura-rodr%C3%ADguez-sotillo-3711811a5/))
+- Alonso Lozano Garcia ([LinkedIn](https://www.linkedin.com/in/alonso-l-b75102254/))
+- Juan Coleto ([LinkedIn](https://www.linkedin.com/in/juan-coleto-arteche-4b2600309/))
+- Alba Herrero ([LinkedIn](https://www.linkedin.com/in/alba-herrero-prado-515102257/))
+- Pablo del Rio Torrecilla ([LinkedIn]())
+- Álvaro Rodríguez ([LinkedIn]())
+- Mónica Martín ([LinkedIn]())
 
 ### Acknowledgements
 We would like to thank the following individuals/organizations for their contributions and support:
 
 - Alfonso X El Sabio University ([website](https://www.uax.com/))
 - B2Space ([website](https://b2-space.com/))
-- Ricardo Atienza ([linkedin](https://www.linkedin.com/in/ricardo-atienza))
-- Jesús Jiménez ([linkedin](https://www.linkedin.com/in/jesus-jimenez))
+- Ricardo Atienza ([LinkedIn](https://www.linkedin.com/in/ricardo-atienza))
+- Jesús Isidro Jiménez ([LinkedIn](https://www.linkedin.com/in/jesus-isidro-jimenez-3577b8153/))
   
