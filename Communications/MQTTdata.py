@@ -24,7 +24,7 @@ DESCRIPTION = "u-blox GNSS receiver"
 HWID = "1546:01A9"
 
 ## MQTT Configuration and interval between sensor readings
-broker = "192.168.1.41"
+broker = "127.0.0.1"
 port = 1883
 sensorReadingInterval = 2
 topic = "data"
