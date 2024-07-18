@@ -3,7 +3,7 @@ from ublox_gps import UbloxGps
 from serial.tools import list_ports
 
 class GPSManager:
-    def __init__(self, baudrate=38400, timeout=1, description=None, hwid=None):
+    def __init__(self, baudrate=38400, timeout=1, description=None, hwid=1546:01A9):
         self.baudrate = baudrate
         self.timeout = timeout
         self.description = description
@@ -33,15 +33,16 @@ class GPSManager:
 
     def coordinates(self):
         try:
-            lat, lon = self.gps.geo_coords()
-            return lat, lon
+            geo = self.geo_coords()
+            return geo.lon, geo.lat
         except Exception as e:
             print(f"Error reading coordinates: {e}")
             return None, None
     
     def heading(self):
         try:
-            heading = self.gps.heading()
+            veh = self.veh_attitude()
+            heading = veh.heading
             return heading
         except Exception as e:
             print(f"Error reading heading: {e}")
@@ -57,27 +58,12 @@ class GPSManager:
     
     def roll_pitch_yaw(self):
         try:
-            roll, pitch, yaw = self.gps.roll_pitch_yaw()
+            veh = self.veh_attitude()
+            roll, pitch, yaw = veh.accRoll, veh.accPitch, veh.accheading
             return roll, pitch, yaw
         except Exception as e:
             print(f"Error reading roll, pitch and yaw: {e}")
             return None, None, None
-    
-    def speed(self):
-        try:
-            speed = self.gps.speed()
-            return speed
-        except Exception as e:
-            print(f"Error reading speed: {e}")
-            return None
-
-    def satellites(self):
-        try:
-            satellites = self.gps.satellites()
-            return satellites
-        except Exception as e:
-            print(f"Error reading satellites: {e}")
-            return None
     
     def main(self):
         while True:
@@ -104,18 +90,6 @@ class GPSManager:
                 print(f"Roll: {roll}, Pitch: {pitch}, Yaw: {yaw}")
             else:
                 print("Error reading roll, pitch and yaw")
-            
-            speed = self.speed()
-            if speed is not None:
-                print(f"Speed: {speed}")
-            else:
-                print("Error reading speed")
-            
-            satellites = self.satellites()
-            if satellites is not None:
-                print(f"Satellites: {satellites}")
-            else:
-                print("Error reading satellites")
             
             print("\n")
 
