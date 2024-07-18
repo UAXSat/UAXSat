@@ -24,7 +24,7 @@ DESCRIPTION = "u-blox GNSS receiver"
 HWID = "1546:01A9"
 
 ## MQTT Configuration and interval between sensor readings
-broker = "127.0.0.1"
+broker = "192.168.1.41"
 port = 1883
 sensorReadingInterval = 2
 topic = "data"
@@ -233,11 +233,11 @@ def save_json_to_csv(json_data, csv_file_path):
         logging.error(f"Error saving data to CSV: {e}")
 
 ## MQTT Callbacks
-def on_connect(client, userdata, flags, rc, properties=None):
-    if rc == 0:
+def on_connect(client, userdata, flags, reason_code, properties=None):
+    if reason_code == 0:
         logging.info("Connected to MQTT Broker!")
     else:
-        logging.error("Failed to connect, return code %d\n", rc)
+        logging.error("Failed to connect, return code %d\n", reason_code)
 
 def on_publish(client, userdata, mid):
     logging.info(f"Data published with mid {mid}")
