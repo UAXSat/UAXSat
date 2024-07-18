@@ -239,7 +239,7 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
     else:
         logging.error("Failed to connect, return code %d\n", reason_code)
 
-def on_publish(client, userdata, mid, reason_codes, properties):
+def on_publish(client, userdata, mid, reason_codes=None, properties=None):
     logging.info(f"Data published with mid {mid}")
 
 if __name__ == "__main__":
