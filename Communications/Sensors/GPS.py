@@ -1,6 +1,5 @@
 import serial
 from ublox_gps import UbloxGps
-from serial.tools import list_ports
 
 port = serial.Serial('/dev/serial0', baudrate=38400, timeout=1)
 gps = UbloxGps(port)
@@ -11,26 +10,29 @@ def run():
         while True:
             try:
                 geo = gps.geo_coords()
-                print("Longitude: ", geo.lon) 
-                print("Latitude: ", geo.lat)
-                print("Heading of Motion: ", geo.headMot)
+                if geo is not None:
+                    print("Longitude: ", geo.lon) 
+                    print("Latitude: ", geo.lat)
+                    print("Heading of Motion: ", geo.headMot)
+                    
+                    altitude = gps.get_altitude()
+                    print("Altitude: ", altitude)
 
-                altitude = gps.get_altitude()
-                print("Altitude: ", altitude)
+                    roll, pitch, yaw = gps.roll_pitch_yaw()
+                    print("Roll: ", roll)
+                    print("Pitch: ", pitch)
+                    print("Yaw: ", yaw)
 
-                roll, pitch, yaw = gps.roll_pitch_yaw()
-                print("Roll: ", roll)
-                print("Pitch: ", pitch)
-                print("Yaw: ", yaw)
+                    speed = gps.get_speed()
+                    print("Speed: ", speed)
 
-                speed = gps.get_speed()
-                print("Speed: ", speed)
-
-                satellites = gps.get_satellite_info()
-                print("Satellites: ", satellites)
+                    satellites = gps.get_satellite_info()
+                    print("Satellites: ", satellites)
+                else:
+                    print("No GPS fix acquired.")
                 
             except (ValueError, IOError) as err:
-                print(err)
+                print(f"GPS error: {err}")
     
     finally:
         port.close()
