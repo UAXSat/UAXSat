@@ -42,6 +42,8 @@ class GPSHandler:
                 try:
                     geo = self.gps.geo_coords()
                     veh = self.gps.veh_attitude()
+                    get_set = self.ubx_get_set_del(0x20930001)
+                    
                     if geo is not None:
                         print("Longitude: ", geo.lon)
                         print("Latitude: ", geo.lat)
@@ -52,7 +54,7 @@ class GPSHandler:
                         print("Pitch: ", veh.pitch)
                         print("Heading: ", veh.heading)
 
-                        get_set = self.ubx_get_set_del(0x20930001)
+                    if get_set is not None:
                         print(get_set)
 
                         print(self.stream_nmea())
