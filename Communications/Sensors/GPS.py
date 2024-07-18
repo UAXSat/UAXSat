@@ -42,7 +42,7 @@ class GPSHandler:
                 try:
                     geo = self.gps.geo_coords()
                     veh = self.gps.veh_attitude()
-                    get_set = self.gps.ubx_get_set_del(0x20930001)
+                    stream_nmea = self.gps.gps.stream_nmea()
 
                     if geo is not None:
                         print("Longitude: ", geo.lon)
@@ -54,10 +54,9 @@ class GPSHandler:
                         print("Pitch: ", veh.pitch)
                         print("Heading: ", veh.heading)
 
-                    if get_set is not None:
-                        print(get_set)
+                    if stream_nmea is not None:
+                        print(stream_nmea)
 
-                        print(self.stream_nmea())
                     else:
                         print("No GPS fix acquired.")
                     
