@@ -1,3 +1,15 @@
+"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                            *
+*                    Developed by Javier Bolaños                             *
+*                 https://github.com/javierbolanosllano                      *
+*                                                                            *
+*                      UAXSAT IV Project - 2024                              *
+*                   https://github.com/UAXSat/UAXSat                         *
+*                                                                            *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
+
+
+
 # GPSmodule.py
 import serial
 from ublox_gps import UbloxGps
@@ -50,10 +62,10 @@ class GPSParser:
             '$GNVTG': self.parse_vtg,
             '$GNGGA': self.parse_gga,
             '$GNGSA': self.parse_gsa,
-            '$GPGSV': self.parse_gsv,
-            '$GLGSV': self.parse_gsv,
-            '$GBGSV': self.parse_gsv,
-            '$GAGSV': self.parse_gsv,
+            '$GPGSV': self.parse_gsv,  # GPS satellites
+            '$GLGSV': self.parse_gsv,  # GLONASS satellites
+            '$GBGSV': self.parse_gsv,  # BeiDou satellites
+            '$GAGSV': self.parse_gsv,  # Galileo satellites
             '$GNGLL': self.parse_gll,
         }
 
