@@ -77,18 +77,6 @@ def read_imu_sensor():
         logging.error(f"Error reading IMU Sensor: {e}")
         return None, None, None
 
-# BMP3XX Sensor
-# def read_bmp3xx_sensor():
-#     try:
-#         sensor = init_bmp_sensor()
-#         data = read_bmp_data(sensor)
-#         log_status("BMP3XX", "OK")
-#         return data['pressure'], data['temperature'], data['altitude']
-#     except Exception as e:
-#         log_status("BMP3XX", "Disconnected")
-#         logging.error(f"Error reading BMP3XX Sensor: {e}")
-#         return None, None, None
-
 # Dallas Sensor
 def read_dallas_sensor():
     try:
@@ -156,7 +144,7 @@ def read_gps_sensor(gps_parser):
         if nmea_data:
             extracted_data = gps_parser.extract_relevant_data(nmea_data)
             log_status("GPS Sensor", "OK")
-            return extracted_data['Latitude'], extracted_data['Longitude'], extracted_data['Altitude'], extracted_data['Satellites in View'], extracted_data['Elevation'], extracted_data['Azimuth'], extracted_data['Time (UTC)']
+            return extracted_data['Latitude'], extracted_data['Longitude'], extracted_data['Altitude'], extracted_data['Satellites in View'], extracted_data['Elevation'], extracted_data['Azimuth'], extracted_data['UTC Time']
         else:
             log_status("GPS Sensor", "Disconnected")
             return None, None, None, None, None, None, None
@@ -176,31 +164,27 @@ def prepare_sensor_data(readings):
 def read_sensors(gps_parser):
     latitude, longitude, altitude, satellites, elevation, azimuth, utc_time = read_gps_sensor(gps_parser)
     acceleration, gyro, magnetic = read_imu_sensor()
-    # pressure, temperature, bmp_altitude = read_bmp3xx_sensor()
     uva, uvb, uvc, uv_temp = read_uv_sensor()
 
     readings = {
-        "CPUTemp"       : read_CPU(),
-        "CPU Usage"     : read_CPU_usage(),
-        "RAM Usage"     : read_RAM_usage(),
-        "Latitude"      : latitude,
-        "Longitude"     : longitude,
-        "Altitude"      : altitude,
-        "Satellites"    : satellites,
-        "Elevation"     : elevation,
-        "Azimuth"       : azimuth,
-        "UTC Time"      : utc_time,
-        "Acceleration"  : acceleration,
-        "Gyro"          : gyro,
-        "Magnetic"      : magnetic,
-        # "Pressure"      : pressure,
-        # "BMP Temp"      : temperature,
-        # "BMP Altitude"  : bmp_altitude,
-        "UVA"           : uva,
-        "UVB"           : uvb,
-        "UVC"           : uvc,
-        "UV Temp"       : uv_temp,
-        "Temperature"   : read_dallas_sensor(),
+        "CPUTemp": read_CPU(),
+        "CPU Usage": read_CPU_usage(),
+        "RAM Usage": read_RAM_usage(),
+        "Latitude": latitude,
+        "Longitude": longitude,
+        "Altitude": altitude,
+        "Satellites": satellites,
+        "Elevation": elevation,
+        "Azimuth": azimuth,
+        "UTC Time": utc_time,
+        "Acceleration": acceleration,
+        "Gyro": gyro,
+        "Magnetic": magnetic,
+        "UVA": uva,
+        "UVB": uvb,
+        "UVC": uvc,
+        "UV Temp": uv_temp,
+        "Temperature": read_dallas_sensor(),
     }
     return prepare_sensor_data(readings)
 
@@ -221,7 +205,7 @@ def save_json_to_csv(json_data, csv_file_path):
 
             # Write the data
             writer.writerow(data)
-        
+
         logging.info(f"Data appended to {csv_file_path} successfully.")
 
     except Exception as e:
@@ -254,7 +238,7 @@ if __name__ == "__main__":
         csv_file_path = os.path.join(csv_folder, csv_filename)
 
         gps_parser = GPSParser(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
-        
+
         # MQTT Client
         client = mqtt.Client()
         client.on_connect = on_connect

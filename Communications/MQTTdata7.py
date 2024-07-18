@@ -13,7 +13,7 @@ from Sensors.UVmodule import initialize_sensor as init_uv_sensor, read_sensor_da
 from Sensors.GPSmodule import GPSParser  # Asegúrate de que GPSParser esté importado correctamente
 from Sensors.IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
 from Sensors.DS18B20module import DallasSensor
-# from Sensors.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
+from Sensors.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
 from gpiozero import CPUTemperature
 from psutil import cpu_percent, virtual_memory
 
@@ -23,8 +23,9 @@ TIMEOUT = 1
 DESCRIPTION = "u-blox GNSS receiver"
 HWID = "1546:01A9"
 
-# MQTT parameters
-broker = "192.168.1.70"  # Cambia esto por la IP del servidor MQTT
+## MQTT Configuration and interval between sensor readings
+sensorReadingInterval = 2
+broker = "192.168.1.70"
 port = 1883
 topic = "data"
 
@@ -59,11 +60,16 @@ def read_uv_sensor():
         sensor = init_uv_sensor()
         data = read_uv_data(sensor)
         log_status("UV Sensor", "OK")
-        return data['UVA'], data['UVB'], data['UVC'], data['temp']
+        return {
+            "UVA": data['UVA'],
+            "UVB": data['UVB'],
+            "UVC": data['UVC'],
+            "Temperature": data['temp']
+        }
     except Exception as e:
         log_status("UV Sensor", "Disconnected")
         logging.error(f"Error reading UV Sensor: {e}")
-        return None, None, None, None
+        return None
 
 # ICM20948 Sensor
 def read_imu_sensor():
@@ -71,23 +77,15 @@ def read_imu_sensor():
         sensor = init_icm_sensor()
         data = read_imu_data(sensor)
         log_status("IMU Sensor", "OK")
-        return data['acceleration'], data['gyro'], data['magnetic']
+        return {
+            "Acceleration": data['acceleration'],
+            "Gyro": data['gyro'],
+            "Magnetic": data['magnetic']
+        }
     except Exception as e:
         log_status("IMU Sensor", "Disconnected")
         logging.error(f"Error reading IMU Sensor: {e}")
-        return None, None, None
-
-# BMP3XX Sensor
-# def read_bmp3xx_sensor():
-#     try:
-#         sensor = init_bmp_sensor()
-#         data = read_bmp_data(sensor)
-#         log_status("BMP3XX", "OK")
-#         return data['pressure'], data['temperature'], data['altitude']
-#     except Exception as e:
-#         log_status("BMP3XX", "Disconnected")
-#         logging.error(f"Error reading BMP3XX Sensor: {e}")
-#         return None, None, None
+        return None
 
 # Dallas Sensor
 def read_dallas_sensor():
@@ -96,7 +94,7 @@ def read_dallas_sensor():
         sensor_info = sensor.get_sensor_info()
         if sensor_info:
             log_status("DallasSensor", "OK")
-            return sensor_info
+            return {"Temperature": sensor_info}
         else:
             log_status("DallasSensor", "Disconnected")
             return None
@@ -111,7 +109,7 @@ def read_CPU():
     try:
         cpu = CPUTemperature().temperature
         log_status("CPUTemperature", "OK")
-        return cpu
+        return {"Temperature": cpu}
     except Exception as e:
         log_status("CPUTemperature", "Disconnected")
         logging.error(f"Error reading CPU Temperature: {e}")
@@ -123,7 +121,7 @@ def read_CPU_usage():
     try:
         cpu = cpu_percent(interval=1)
         log_status("CPU Usage", "OK")
-        return cpu
+        return {"Usage": cpu}
     except Exception as e:
         log_status("CPU Usage", "Disconnected")
         logging.error(f"Error reading CPU Usage: {e}")
@@ -135,7 +133,7 @@ def read_RAM_usage():
     try:
         ram = virtual_memory().percent
         log_status("RAM Usage", "OK")
-        return ram
+        return {"Usage": ram}
     except Exception as e:
         log_status("RAM Usage", "Disconnected")
         logging.error(f"Error reading RAM Usage: {e}")
@@ -150,57 +148,49 @@ def read_gps_sensor(gps_parser):
             gps_parser = GPSParser(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
             if not gps_parser.gps or not gps_parser.serial_port:
                 log_status("GPS Sensor", "Disconnected")
-                return None, None, None, None, None, None, None
+                return None
 
         nmea_data = gps_parser.read_nmea_data()
         if nmea_data:
             extracted_data = gps_parser.extract_relevant_data(nmea_data)
             log_status("GPS Sensor", "OK")
-            return extracted_data['Latitude'], extracted_data['Longitude'], extracted_data['Altitude'], extracted_data['Satellites in View'], extracted_data['Elevation'], extracted_data['Azimuth'], extracted_data['Time (UTC)']
+            return {
+                "Latitude": extracted_data['Latitude'],
+                "Longitude": extracted_data['Longitude'],
+                "Altitude": extracted_data['Altitude'],
+                "Satellites in View": extracted_data['Satellites in View'],
+                "Elevation": extracted_data['Elevation'],
+                "Azimuth": extracted_data['Azimuth'],
+                "UTC Time": extracted_data['UTC Time']
+            }
         else:
             log_status("GPS Sensor", "Disconnected")
-            return None, None, None, None, None, None, None
+            return None
     except Exception as e:
         log_status("GPS Sensor", "Disconnected")
         logging.error(f"Error reading GPS Sensor: {e}")
-        return None, None, None, None, None, None, None
+        return None
 
 ## Prepare the data to be sent
 def prepare_sensor_data(readings):
-    sensors_data = {"Date": time.strftime("%H:%M:%S", time.localtime())}
+    sensors_data = {"Date": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}
     for sensor, data in readings.items():
-        sensors_data[sensor] = data if data else "Error"
+        if data:
+            sensors_data[sensor] = data
+        else:
+            sensors_data[sensor] = "Error"
     return sensors_data
 
 ## Read all the sensors
 def read_sensors(gps_parser):
-    latitude, longitude, altitude, satellites, elevation, azimuth, utc_time = read_gps_sensor(gps_parser)
-    acceleration, gyro, magnetic = read_imu_sensor()
-    # pressure, temperature, bmp_altitude = read_bmp3xx_sensor()
-    uva, uvb, uvc, uv_temp = read_uv_sensor()
-
     readings = {
-        "CPUTemp"       : read_CPU(),
-        "CPU Usage"     : read_CPU_usage(),
-        "RAM Usage"     : read_RAM_usage(),
-        "Latitude"      : latitude,
-        "Longitude"     : longitude,
-        "Altitude"      : altitude,
-        "Satellites"    : satellites,
-        "Elevation"     : elevation,
-        "Azimuth"       : azimuth,
-        "UTC Time"      : utc_time,
-        "Acceleration"  : acceleration,
-        "Gyro"          : gyro,
-        "Magnetic"      : magnetic,
-        # "Pressure"      : pressure,
-        # "BMP Temp"      : temperature,
-        # "BMP Altitude"  : bmp_altitude,
-        "UVA"           : uva,
-        "UVB"           : uvb,
-        "UVC"           : uvc,
-        "UV Temp"       : uv_temp,
-        "Temperature"   : read_dallas_sensor(),
+        "CPUTemp": read_CPU(),
+        "CPU Usage": read_CPU_usage(),
+        "RAM Usage": read_RAM_usage(),
+        "GPS": read_gps_sensor(gps_parser),
+        "IMU": read_imu_sensor(),
+        "UV": read_uv_sensor(),
+        "Dallas Temperature": read_dallas_sensor(),
     }
     return prepare_sensor_data(readings)
 
@@ -221,7 +211,7 @@ def save_json_to_csv(json_data, csv_file_path):
 
             # Write the data
             writer.writerow(data)
-        
+
         logging.info(f"Data appended to {csv_file_path} successfully.")
 
     except Exception as e:
@@ -237,9 +227,6 @@ def on_connect(client, userdata, flags, rc, properties=None):
 def on_publish(client, userdata, mid):
     logging.info(f"Data published with mid {mid}")
 
-## MQTT Configuration and interval between sensor readings
-sensorReadingInterval = 5
-
 if __name__ == "__main__":
     try:
         logging.info("Starting sensor data collection script.")
@@ -254,7 +241,7 @@ if __name__ == "__main__":
         csv_file_path = os.path.join(csv_folder, csv_filename)
 
         gps_parser = GPSParser(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
-        
+
         # MQTT Client
         client = mqtt.Client()
         client.on_connect = on_connect
