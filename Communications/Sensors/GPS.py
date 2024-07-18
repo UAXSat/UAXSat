@@ -62,6 +62,8 @@ class GPSHandler:
 
                         get_set = self.ubx_get_set_del(0x20930001)
                         print(get_set)
+
+                        print(self.stream_nmea())
                     else:
                         print("No GPS fix acquired.")
                     
