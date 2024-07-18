@@ -42,7 +42,7 @@ class GPSHandler:
                 try:
                     geo = self.gps.geo_coords()
                     veh = self.gps.veh_attitude()
-                    stream_nmea = self.gps.gps.stream_nmea()
+                    stream_nmea = self.gps.stream_nmea()
 
                     if geo is not None:
                         print("Longitude: ", geo.lon)
