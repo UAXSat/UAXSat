@@ -3,7 +3,7 @@ from ublox_gps import UbloxGps
 from serial.tools import list_ports
 
 class GPSManager:
-    def __init__(self, baudrate=38400, timeout=1, description=None, hwid=1546:01A9):
+    def __init__(self, baudrate=38400, timeout=1, description=None, hwid="1546:01A9"):
         self.baudrate = baudrate
         self.timeout = timeout
         self.description = description
