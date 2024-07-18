@@ -41,21 +41,16 @@ class GPSHandler:
             while True:
                 try:
                     geo = self.gps.geo_coords()
+                    veh = self.veh_attitude()
                     if geo is not None:
                         print("Longitude: ", geo.lon)
                         print("Latitude: ", geo.lat)
                         print("Heading of Motion: ", geo.headMot)
 
-                        roll, pitch, yaw = self.gps.roll_pitch_yaw()
-                        print("Roll: ", roll)
-                        print("Pitch: ", pitch)
-                        print("Yaw: ", yaw)
-
-                        speed = self.gps.get_speed()
-                        print("Speed: ", speed)
-
-                        satellites = self.gps.get_satellite_info()
-                        print("Satellites: ", satellites)
+                    if veh is not None:
+                        print("Roll: ", veh.roll)
+                        print("Pitch: ", veh.pitch)
+                        print("Heading: ", veh.heading)
 
                         get_set = self.ubx_get_set_del(0x20930001)
                         print(get_set)
