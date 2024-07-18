@@ -31,61 +31,61 @@ class GPSManager:
             print(f"Error opening serial port: {e}")
             return None, None
 
-    def coordinates(self):
+    def coordinates(gps):
         try:
-            geo = self.geo_coords()
+            geo = gps.geo_coords()
             return geo.lon, geo.lat
         except Exception as e:
             print(f"Error reading coordinates: {e}")
             return None, None
     
-    def heading(self):
+    def heading(gps):
         try:
-            veh = self.veh_attitude()
+            veh = gps.veh_attitude()
             heading = veh.heading
             return heading
         except Exception as e:
             print(f"Error reading heading: {e}")
             return None
     
-    def altitude(self):
+    def altitude(gps):
         try:
-            altitude = self.gps.altitude()
+            altitude = gps.gps.altitude()
             return altitude
         except Exception as e:
             print(f"Error reading altitude: {e}")
             return None
     
-    def roll_pitch_yaw(self):
+    def roll_pitch_yaw(gps):
         try:
-            veh = self.veh_attitude()
+            veh = gps.veh_attitude()
             roll, pitch, yaw = veh.accRoll, veh.accPitch, veh.accheading
             return roll, pitch, yaw
         except Exception as e:
             print(f"Error reading roll, pitch and yaw: {e}")
             return None, None, None
     
-    def main(self):
+    def main(gps):
         while True:
-            lat, lon = self.coordinates()
+            lat, lon = gps.coordinates()
             if lat is not None and lon is not None:
                 print(f"Coordinates: {lat}, {lon}")
             else:
                 print("Error reading coordinates")
             
-            heading = self.heading()
+            heading = gps.heading()
             if heading is not None:
                 print(f"Heading: {heading}")
             else:
                 print("Error reading heading")
             
-            altitude = self.altitude()
+            altitude = gps.altitude()
             if altitude is not None:
                 print(f"Altitude: {altitude}")
             else:
                 print("Error reading altitude")
             
-            roll, pitch, yaw = self.roll_pitch_yaw()
+            roll, pitch, yaw = gps.roll_pitch_yaw()
             if roll is not None and pitch is not None and yaw is not None:
                 print(f"Roll: {roll}, Pitch: {pitch}, Yaw: {yaw}")
             else:
