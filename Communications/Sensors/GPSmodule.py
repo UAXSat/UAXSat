@@ -18,8 +18,7 @@ class GPSParser:
             if description and description in port.description:
                 return port.device
             if hwid and hwid in port.hwid:
-return port.device
-        return None
+                return None
 
     def initialize_gps(self):
         if not self.port:
@@ -172,7 +171,7 @@ return port.device
             if error:
                 print(f"Error parsing sentence: {error}")
                 continue
-            
+
             if 'Latitude' in data and 'Longitude' in data:
                 extracted_data['Latitude'] = data['Latitude']
                 extracted_data['Longitude'] = data['Longitude']
@@ -186,7 +185,7 @@ return port.device
                 extracted_data['Azimuth'] = data['Azimuth (degrees)']
             if 'Time (UTC)' in data:
                 extracted_data['Time (UTC)'] = data['Time (UTC)']
-        
+
         return extracted_data
 
     def close(self):
