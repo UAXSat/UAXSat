@@ -59,6 +59,9 @@ class GPSHandler:
 
                         satellites = self.gps.get_satellite_info()
                         print("Satellites: ", satellites)
+
+                        get_set = self.ubx_get_set_del(0x20930001)
+                        print(get_set)
                     else:
                         print("No GPS fix acquired.")
                     
