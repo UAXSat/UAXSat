@@ -233,7 +233,7 @@ def save_json_to_csv(json_data, csv_file_path):
         logging.error(f"Error saving data to CSV: {e}")
 
 ## MQTT Callbacks
-def on_connect(client, userdata, reason_code, properties):
+def on_connect(client, userdata, flags, reason_code, properties):
     if reason_code == 0:
         logging.info("Connected to MQTT Broker!")
     else:
@@ -258,7 +258,7 @@ if __name__ == "__main__":
         gps_parser = GPSParser(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
 
         # MQTT Client
-        client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
+        client = mqtt.Client()
         client.on_connect = on_connect
         client.on_publish = on_publish
         client.connect(broker, port, 60)
