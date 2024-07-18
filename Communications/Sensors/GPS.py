@@ -69,5 +69,5 @@ class GPSHandler:
             self.serial_port.close()
 
 if __name__ == '__main__':
-    gps_handler = GPSHandler(baudrate=38400, timeout=1, description=None, hwid=None)
+    gps_handler = GPSHandler(baudrate=38400, timeout=1, description=None, hwid="1546:01A9")
     gps_handler.run()
