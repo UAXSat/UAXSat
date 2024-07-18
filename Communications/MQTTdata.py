@@ -258,7 +258,7 @@ if __name__ == "__main__":
         gps_parser = GPSParser(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
 
         # MQTT Client
-        client = mqtt.Client()
+        client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
         client.on_connect = on_connect
         client.on_publish = on_publish
         client.connect(broker, port, 60)
