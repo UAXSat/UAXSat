@@ -42,8 +42,8 @@ class GPSHandler:
                 try:
                     geo = self.gps.geo_coords()
                     veh = self.gps.veh_attitude()
-                    get_set = self.ubx_get_set_del(0x20930001)
-                    
+                    get_set = self.gps.ubx_get_set_del(0x20930001)
+
                     if geo is not None:
                         print("Longitude: ", geo.lon)
                         print("Latitude: ", geo.lat)
