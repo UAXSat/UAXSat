@@ -45,9 +45,6 @@ class GPSHandler:
                         print("Longitude: ", geo.lon)
                         print("Latitude: ", geo.lat)
                         print("Heading of Motion: ", geo.headMot)
-                        
-                        altitude = self.gps.veh_altitude()
-                        print("Altitude: ", altitude)
 
                         roll, pitch, yaw = self.gps.roll_pitch_yaw()
                         print("Roll: ", roll)
