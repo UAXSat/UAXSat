@@ -1,63 +1,56 @@
-"""*********************************************************************************************************
-*                                                                                                          *
-*                                     UAXSAT IV Project - 2024                                             *
-*                       Developed by Javier Bolanos Llano and Javier Lendinez                              *
-*                                    https://github.com/UAXSat                                             *
-*                                                                                                          *
-*********************************************************************************************************"""
-
 import os
 import time
 import json
 import csv
 import logging
-
 import sys
-sys.path.append('../') # permite importar modulos de la carpeta vecinos
+import paho.mqtt.client as mqtt
+
+sys.path.append('../')  # Permite importar módulos de la carpeta vecinos
 
 # Import the modules to read the sensors
 from Sensors.UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
-from Sensors.GPSmodule2 import run
-#from Sensors.GPSmodule_complicated import parse_nmea_sentence as parse_nmea_sentence_complicated
+from Sensors.GPSmodule import GPSParser  # Asegúrate de que GPSParser esté importado correctamente
 from Sensors.IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
 from Sensors.DS18B20module import DallasSensor
 from Sensors.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
 from gpiozero import CPUTemperature
 from psutil import cpu_percent, virtual_memory
 
-# Importa el módulo para publicar mensajes MQTT
-import paho.mqtt.publish as publish  
+# GPS parameters
+BAUDRATE = 38400
+TIMEOUT = 1
+DESCRIPTION = "u-blox GNSS receiver"
+HWID = "1546:01A9"
 
+## MQTT Configuration and interval between sensor readings
+broker = "192.168.1.41"
+port = 1883
+sensorReadingInterval = 2
+topic = "data"
+
+# Logging configuration
 logging.basicConfig(filename='/home/javil/error.log', level=logging.DEBUG,
                     format='%(asctime)s: %(levelname)s: %(message)s')
 
-def clear_screen():
-    """Clears the console screen."""
-    os.system('cls' if os.name == 'nt' else 'clear')
+def initialize_csv_folder():
+    """Create the folder to save the CSV files if it doesn't exist."""
+    if not os.path.exists(csv_folder):
+        os.makedirs(csv_folder)
+        logging.info(f"Carpeta '{csv_folder}' creada.")
 
 def log_status(sensor_name, status):
     """
-    Prints the sensor status in the console with colors and logs it.
+    Logs the sensor status.
 
     Parameters:
     - sensor_name: Name of the sensor (string).
     - status: Sensor status ('OK' or 'Disconnected') (string).
-
-    Uses colors for the console output:
-
-    Green: 'OK'
-    Red:  'Disconnected'
     """
-
-    RED     = "\033[91m"
-    GREEN   = "\033[92m"
-    RESET   = "\033[0m"
     status_message = f"{sensor_name}: {status}"
     if status == "OK":
-        print(f"{GREEN}{status_message}{RESET}", end=" | ")
         logging.info(status_message)
     else:
-        print(f"{RED}{status_message}{RESET}", end=" | ")
         logging.warning(status_message)
 
 ## Functions to read the sensors
@@ -84,19 +77,18 @@ def read_imu_sensor():
         log_status("IMU Sensor", "Disconnected")
         logging.error(f"Error reading IMU Sensor: {e}")
         return None, None, None
-
+    
 # BMP3XX Sensor
-def read_bmp3xx_sensor():
-    try:
-        sensor = init_bmp_sensor()
-        data = read_bmp_data(sensor)
-        log_status("BMP3XX", "OK")
-        return data['pressure'], data['temperature'], data['altitude']
-    except Exception as e:
-        log_status("BMP3XX", "Disconnected")
-        logging.error(f"Error reading BMP3XX Sensor: {e}")
-        return None, None, None
-
+# def read_bmp3xx_sensor():
+#     try:
+#         sensor = init_bmp_sensor()
+#         data = read_bmp_data(sensor)
+#         log_status("BMP3XX", "OK")
+#         return data['pressure'], data['temperature'], data['altitude']
+#     except Exception as e:
+#         log_status("BMP3XX", "Disconnected")
+#         logging.error(f"Error reading BMP3XX Sensor: {e}")
+#         return None, None, None
 
 # Dallas Sensor
 def read_dallas_sensor():
@@ -122,10 +114,10 @@ def read_CPU():
         log_status("CPUTemperature", "OK")
         return cpu
     except Exception as e:
-        log_status("CPUTemperature", "Err")
+        log_status("CPUTemperature", "Disconnected")
         logging.error(f"Error reading CPU Temperature: {e}")
         return None
-    
+
 # CPU Usage
 def read_CPU_usage():
     """Reads the CPU usage."""
@@ -134,10 +126,10 @@ def read_CPU_usage():
         log_status("CPU Usage", "OK")
         return cpu
     except Exception as e:
-        log_status("CPU Usage", "Err")
+        log_status("CPU Usage", "Disconnected")
         logging.error(f"Error reading CPU Usage: {e}")
         return None
-    
+
 # RAM Usage
 def read_RAM_usage():
     """Reads the RAM usage."""
@@ -146,132 +138,160 @@ def read_RAM_usage():
         log_status("RAM Usage", "OK")
         return ram
     except Exception as e:
-        log_status("RAM Usage", "Err")
+        log_status("RAM Usage", "Disconnected")
         logging.error(f"Error reading RAM Usage: {e}")
         return None
 
 # GPS Sensor
-def read_gps_sensor():
+def read_gps_sensor(gps_parser):
     try:
-        port, gps = connect_gps()
-        data = None
-        while not data:
-            nmea_data = gps.stream_nmea().strip()
-            for sentence in nmea_data.splitlines():
-                data, error = parse_nmea_sentence(sentence)
-                if data:
-                    log_status("GPS Sensor", "OK")
-                    return data['latitude'], data['longitude']
-        log_status("GPS Sensor", "Disconnected")
+        if not gps_parser.gps or not gps_parser.serial_port:
+            # Try to reconnect to the GPS
+            logging.debug("Attempting to reconnect to GPS...")
+            gps_parser = GPSParser(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
+            if not gps_parser.gps or not gps_parser.serial_port:
+                log_status("GPS Sensor", "Disconnected")
+                return None, None, None, None, None, None, None
+
+        nmea_data = gps_parser.read_nmea_data()
+        if nmea_data:
+            extracted_data = gps_parser.extract_relevant_data(nmea_data)
+            log_status("GPS Sensor", "OK")
+            return extracted_data['Latitude'], extracted_data['Longitude'], extracted_data['Altitude'], extracted_data['Satellites in View'], extracted_data['Elevation'], extracted_data['Azimuth'], extracted_data['Time (UTC)']
+        else:
+            log_status("GPS Sensor", "Disconnected")
+            return None, None, None, None, None, None, None
+        
     except Exception as e:
         log_status("GPS Sensor", "Disconnected")
         logging.error(f"Error reading GPS Sensor: {e}")
-        return None
-    
-# GPS Sensor
-'''
-def read_gpscomplicated_sensor():
-    try:
-        port, gps_complicated = connect_gps()
-        data_complicated = None
-        while not data_complicated:
-            nmea_data = gps_complicated.stream_nmea().strip()
-            for sentence in nmea_data.splitlines():
-                data_complicated, error = parse_nmea_sentence_complicated(sentence)
-                if data_complicated:
-                    log_status("GPS Sensor", "OK")
-                    return data_complicated
-        log_status("GPS Sensor", "Disconnected")
-    except Exception as e:
-        log_status("GPS Sensor", "Disconnected")
-        logging.error(f"Error reading GPS Sensor: {e}")
-        return None
-'''
+        return None, None, None, None, None, None, None
 
 ## Prepare the data to be sent
 def prepare_sensor_data(readings):
-    sensors_data = {"Date": time.strftime("%H:%M:%S", time.localtime())}
+    sensors_data = {"Date": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}
     for sensor, data in readings.items():
-        sensors_data[sensor] = data if data else "Error"
+        if data:
+            sensors_data[sensor] = data
+        else:
+            sensors_data[sensor] = "Error"
     return sensors_data
 
 ## Read all the sensors
-def read_sensors():
-    
-    #latitude, longitude = read_gps_sensor()
+def read_sensors(gps_parser):
+    latitude, longitude, altitude, satellites, elevation, azimuth, utc_time = read_gps_sensor(gps_parser)
     acceleration, gyro, magnetic = read_imu_sensor()
-    pressure, temperature, altitude = read_bmp3xx_sensor()
+    # pressure, temperature, bmp_altitude = read_bmp3xx_sensor()
     uva, uvb, uvc, uv_temp = read_uv_sensor()
-    
+
     readings = {
         "CPUTemp"       : read_CPU(),
         "CPU Usage"     : read_CPU_usage(),
         "RAM Usage"     : read_RAM_usage(),
-        #"latitude": latitude,
-        #"longitude": longitude,
+        "Latitude"      : latitude,
+        "Longitude"     : longitude,
+        "Altitude"      : altitude,
+        "Satellites"    : satellites,
+        "Elevation"     : elevation,
+        "Azimuth"       : azimuth,
+        "UTC Time"      : utc_time,
         "Acceleration"  : acceleration,
         "Gyro"          : gyro,
         "Magnetic"      : magnetic,
-        "Pressure"      : pressure,
-        "BMP Temp"      : temperature,
-        "Altitude"      : altitude,
+        # "Pressure"      : pressure,
+        # "BMP Temp"      : temperature,
+        # "BMP Altitude"  : bmp_altitude,
         "UVA"           : uva,
         "UVB"           : uvb,
         "UVC"           : uvc,
         "UV Temp"       : uv_temp,
         "Temperature"   : read_dallas_sensor(),
-        #"GPS Sensor": read_gpscomplicated_sensor(),
     }
     return prepare_sensor_data(readings)
 
 ## Save the data to a CSV file
 def save_json_to_csv(json_data, csv_file_path):
-    # Parse the JSON data
-    data = json.loads(json_data)
+    try:
+        data = json.loads(json_data)
 
-    # Check if the CSV file already exists
-    file_exists = os.path.isfile(csv_file_path)
+        # Check if the CSV file already exists
+        file_exists = os.path.isfile(csv_file_path)
 
-    with open(csv_file_path, mode='w', newline='') as file:
-        writer = csv.writer(file)
+        with open(csv_file_path, mode='a', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=data.keys())
 
-        # If the file doesn't exist, write the header
-        if not file_exists:
-            header = data.keys()
-            writer.writerow(header)
+            # If the file doesn't exist, write the header
+            if not file_exists:
+                writer.writeheader()
 
-        # Write the data
-        writer.writerow(data.values())
+            # Write the data
+            writer.writerow(data)
 
+        logging.info(f"Data appended to {csv_file_path} successfully.")
 
-## MQTT Configuration and interval between sensor readings
-hostname_mqtt = "localhost"
-sensorReadingInterval = 2
+    except Exception as e:
+        logging.error(f"Error saving data to CSV: {e}")
 
-# Path to save the CSV file
-csv_file_path = "/home/javil/sensor_data.csv"
+## MQTT Callbacks
+def on_connect(client, userdata, flags, rc, properties=None):
+    if rc == 0:
+        logging.info("Connected to MQTT Broker!")
+    else:
+        logging.error("Failed to connect, return code %d\n", rc)
+
+def on_publish(client, userdata, mid):
+    logging.info(f"Data published with mid {mid}")
 
 if __name__ == "__main__":
     try:
+        logging.info("Starting sensor data collection script.")
+
+        # Generate unique CSV file name
+        current_time = time.strftime("%H%M%S", time.localtime())
+        current_date = time.strftime("%d%m%Y", time.localtime())
+
+        csv_folder = f"CSV/{current_date}"  # Path to the folder where the CSV will be saved
+        initialize_csv_folder()  # Ensure the CSV folder exists
+        csv_filename = f"data_{current_time}.csv"
+        csv_file_path = os.path.join(csv_folder, csv_filename)
+
+        gps_parser = GPSParser(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
+
+        # MQTT Client
+        client = mqtt.Client()
+        client.on_connect = on_connect
+        client.on_publish = on_publish
+        client.connect(broker, port, 60)
+        client.loop_start()
+
         while True:
-            clear_screen()
-            sensor_data = read_sensors()
+            logging.debug("Reading sensor data...")
+            sensor_data = read_sensors(gps_parser)
             sensorDataJSON = json.dumps(sensor_data)
 
             if sensorDataJSON:
                 # Publish the data via MQTT
-                publish.single("data", sensorDataJSON, hostname=hostname_mqtt)
-                print("Data sent successfully.")
+                logging.debug(f"Publishing data via MQTT: {sensorDataJSON}")
+                result = client.publish(topic, sensorDataJSON)
+                status = result.rc
+                if status == mqtt.MQTT_ERR_SUCCESS:
+                    logging.info("Data sent successfully.")
+                else:
+                    logging.error(f"Failed to send message to topic {topic}")
 
                 # Save the JSON data to CSV
+                logging.debug(f"Saving data to CSV: {sensorDataJSON}")
                 save_json_to_csv(sensorDataJSON, csv_file_path)
-                print("Data saved to CSV successfully.")
+                logging.info(f"Data saved to {csv_filename} successfully.")
             else:
-                print("Error sending data.")
+                logging.error("Error preparing sensor data.")
 
             time.sleep(sensorReadingInterval)
-    except KeyboardInterrupt:
-        print("\n Program stopped by the user.")
-    except Exception as e:
-        print(f"Unexpected error while publishing data: {e}")
 
+    except KeyboardInterrupt:
+        logging.info("Program stopped by the user.")
+    except Exception as e:
+        logging.error(f"Unexpected error while publishing data: {e}")
+    finally:
+        client.loop_stop()
+        client.disconnect()
