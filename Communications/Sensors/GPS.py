@@ -41,7 +41,7 @@ class GPSHandler:
             while True:
                 try:
                     geo = self.gps.geo_coords()
-                    veh = self.veh_attitude()
+                    veh = self.gps.veh_attitude()
                     if geo is not None:
                         print("Longitude: ", geo.lon)
                         print("Latitude: ", geo.lat)
