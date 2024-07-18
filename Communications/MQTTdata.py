@@ -211,6 +211,7 @@ def read_sensors(gps_parser):
 
 ## Save the data to a CSV file
 def save_json_to_csv(json_data, csv_file_path):
+    # Parse the JSON data
     try:
         data = json.loads(json_data)
 
@@ -222,10 +223,11 @@ def save_json_to_csv(json_data, csv_file_path):
 
             # If the file doesn't exist, write the header
             if not file_exists:
-                writer.writeheader()
+                header = data.keys()
+                writer.writerow(header)
 
             # Write the data
-            writer.writerow(data)
+            writer.writerow(data.values())
 
         logging.info(f"Data appended to {csv_file_path} successfully.")
 
