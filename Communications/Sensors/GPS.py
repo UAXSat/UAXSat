@@ -25,6 +25,7 @@ class GPSManager:
             return None, None
         try:
             serial_port = serial.Serial(self.port, baudrate=self.baudrate, timeout=self.timeout)
+            print(f"Connected to GPS on port {serial_port}")
             gps = UbloxGps(serial_port)
             return gps, serial_port
         except serial.SerialException as e:
