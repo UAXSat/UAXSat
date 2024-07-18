@@ -223,11 +223,10 @@ def save_json_to_csv(json_data, csv_file_path):
 
             # If the file doesn't exist, write the header
             if not file_exists:
-                header = data.keys()
-                writer.writerow(header)
+                writer.writeheader()
 
             # Write the data
-            writer.writerow(data.values())
+            writer.writerow(data)
 
         logging.info(f"Data appended to {csv_file_path} successfully.")
 
