@@ -250,8 +250,13 @@ if __name__ == "__main__":
         current_time = time.strftime("%H%M%S", time.localtime())
         current_date = time.strftime("%d%m%Y", time.localtime())
 
-        csv_folder = f"CSV/{current_date}"  # Path to the folder where the CSV will be saved
-        initialize_csv_folder()  # Ensure the CSV folder exists
+        home_folder = os.path.expanduser('~')
+        csv_folder = os.path.join(home_folder, 'CSV', current_date)
+
+        # Ensure the CSV folder exists; create it if it doesn't
+        if not os.path.exists(csv_folder):
+            os.makedirs(csv_folder)
+
         csv_filename = f"data_{current_time}.csv"
         csv_file_path = os.path.join(csv_folder, csv_filename)
 
