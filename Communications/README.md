@@ -69,6 +69,12 @@ sudo systemctl start mqttclient.service
 sudo systemctl status mqttclient.service
 ```
 
+-To check de error log you can:
+```bash
+journalctl -u mqttclient.service
+tail -f error.log
+```
+
 ## Grafana
 To be done...
 ![graf](https://github.com/user-attachments/assets/c89a8089-0d4d-4fb3-bfcc-7217d1fd9937)
