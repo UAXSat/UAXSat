@@ -5,6 +5,7 @@ import csv
 import logging
 import sys
 import paho.mqtt.client as mqtt
+import psycopg2
 
 sys.path.append('../')  # Permite importar módulos de la carpeta vecinos
 
@@ -17,11 +18,12 @@ from Sensors.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_
 from gpiozero import CPUTemperature
 from psutil import cpu_percent, virtual_memory
 
-# GPS parameters
-BAUDRATE = 38400
-TIMEOUT = 1
-DESCRIPTION = "u-blox GNSS receiver"
-HWID = "1546:01A9"
+# Database configuration
+DB_HOST = 'localhost'
+DB_PORT = 5432
+DB_NAME = 'grafana'
+DB_USER = 'grafana'
+DB_PASSWORD = '4225'
 
 ## MQTT Configuration and interval between sensor readings
 broker = "localhost"
@@ -29,9 +31,52 @@ port = 1883
 sensorReadingInterval = 2
 topic = "data"
 
+# GPS parameters
+BAUDRATE = 38400
+TIMEOUT = 1
+DESCRIPTION = "u-blox GNSS receiver"
+HWID = "1546:01A9"
+
 # Logging configuration
 logging.basicConfig(filename='/home/javil/error.log', level=logging.DEBUG,
                     format='%(asctime)s: %(levelname)s: %(message)s')
+
+# Initialize PostgreSQL connection
+def connect_to_db():
+    try:
+        conn = psycopg2.connect(
+            host=DB_HOST,
+            port=DB_PORT,
+            dbname=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD
+        )
+        logging.info("Connected to PostgreSQL database.")
+        return conn
+    except Exception as e:
+        logging.error(f"Error connecting to PostgreSQL database: {e}")
+        return None
+
+def insert_sensor_data(conn, data):
+    try:
+        with conn.cursor() as cursor:
+            query = """
+                INSERT INTO sensor_data (
+                    timestamp, cpu_temp, cpu_usage, ram_usage, latitude, longitude, altitude,
+                    heading_motion, roll, pitch, heading, nmea_sentence, acceleration, gyro,
+                    magnetic, uva, uvb, uvc, uv_temp, temperature
+                ) VALUES (
+                    %(timestamp)s, %(cpu_temp)s, %(cpu_usage)s, %(ram_usage)s, %(latitude)s, %(longitude)s, %(altitude)s,
+                    %(heading_motion)s, %(roll)s, %(pitch)s, %(heading)s, %(nmea_sentence)s, %(acceleration)s, %(gyro)s,
+                    %(magnetic)s, %(uva)s, %(uvb)s, %(uvc)s, %(uv_temp)s, %(temperature)s
+                )
+            """
+            cursor.execute(query, data)
+            conn.commit()
+            logging.info("Sensor data inserted into PostgreSQL database.")
+    except Exception as e:
+        logging.error(f"Error inserting data into PostgreSQL database: {e}")
+
 
 def initialize_csv_folder():
     """Create the folder to save the CSV files if it doesn't exist."""
@@ -270,6 +315,9 @@ if __name__ == "__main__":
         client.connect(broker, port, 60)
         client.loop_start()
 
+        # Database Connection
+        db_conn = connect_to_db()
+
         while True:
             logging.debug("Reading sensor data...")
             sensor_data = read_sensors(gps_parser)
@@ -289,6 +337,32 @@ if __name__ == "__main__":
                 logging.debug(f"Saving data to CSV: {sensorDataJSON}")
                 save_json_to_csv(sensorDataJSON, csv_file_path)
                 logging.info(f"Data saved to {csv_filename} successfully.")
+
+                # Insert data into PostgreSQL
+                if db_conn:
+                    data_to_insert = {
+                        'timestamp': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                        'cpu_temp': sensor_data.get('CPUTemp'),
+                        'cpu_usage': sensor_data.get('CPU Usage'),
+                        'ram_usage': sensor_data.get('RAM Usage'),
+                        'latitude': sensor_data.get('Latitude'),
+                        'longitude': sensor_data.get('Longitude'),
+                        'altitude': sensor_data.get('Altitude'),
+                        'heading_motion': sensor_data.get('Heading of Motion'),
+                        'roll': sensor_data.get('Roll'),
+                        'pitch': sensor_data.get('Pitch'),
+                        'heading': sensor_data.get('Heading'),
+                        'nmea_sentence': sensor_data.get('NMEA Sentence'),
+                        'acceleration': json.dumps(sensor_data.get('Acceleration')),
+                        'gyro': json.dumps(sensor_data.get('Gyro')),
+                        'magnetic': json.dumps(sensor_data.get('Magnetic')),
+                        'uva': sensor_data.get('UVA'),
+                        'uvb': sensor_data.get('UVB'),
+                        'uvc': sensor_data.get('UVC'),
+                        'uv_temp': sensor_data.get('UV Temp'),
+                        'temperature': sensor_data.get('Temperature')
+                    }
+                    insert_sensor_data(db_conn, data_to_insert)
             else:
                 logging.error("Error preparing sensor data.")
 
@@ -301,3 +375,5 @@ if __name__ == "__main__":
     finally:
         client.loop_stop()
         client.disconnect()
+        if db_conn:
+            db_conn.close()
