@@ -82,6 +82,41 @@ def insert_sensor_data(conn, data):
         conn.rollback()  # Rollback the transaction if a non-psycopg2 error occurs
         logging.error(f"Unexpected error inserting data: {e}")
 
+def reset_sensor_data_table(conn):
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("DROP TABLE IF EXISTS grafana_schema.sensor_data")
+            cursor.execute("""
+                CREATE TABLE grafana_schema.sensor_data (
+                    id SERIAL PRIMARY KEY,
+                    timestamp TIMESTAMP,
+                    cpu_temp FLOAT,
+                    cpu_usage FLOAT,
+                    ram_usage FLOAT,
+                    latitude FLOAT,
+                    longitude FLOAT,
+                    altitude FLOAT,
+                    heading_motion FLOAT,
+                    roll FLOAT,
+                    pitch FLOAT,
+                    heading FLOAT,
+                    nmea_sentence TEXT,
+                    acceleration JSONB,
+                    gyro JSONB,
+                    magnetic JSONB,
+                    uva FLOAT,
+                    uvb FLOAT,
+                    uvc FLOAT,
+                    uv_temp FLOAT,
+                    temperature FLOAT
+                )
+            """)
+            conn.commit()
+            logging.info("Sensor data table reset successfully.")
+    except Exception as e:
+        conn.rollback()
+        logging.error(f"Error resetting sensor data table: {e}")
+
 def initialize_csv_folder():
     """Create the folder to save the CSV files if it doesn't exist."""
     if not os.path.exists(csv_folder):
@@ -321,6 +356,10 @@ if __name__ == "__main__":
 
         # Database Connection
         db_conn = connect_to_db()
+
+        # Reset the sensor_data table
+        if db_conn:
+            reset_sensor_data_table(db_conn)
 
         while True:
             logging.debug("Reading sensor data...")
