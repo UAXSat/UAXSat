@@ -72,22 +72,27 @@ class GPSHandler:
                         data['Longitude'] = geo.lon
                         data['Heading of Motion'] = geo.headMot
                         data['Altitude'] = geo.height
+                        print(f"Latitude: {geo.lat}, Longitude: {geo.lon}, Altitude: {geo.height} m, Heading of Motion: {geo.headMot}")
 
                     if veh is not None:
                         data['Roll'] = veh.roll
                         data['Pitch'] = veh.pitch
                         data['Heading'] = veh.heading
+                        print(f"Roll: {veh.roll}, Pitch: {veh.pitch}, Heading: {veh.heading}")
 
                     if stream_nmea is not None:
                         data['NMEA Sentence'] = stream_nmea
+                        print(f"NMEA Sentence: {stream_nmea}")
 
                     if satellites is not None:
                         data['Satellites'] = satellites
+                        print(f"Satellites: {satellites}")
 
                     if hp_geo is not None:
                         data['Latitude'] = hp_geo.latHp
                         data['Longitude'] = hp_geo.lonHp
                         data['Altitude'] = hp_geo.heightHp/1000
+                        print(f"Latitude: {hp_geo.latHp}, Longitude: {hp_geo.lonHp}, Altitude: {hp_geo.heightHp/1000} km")
 
                     else:
                         print("No GPS fix acquired.")
