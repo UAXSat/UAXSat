@@ -167,7 +167,6 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE grafana_schema.sensor_data TO graf
 ```
 
 
-
 ## Grafana
 To be done...
 
