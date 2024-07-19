@@ -72,7 +72,7 @@ class GPSHandler:
                         data['Longitude'] = geo.lon
                         data['Altitude'] = geo.height/1000
                         data['Heading of Motion'] = geo.headMot
-                        print(data['Latitude'], data['Longitude'], data['Altitude'], data['Heading of Motion'])
+                        #print(data['Latitude'], data['Longitude'], data['Altitude'], data['Heading of Motion'])
                     else:
                         print("No GPS geo fix acquired.")
 
@@ -80,13 +80,13 @@ class GPSHandler:
                         data['Roll'] = veh.roll
                         data['Pitch'] = veh.pitch
                         data['Heading'] = veh.heading
-                        print(data['Roll'], data['Pitch'], data['Heading'])
+                        #print(data['Roll'], data['Pitch'], data['Heading'])
                     else:
                         print("No vehicle attitude acquired.")
 
                     if stream_nmea is not None:
                         data['NMEA Sentence'] = stream_nmea
-                        print(data['NMEA Sentence'])
+                        #print(data['NMEA Sentence'])
                     else:
                         print("No NMEA sentence acquired.")
 
@@ -94,7 +94,7 @@ class GPSHandler:
                         data['Latitude'] = hp_geo.latHp
                         data['Longitude'] = hp_geo.lonHp
                         data['Altitude'] = hp_geo.heightHp/1000
-                        print(data['Latitude'], data['Longitude'], data['Altitude'])
+                        #print(data['Latitude'], data['Longitude'], data['Altitude'])
                     else:
                         print("No high precision geo fix acquired.")
                     
