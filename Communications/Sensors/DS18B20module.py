@@ -1,12 +1,15 @@
-"""*********************************************************************************************************
-*                                                                                                          *
-*                                     UAXSAT IV Project - 2024                                             *
-*                       Developed by Javier Bolaños Llano and Javier Lendinez                              *
-*                                https://github.com/UAXSat                                                 *
-*                                                                                                          *
-*********************************************************************************************************"""
+"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                            *
+*               Developed by Javier Bolañs & Javier Lendinez                 *
+*                  https://github.com/javierbolanosllano                     *
+*                        https://github.com/JaviLendi                        *
+*                                                                            *
+*                      UAXSAT IV Project - 2024                              *
+*                   https://github.com/UAXSat/UAXSat                         *
+*                                                                            *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
 
-# ds18b20.py
+# DS18B20module.py
 import os
 import time
 

@@ -1,3 +1,15 @@
+"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                            *
+*               Developed by Javier Bolanos & Javier Lendinez                *
+*                  https://github.com/javierbolanosllano                     *
+*                        https://github.com/JaviLendi                        *
+*                                                                            *
+*                      UAXSAT IV Project - 2024                              *
+*                   https://github.com/UAXSat/UAXSat                         *
+*                                                                            *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
+
+#GPS.py
 import serial
 from serial.tools import list_ports
 from ublox_gps import UbloxGps
@@ -37,25 +49,25 @@ class GPSHandler:
             return
 
         try:
-            print("Listening for UBX Messages")
+            #print("Listening for UBX Messages")
             while True:
                 try:
                     geo = self.gps.geo_coords()
-                    veh = self.gps.veh_attitude()
-                    stream_nmea = self.gps.stream_nmea()
+                    #veh = self.gps.veh_attitude()
+                    #stream_nmea = self.gps.stream_nmea()
 
                     if geo is not None:
                         print("Longitude: ", geo.lon)
                         print("Latitude: ", geo.lat)
                         print("Heading of Motion: ", geo.headMot)
 
-                    if veh is not None:
-                        print("Roll: ", veh.roll)
-                        print("Pitch: ", veh.pitch)
-                        print("Heading: ", veh.heading)
+                    #if veh is not None:
+                    #    print("Roll: ", veh.roll)
+                    #    print("Pitch: ", veh.pitch)
+                    #    print("Heading: ", veh.heading)
 
-                    if stream_nmea is not None:
-                        print(stream_nmea)
+                    #if stream_nmea is not None:
+                    #    print(stream_nmea)
 
                     else:
                         print("No GPS fix acquired.")

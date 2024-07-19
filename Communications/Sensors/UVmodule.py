@@ -1,7 +1,8 @@
 """* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *                                                                            *
-*                    Developed by Javier Bolaños                             *
-*                 https://github.com/javierbolanosllano                      *
+*               Developed by Javier Bolañs & Javier Lendinez                 *
+*                  https://github.com/javierbolanosllano                     *
+*                        https://github.com/JaviLendi                        *
 *                                                                            *
 *                      UAXSAT IV Project - 2024                              *
 *                   https://github.com/UAXSat/UAXSat                         *
@@ -10,7 +11,7 @@
 
 # AS7331.py
 import time
-import board                                            # Import the board module to access the I2C pins
+import board
 from adafruit_bus_device.i2c_device import I2CDevice
 
 DEFAULT_I2C_ADDR = 0x74
@@ -875,7 +876,7 @@ def get_sensor_status(sensor):
 def read_sensor_data(sensor):
     try:
         uva, uvb, uvc, temp = sensor.values
-        return {'UVA': uva, 'UVB': uvb, 'UVC': uvc, 'temp': temp}
+        return {'UVA': uva, 'UVB': uvb, 'UVC': uvc, 'UV Temp': temp}
     except AS7331Overflow as err:
         print('Sensor Overflow Error:', err)
         return None
@@ -885,7 +886,7 @@ def main():
     while True:
         data = read_sensor_data(sensor)
         if data:
-            print(f"UVA: {data['UVA']}, UVB: {data['UVB']}, UVC: {data['UVC']}, Tem: {data['temp']}°C")
+            print(f"UVA: {data['UVA']}, UVB: {data['UVB']}, UVC: {data['UVC']}, UV Temp: {data['UV Temp']}°C")
         #else:
             #print("Error al leer los datos del sensor.")
         time.sleep(1)

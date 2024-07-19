@@ -1,12 +1,15 @@
-"""*********************************************************************************************************
-*                                                                                                          *
-*                                     UAXSAT IV Project - 2024                                             *
-*                       Developed by Javier Bolaños Llano and Javier Lendinez                              *
-*                                https://github.com/UAXSat                                                 *
-*                                                                                                          *
-*********************************************************************************************************"""
+"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                            *
+*               Developed by Javier Bolañs & Javier Lendinez                *
+*                  https://github.com/javierbolanosllano                     *
+*                        https://github.com/JaviLendi                        *
+*                                                                            *
+*                      UAXSAT IV Project - 2024                              *
+*                   https://github.com/UAXSat/UAXSat                         *
+*                                                                            *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
 
-# icm20948module.py
+# IMUmodule.py
 import time
 import board
 import adafruit_icm20x
@@ -32,23 +35,22 @@ def read_magnetic(icm):
 def read_sensor_data(icm):
     try:
         acceleration, gyro, magnetic = read_acceleration(icm), read_gyro(icm), read_magnetic(icm)
-        return {"acceleration": acceleration, "gyro": gyro, "magnetic": magnetic}
+        return {"ACELX": acceleration[0], "ACELY": acceleration[1], "ACELZ": acceleration[2], "GIROX": gyro[0], "GIROY": gyro[1], "GIROZ": gyro[2], "MAGX": magnetic[0], "MAGY": magnetic[1], "MAGZ": magnetic[2]}
     except Exception as e:
-        print(f"Error reading sensor data: {e}")
+        print(f"Error reading the IMU: {e}")
         return None
 
 # Función principal para ejecución continua
 def main():
-    icm = initialize_sensor()
+    imu = initialize_sensor()
     while True:
-        sensor_data = read_sensor_data(icm)
-        if sensor_data:
-            print(f"Acceleration: {sensor_data['acceleration']}, Gyro: {sensor_data['gyro']}, Magnetic: {sensor_data['magnetic']}")
+        imudata = read_sensor_data(imu)
+        if imudata:
+            print(imudata)
         else:
-            print("Error initializing the sensor")
+            print("Error initializing the IMU")
         time.sleep(1)
 
 # Ejecutar el sensor si se ejecuta como script principal
 if __name__ == "__main__":
     main()
-
