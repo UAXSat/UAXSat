@@ -60,7 +60,6 @@ class GPSHandler:
                     'Pitch': None,
                     'Heading': None,
                     'NMEA Sentence': None,
-                    'Satellites': None
                 }
                 try:
                     geo = self.gps.geo_coords()
@@ -71,9 +70,9 @@ class GPSHandler:
                     if geo is not None:
                         data['Latitude'] = geo.lat
                         data['Longitude'] = geo.lon
-                        data['Heading of Motion'] = geo.headMot
                         data['Altitude'] = geo.height/1000
-                        print(f"Latitude: {geo.lat}, Longitude: {geo.lon}, Altitude: {geo.height} m, Heading of Motion: {geo.headMot}")
+                        data['Heading of Motion'] = geo.headMot
+                        #print(f"Latitude: {geo.lat}, Longitude: {geo.lon}, Altitude: {geo.height} m, Heading of Motion: {geo.headMot}")
                     else:
                         print("No GPS geo fix acquired.")
 
@@ -81,13 +80,13 @@ class GPSHandler:
                         data['Roll'] = veh.roll
                         data['Pitch'] = veh.pitch
                         data['Heading'] = veh.heading
-                        print(f"Roll: {veh.roll}, Pitch: {veh.pitch}, Heading: {veh.heading}")
+                        #print(f"Roll: {veh.roll}, Pitch: {veh.pitch}, Heading: {veh.heading}")
                     else:
                         print("No vehicle attitude acquired.")
 
                     if stream_nmea is not None:
                         data['NMEA Sentence'] = stream_nmea
-                        print(f"NMEA Sentence: {stream_nmea}")
+                        #print(f"NMEA Sentence: {stream_nmea}")
                     else:
                         print("No NMEA sentence acquired.")
 
@@ -95,7 +94,7 @@ class GPSHandler:
                         data['Latitude'] = hp_geo.latHp
                         data['Longitude'] = hp_geo.lonHp
                         data['Altitude'] = hp_geo.heightHp/1000
-                        print(f"Latitude: {hp_geo.latHp}, Longitude: {hp_geo.lonHp}, Altitude: {hp_geo.heightHp/1000} km")
+                        #print(f"Latitude: {hp_geo.latHp}, Longitude: {hp_geo.lonHp}, Altitude: {hp_geo.heightHp/1000} km")
                     else:
                         print("No high precision geo fix acquired.")
                     

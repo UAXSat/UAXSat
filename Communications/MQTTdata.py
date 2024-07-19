@@ -155,17 +155,17 @@ def read_gps_sensor(gps_reader):
 
         data = gps_reader.GPSprogram()
         if data:
-            extracted_data = gps_reader.GPSprogram(data)
+            data = gps_reader.GPSprogram(data)
             log_status("GPS Sensor", "OK")
-            return extracted_data['Latitude'], extracted_data['Longitude'], extracted_data['Heading of Motion'], extracted_data['Roll'], extracted_data['Pitch'], extracted_data['Heading'], extracted_data['NMEA Sentence']
+            return data['Latitude'], data['Longitude'], data['Altitude'], data['Heading of Motion'], data['Roll'], data['Pitch'], data['Heading'], data['NMEA Sentence']
         else:
             log_status("GPS Sensor", "Disconnected")
-            return None, None, None, None, None, None, None
+            return None, None, None, None, None, None, None, None
         
     except Exception as e:
         log_status("GPS Sensor", "Disconnected")
         logging.error(f"Error reading GPS Sensor: {e}")
-        return None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None, None
 
 ## Prepare the data to be sent
 def prepare_sensor_data(readings):
@@ -179,30 +179,34 @@ def prepare_sensor_data(readings):
 
 ## Read all the sensors
 def read_sensors(gps_parser):
-    latitude, longitude, altitude, satellites, elevation, azimuth, utc_time = read_gps_sensor(gps_parser)
+    latitude, longitude, altitude, headingMotion, roll, pitch, heading, nmea = read_gps_sensor(gps_parser)
     acceleration, gyro, magnetic = read_imu_sensor()
     # pressure, temperature, bmp_altitude = read_bmp3xx_sensor()
     uva, uvb, uvc, uv_temp = read_uv_sensor()
 
     readings = {
-        "CPUTemp"       : read_CPU(),
-        "CPU Usage"     : read_CPU_usage(),
-        "RAM Usage"     : read_RAM_usage(),
-        "Latitude"      : latitude,
-        "Longitude"     : longitude,
-        "Altitude"      : altitude,
-        "Satellites"    : satellites,
-        "Acceleration"  : acceleration,
-        "Gyro"          : gyro,
-        "Magnetic"      : magnetic,
-        # "Pressure"      : pressure,
-        # "BMP Temp"      : temperature,
-        # "BMP Altitude"  : bmp_altitude,
-        "UVA"           : uva,
-        "UVB"           : uvb,
-        "UVC"           : uvc,
-        "UV Temp"       : uv_temp,
-        "Temperature"   : read_dallas_sensor(),
+        "CPUTemp"           : read_CPU(),
+        "CPU Usage"         : read_CPU_usage(),
+        "RAM Usage"         : read_RAM_usage(),
+        "Latitude"          : latitude,
+        "Longitude"         : longitude,
+        "Altitude"          : altitude,
+        "Heading of Motion" : headingMotion,
+        "Roll"              : roll,
+        "Pitch"             : pitch,
+        "Heading"           : heading,
+        "NMEA Sentence"     : nmea,
+        "Acceleration"      : acceleration,
+        "Gyro"              : gyro,
+        "Magnetic"          : magnetic,
+        # "Pressure"        : pressure,
+        # "BMP Temp"        : temperature,
+        # "BMP Altitude"    : bmp_altitude,
+        "UVA"               : uva,
+        "UVB"               : uvb,
+        "UVC"               : uvc,
+        "UV Temp"           : uv_temp,
+        "Temperature"       : read_dallas_sensor(),
     }
     return prepare_sensor_data(readings)
 
@@ -258,7 +262,7 @@ if __name__ == "__main__":
         csv_filename = f"data_{current_time}.csv"
         csv_file_path = os.path.join(csv_folder, csv_filename)
 
-        gps_parser = GPSParser(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
+        gps_parser = GPSHandler(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
 
         # MQTT Client
         client = mqtt.Client()
