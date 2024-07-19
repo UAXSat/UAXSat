@@ -200,7 +200,7 @@ def read_gps_sensor(gps_reader):
             gps_reader = GPSHandler(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
             if not gps_reader.gps or not gps_reader.serial_port:
                 log_status("GPS Sensor", "Disconnected")
-                return None, None, None, None, None, None, None
+                return None, None, None, None, None, None, None, None
 
         data = gps_reader.GPSprogram()
         if data:
