@@ -109,4 +109,6 @@ class GPSHandler:
 
 if __name__ == '__main__':
     gps_handler = GPSHandler(baudrate=38400, timeout=1, description=None, hwid="1546:01A9")
-    gps_handler.GPSprogram()
+    while True:
+        gps_handler.GPSprogram()
+        
