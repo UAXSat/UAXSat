@@ -182,7 +182,6 @@ def read_sensors(gps_parser):
     acceleration, gyro, magnetic = read_imu_sensor()
     # pressure, temperature, bmp_altitude = read_bmp3xx_sensor()
     uva, uvb, uvc, uv_temp = read_uv_sensor()
-    print(latitude, longitude, altitude, headingMotion, roll, pitch, heading, nmea, acceleration, gyro, magnetic, uva, uvb, uvc, uv_temp)
 
     readings = {
         "CPUTemp"           : read_CPU(),
