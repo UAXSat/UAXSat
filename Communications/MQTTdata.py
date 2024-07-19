@@ -60,13 +60,6 @@ def connect_to_db():
 def insert_sensor_data(conn, data):
     try:
         with conn.cursor() as cursor:
-            # Convert "Error" or None to NULL for numeric fields
-            for key in ['cpu_temp', 'cpu_usage', 'ram_usage', 'latitude', 'longitude', 'altitude',
-                        'heading_motion', 'uva', 'uvb', 'uvc', 'uv_temp', 'temperature']:
-                if data.get(key) == "Error" or data.get(key) is None:
-                    data[key] = None
-
-            # Prepare the query
             query = """
                 INSERT INTO sensor_data (
                     timestamp, cpu_temp, cpu_usage, ram_usage, latitude, longitude, altitude,
@@ -229,7 +222,7 @@ def prepare_sensor_data(readings):
         if data:
             sensors_data[sensor] = data
         else:
-            sensors_data[sensor] = "Error"
+            sensors_data[sensor] = None
     return sensors_data
 
 ## Read all the sensors
