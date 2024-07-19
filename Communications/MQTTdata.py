@@ -10,7 +10,7 @@ sys.path.append('../')  # Permite importar módulos de la carpeta vecinos
 
 # Import the modules to read the sensors
 from Sensors.UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
-from Sensors.GPSmodule import GPSParser  # Asegúrate de que GPSParser esté importado correctamente
+from Sensors.GPS import GPSHandler
 from Sensors.IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
 from Sensors.DS18B20module import DallasSensor
 from Sensors.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
@@ -143,21 +143,21 @@ def read_RAM_usage():
         return None
 
 # GPS Sensor
-def read_gps_sensor(gps_parser):
+def read_gps_sensor(gps_reader):
     try:
-        if not gps_parser.gps or not gps_parser.serial_port:
+        if not gps_reader.gps or not gps_reader.serial_port:
             # Try to reconnect to the GPS
             logging.debug("Attempting to reconnect to GPS...")
-            gps_parser = GPSParser(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
-            if not gps_parser.gps or not gps_parser.serial_port:
+            gps_reader = GPSHandler(BAUDRATE, TIMEOUT, description=DESCRIPTION, hwid=HWID)
+            if not gps_reader.gps or not gps_reader.serial_port:
                 log_status("GPS Sensor", "Disconnected")
                 return None, None, None, None, None, None, None
 
-        nmea_data = gps_parser.read_nmea_data()
-        if nmea_data:
-            extracted_data = gps_parser.extract_relevant_data(nmea_data)
+        data = gps_reader.GPSprogram()
+        if data:
+            extracted_data = gps_reader.GPSprogram(data)
             log_status("GPS Sensor", "OK")
-            return extracted_data['Latitude'], extracted_data['Longitude'], extracted_data['Altitude'], extracted_data['Satellites in View'], extracted_data['Elevation'], extracted_data['Azimuth'], extracted_data['Time (UTC)']
+            return extracted_data['Latitude'], extracted_data['Longitude'], extracted_data['Heading of Motion'], extracted_data['Roll'], extracted_data['Pitch'], extracted_data['Heading'], extracted_data['NMEA Sentence']
         else:
             log_status("GPS Sensor", "Disconnected")
             return None, None, None, None, None, None, None
@@ -192,9 +192,6 @@ def read_sensors(gps_parser):
         "Longitude"     : longitude,
         "Altitude"      : altitude,
         "Satellites"    : satellites,
-        "Elevation"     : elevation,
-        "Azimuth"       : azimuth,
-        "UTC Time"      : utc_time,
         "Acceleration"  : acceleration,
         "Gyro"          : gyro,
         "Magnetic"      : magnetic,
