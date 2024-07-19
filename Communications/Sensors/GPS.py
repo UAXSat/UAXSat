@@ -70,32 +70,38 @@ class GPSHandler:
                         data['Latitude'] = geo.lat
                         data['Longitude'] = geo.lon
                         data['Heading of Motion'] = geo.headMot
-                        data['Altitude'] = geo.height
+                        data['Altitude'] = geo.height/1000
                         print(f"Latitude: {geo.lat}, Longitude: {geo.lon}, Altitude: {geo.height} m, Heading of Motion: {geo.headMot}")
+                    else:
+                        print("No GPS geo fix acquired.")
 
-                    elif veh is not None:
+                    if veh is not None:
                         data['Roll'] = veh.roll
                         data['Pitch'] = veh.pitch
                         data['Heading'] = veh.heading
                         print(f"Roll: {veh.roll}, Pitch: {veh.pitch}, Heading: {veh.heading}")
+                    else:
+                        print("No vehicle attitude acquired.")
 
-                    elif stream_nmea is not None:
+                    if stream_nmea is not None:
                         data['NMEA Sentence'] = stream_nmea
                         print(f"NMEA Sentence: {stream_nmea}")
+                    else:
+                        print("No NMEA sentence acquired.")
 
-                    elif hp_geo is not None:
+                    if hp_geo is not None:
                         data['Latitude'] = hp_geo.latHp
                         data['Longitude'] = hp_geo.lonHp
                         data['Altitude'] = hp_geo.heightHp/1000
                         print(f"Latitude: {hp_geo.latHp}, Longitude: {hp_geo.lonHp}, Altitude: {hp_geo.heightHp/1000} km")
-
                     else:
-                        print("No GPS fix acquired.")
-
+                        print("No high precision geo fix acquired.")
+                        
                     return data
                     
                 except (ValueError, IOError) as err:
                     print(f"GPS error: {err}")
+                    return None
         
         except KeyboardInterrupt:
             self.serial_port.close()
