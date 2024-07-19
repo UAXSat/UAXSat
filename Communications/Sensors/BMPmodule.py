@@ -1,14 +1,15 @@
 """* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *                                                                            *
-*                    Developed by Javier Bolaños                             *
-*                 https://github.com/javierbolanosllano                      *
+*               Developed by Javier Bolañs & Javier Lendinez                 *
+*                  https://github.com/javierbolanosllano                     *
+*                        https://github.com/JaviLendi                        *
 *                                                                            *
 *                      UAXSAT IV Project - 2024                              *
 *                   https://github.com/UAXSat/UAXSat                         *
 *                                                                            *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
-# bmp390module.py
 
+# BMPmodule.py
 import time
 import board
 import adafruit_bmp3xx
