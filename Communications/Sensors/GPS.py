@@ -1,3 +1,14 @@
+"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                            *
+*                    Developed by Javier Lendínez                            *
+*                    https://github.com/javilendi                            *
+*                                                                            *
+*                      UAXSAT IV Project - 2024                              *
+*                   https://github.com/UAXSat/UAXSat                         *
+*                                                                            *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
+
+
 import serial
 from serial.tools import list_ports
 from ublox_gps import UbloxGps
@@ -31,41 +42,65 @@ class GPSHandler:
             print(f"Error opening serial port: {e}")
             return None, None
 
-    def run(self):
+    def GPSprogram(self):
         if self.gps is None or self.serial_port is None:
             print("GPS initialization failed.")
             return
 
         try:
-            print("Listening for UBX Messages")
             while True:
+                data = {
+                    'Latitude': None,
+                    'Longitude': None,
+                    'Altitude': None,
+                    'Heading of Motion': None,
+                    'Roll': None,
+                    'Pitch': None,
+                    'Heading': None,
+                    'NMEA Sentence': None,
+                    'Satellites': None
+                }
                 try:
                     geo = self.gps.geo_coords()
                     veh = self.gps.veh_attitude()
                     stream_nmea = self.gps.stream_nmea()
+                    satellites = self.gps.satellites()
+                    hp_geo = self.gps.hp_geo_coords()
 
                     if geo is not None:
-                        print("Longitude: ", geo.lon)
-                        print("Latitude: ", geo.lat)
-                        print("Heading of Motion: ", geo.headMot)
+                        data['Latitude'] = geo.lat
+                        data['Longitude'] = geo.lon
+                        data['Heading of Motion'] = geo.headMot
+                        data['Altitude'] = geo.height
 
                     if veh is not None:
-                        print("Roll: ", veh.roll)
-                        print("Pitch: ", veh.pitch)
-                        print("Heading: ", veh.heading)
+                        data['Roll'] = veh.roll
+                        data['Pitch'] = veh.pitch
+                        data['Heading'] = veh.heading
 
                     if stream_nmea is not None:
-                        print(stream_nmea)
+                        data['NMEA Sentence'] = stream_nmea
+
+                    if satellites is not None:
+                        data['Satellites'] = satellites
+
+                    if hp_geo is not None:
+                        data['Latitude'] = hp_geo.latHp
+                        data['Longitude'] = hp_geo.lonHp
+                        data['Altitude'] = hp_geo.heightHp/1000
 
                     else:
                         print("No GPS fix acquired.")
+
+                    return data
                     
                 except (ValueError, IOError) as err:
                     print(f"GPS error: {err}")
         
-        finally:
+        except KeyboardInterrupt:
             self.serial_port.close()
+            print("GPS stopped.")
 
 if __name__ == '__main__':
     gps_handler = GPSHandler(baudrate=38400, timeout=1, description=None, hwid="1546:01A9")
-    gps_handler.run()
+    gps_handler.GPSprogram()
