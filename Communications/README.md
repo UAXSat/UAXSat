@@ -75,6 +75,110 @@ journalctl -u mqttclient.service
 tail -f error.log
 ```
 
+### Using PostgreSQL
+
+- To install PostgreSQL you can run the following commands:
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+```
+- To create a new user you can run the following commands:
+```bash
+sudo -i -u postgres
+psql
+CREATE DATABASE grafana;
+CREATE USER grafana WITH PASSWORD 'yourpassword';
+GRANT ALL PRIVILEGES ON DATABASE grafana TO grafana;
+\q
+exit
+```
+- Configure Grafana to use PostgreSQL as the database.
+```bash
+sudo nano /etc/grafana/grafana.ini
+```
+
+- Locate the [database] section. It should look something like this:
+```bash
+#################################### Postgres DB ####################################
+[database]
+type = postgres
+host = 127.0.0.1:5432
+name = grafana
+user = grafana
+password = yourpassword
+```
+
+- Change Authentication Method:
+```bash
+sudo nano /etc/postgresql/15/main/pg_hba.conf
+```
+- Change the following line:
+```bash
+local   all             all                                     peer
+```
+- To:
+```bash
+local   all             all                                     md5
+```
+- Reload PostgreSQL:
+```bash
+sudo systemctl reload postgresql
+```
+
+- Create a new schema
+```bash
+sudo -i -u postgres
+psql
+CREATE SCHEMA grafana_schema AUTHORIZATION grafana;
+GRANT CREATE ON SCHEMA grafana_schema TO grafana;
+```
+
+- Create a new table
+```bash
+CREATE TABLE grafana_schema.sensor_data (
+    id SERIAL PRIMARY KEY,
+    timestamp TIMESTAMP NOT NULL,
+    cpu_temp FLOAT,
+    cpu_usage FLOAT,
+    ram_usage FLOAT,
+    latitude FLOAT,
+    longitude FLOAT,
+    altitude FLOAT,
+    heading_motion FLOAT,
+    roll TEXT,
+    pitch TEXT,
+    heading TEXT,
+    nmea_sentence TEXT,
+    acceleration JSONB,
+    gyro JSONB,
+    magnetic JSONB,
+    uva FLOAT,
+    uvb FLOAT,
+    uvc FLOAT,
+    uv_temp FLOAT,
+    temperature FLOAT
+);
+```
+
+- Final verifications:
+```bash
+\dt grafana_schema.sensor_data
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE grafana_schema.sensor_data TO grafana;
+```
+
+
+
 ## Grafana
 To be done...
+
+- Restart the Grafana service:
+```bash
+sudo systemctl restart grafana-server
+```
+
+- To check the status of the service you can run:
+```bash
+sudo systemctl status grafana-server
+```
+
 ![graf](https://github.com/user-attachments/assets/c89a8089-0d4d-4fb3-bfcc-7217d1fd9937)
