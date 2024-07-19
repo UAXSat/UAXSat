@@ -154,9 +154,7 @@ def read_gps_sensor(gps_reader):
                 return None, None, None, None, None, None, None
 
         data = gps_reader.GPSprogram()
-        print(data)
         if data:
-            data = gps_reader.GPSprogram(data)
             log_status("GPS Sensor", "OK")
             return data['Latitude'], data['Longitude'], data['Altitude'], data['Heading of Motion'], data['Roll'], data['Pitch'], data['Heading'], data['NMEA Sentence']
         else:
