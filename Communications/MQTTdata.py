@@ -61,7 +61,7 @@ def insert_sensor_data(conn, data):
     try:
         with conn.cursor() as cursor:
             query = """
-                INSERT INTO sensor_data (
+                INSERT INTO grafana_schema.sensor_data (
                     timestamp, cpu_temp, cpu_usage, ram_usage, latitude, longitude, altitude,
                     heading_motion, roll, pitch, heading, nmea_sentence, acceleration, gyro,
                     magnetic, uva, uvb, uvc, uv_temp, temperature
