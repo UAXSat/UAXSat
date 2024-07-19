@@ -1,18 +1,19 @@
 """* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *                                                                            *
-*               Developed by Javier Bolanos & Javier Lendinez                *
-*                  https://github.com/javierbolanosllano                     *
-*                        https://github.com/JaviLendi                        *
+*                    Developed by Javier Lendínez                            *
+*                    https://github.com/javilendi                            *
 *                                                                            *
 *                      UAXSAT IV Project - 2024                              *
 *                   https://github.com/UAXSat/UAXSat                         *
 *                                                                            *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
 
-#GPS.py
+
 import serial
 from serial.tools import list_ports
 from ublox_gps import UbloxGps
+import time
+import sys
 
 class GPSHandler:
     def __init__(self, baudrate, timeout, description=None, hwid=None):
@@ -43,41 +44,79 @@ class GPSHandler:
             print(f"Error opening serial port: {e}")
             return None, None
 
-    def run(self):
+    def GPSprogram(self):
         if self.gps is None or self.serial_port is None:
             print("GPS initialization failed.")
             return
 
         try:
-            #print("Listening for UBX Messages")
             while True:
+                data = {
+                    'Latitude': None,
+                    'Longitude': None,
+                    'Altitude': None,
+                    'Heading of Motion': None,
+                    'Roll': None,
+                    'Pitch': None,
+                    'Heading': None,
+                    'NMEA Sentence': None,
+                }
                 try:
                     geo = self.gps.geo_coords()
-                    #veh = self.gps.veh_attitude()
-                    #stream_nmea = self.gps.stream_nmea()
+                    veh = self.gps.veh_attitude()
+                    stream_nmea = self.gps.stream_nmea()
+                    hp_geo = self.gps.hp_geo_coords()
 
                     if geo is not None:
-                        print("Longitude: ", geo.lon)
-                        print("Latitude: ", geo.lat)
-                        print("Heading of Motion: ", geo.headMot)
-
-                    #if veh is not None:
-                    #    print("Roll: ", veh.roll)
-                    #    print("Pitch: ", veh.pitch)
-                    #    print("Heading: ", veh.heading)
-
-                    #if stream_nmea is not None:
-                    #    print(stream_nmea)
-
+                        data['Latitude'] = geo.lat
+                        data['Longitude'] = geo.lon
+                        data['Altitude'] = geo.height/1000
+                        data['Heading of Motion'] = geo.headMot
+                        #print(data['Latitude'], data['Longitude'], data['Altitude'], data['Heading of Motion'])
                     else:
-                        print("No GPS fix acquired.")
+                        print("No GPS geo fix acquired.")
+
+                    if veh is not None:
+                        data['Roll'] = veh.roll
+                        data['Pitch'] = veh.pitch
+                        data['Heading'] = veh.heading
+                        #print(data['Roll'], data['Pitch'], data['Heading'])
+                    else:
+                        print("No vehicle attitude acquired.")
+
+                    if stream_nmea is not None:
+                        data['NMEA Sentence'] = stream_nmea
+                        #print(data['NMEA Sentence'])
+                    else:
+                        print("No NMEA sentence acquired.")
+
+                    if hp_geo is not None:
+                        data['Latitude'] = hp_geo.latHp
+                        data['Longitude'] = hp_geo.lonHp
+                        data['Altitude'] = hp_geo.heightHp/1000
+                        #print(data['Latitude'], data['Longitude'], data['Altitude'])
+                    else:
+                        print("No high precision geo fix acquired.")
+                    
+                    return data
                     
                 except (ValueError, IOError) as err:
                     print(f"GPS error: {err}")
+                    return None
         
-        finally:
+        except KeyboardInterrupt:
             self.serial_port.close()
+            print("GPS stopped.")
 
 if __name__ == '__main__':
     gps_handler = GPSHandler(baudrate=38400, timeout=1, description=None, hwid="1546:01A9")
-    gps_handler.run()
+    try:
+        while True:
+            gps_handler.GPSprogram()
+            time.sleep(1)  # Add a small delay to prevent CPU overuse
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        sys.exit(1)
+    
+    
+
