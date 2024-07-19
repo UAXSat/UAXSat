@@ -12,6 +12,8 @@
 import serial
 from serial.tools import list_ports
 from ublox_gps import UbloxGps
+import time
+import sys
 
 class GPSHandler:
     def __init__(self, baudrate, timeout, description=None, hwid=None):
@@ -109,6 +111,13 @@ class GPSHandler:
 
 if __name__ == '__main__':
     gps_handler = GPSHandler(baudrate=38400, timeout=1, description=None, hwid="1546:01A9")
-    while True:
-        gps_handler.GPSprogram()
-        
+    try:
+        while True:
+            gps_handler.GPSprogram()
+            time.sleep(1)  # Add a small delay to prevent CPU overuse
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        sys.exit(1)
+    
+    
+
