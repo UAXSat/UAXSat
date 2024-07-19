@@ -97,6 +97,8 @@ class GPSHandler:
                     else:
                         print("No high precision geo fix acquired.")
                     
+                    return data
+                    
                 except (ValueError, IOError) as err:
                     print(f"GPS error: {err}")
                     return None
