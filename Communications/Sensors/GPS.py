@@ -64,7 +64,6 @@ class GPSHandler:
                     geo = self.gps.geo_coords()
                     veh = self.gps.veh_attitude()
                     stream_nmea = self.gps.stream_nmea()
-                    satellites = self.gps.satellites()
                     hp_geo = self.gps.hp_geo_coords()
 
                     if geo is not None:
@@ -83,10 +82,6 @@ class GPSHandler:
                     if stream_nmea is not None:
                         data['NMEA Sentence'] = stream_nmea
                         print(f"NMEA Sentence: {stream_nmea}")
-
-                    if satellites is not None:
-                        data['Satellites'] = satellites
-                        print(f"Satellites: {satellites}")
 
                     if hp_geo is not None:
                         data['Latitude'] = hp_geo.latHp
