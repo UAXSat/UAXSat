@@ -61,7 +61,7 @@ def insert_sensor_data(conn, data):
     try:
         with conn.cursor() as cursor:
             query = """
-                INSERT INTO grafana_schema.sensor_data (
+                INSERT INTO sensor_data (
                     timestamp, cpu_temp, cpu_usage, ram_usage, latitude, longitude, altitude,
                     heading_motion, roll, pitch, heading, nmea_sentence, acceleration, gyro,
                     magnetic, uva, uvb, uvc, uv_temp, temperature
@@ -74,9 +74,13 @@ def insert_sensor_data(conn, data):
             cursor.execute(query, data)
             conn.commit()
             logging.info("Sensor data inserted into PostgreSQL database.")
+    except psycopg2.Error as e:
+        conn.rollback()  # Rollback the transaction if an error occurs
+        logging.error(f"Error inserting data into PostgreSQL database: {e.pgerror}")
+        logging.error(f"Error details: {e.diag.message_primary}")
     except Exception as e:
-        logging.error(f"Error inserting data into PostgreSQL database: {e}")
-
+        conn.rollback()  # Rollback the transaction if a non-psycopg2 error occurs
+        logging.error(f"Unexpected error inserting data: {e}")
 
 def initialize_csv_folder():
     """Create the folder to save the CSV files if it doesn't exist."""
