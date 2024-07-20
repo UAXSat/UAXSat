@@ -1,4 +1,4 @@
-#GPS2.py
+
 import serial
 from serial.tools import list_ports
 from ublox_gps import UbloxGps
