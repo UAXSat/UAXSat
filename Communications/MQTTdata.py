@@ -11,7 +11,7 @@ sys.path.append('../')  # Permite importar módulos de la carpeta vecinos
 
 # Import the modules to read the sensors
 from Software.Sensors.UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
-from Software.Sensors.GPS import GPSHandler
+from Software.Sensors.GPSmodule import GPSHandler
 from Software.Sensors.IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
 from Software.Sensors.DS18B20module import DallasSensor
 from Software.Sensors.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
