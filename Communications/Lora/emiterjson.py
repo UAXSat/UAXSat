@@ -5,11 +5,11 @@ import logging
 import sys
 import serial
 from e220 import E220  # Asegúrate de que el módulo e220 está importado correctamente
-from Sensors.UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
-from Sensors.GPS import GPSHandler
-from Sensors.IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
-from Sensors.DS18B20module import DallasSensor
-from Sensors.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
+from Software.Sensors.UVmodule import initialize_sensor as init_uv_sensor, read_sensor_data as read_uv_data
+from Software.Sensors.GPS import GPSHandler
+from Software.Sensors.IMUmodule import initialize_sensor as init_icm_sensor, read_sensor_data as read_imu_data
+from Software.Sensors.DS18B20module import DallasSensor
+from Software.Sensors.BMPmodule import initialize_sensor as init_bmp_sensor, read_sensor_data as read_bmp_data
 from gpiozero import CPUTemperature
 from psutil import cpu_percent, virtual_memory
 
