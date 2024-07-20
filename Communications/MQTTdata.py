@@ -384,7 +384,7 @@ if __name__ == "__main__":
                 # Insert data into PostgreSQL
                 if db_conn:
                     data_to_insert = {
-                        'timestamp': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                        'timestamp': time.strftime("%y-%m-%d %H:%M:%S", time.localtime()),
                         'cpu_temp': sensor_data.get('CPUTemp'),
                         'cpu_usage': sensor_data.get('CPU Usage'),
                         'ram_usage': sensor_data.get('RAM Usage'),

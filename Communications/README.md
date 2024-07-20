@@ -109,6 +109,7 @@ password = yourpassword
 ```
 
 - Change Authentication Method:
+
 ```bash
 sudo nano /etc/postgresql/15/main/pg_hba.conf
 ```
@@ -126,6 +127,7 @@ sudo systemctl reload postgresql
 ```
 
 - Create a new schema
+First you need to sign in as the postgres user and then create a new schema and grant the necessary permissions to the user grafana.
 ```bash
 sudo -i -u postgres
 psql
@@ -164,6 +166,11 @@ CREATE TABLE grafana_schema.sensor_data (
 ```bash
 \dt grafana_schema.sensor_data
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE grafana_schema.sensor_data TO grafana;
+```
+
+- To sign is as grafana user:
+```bash
+psql -U grafana -d grafana
 ```
 
 
