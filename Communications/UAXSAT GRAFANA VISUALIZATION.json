@@ -18,14 +18,14 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 1,
   "links": [],
   "panels": [
     {
       "datasource": {
         "default": true,
         "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
+        "uid": "fdxeparwsatj4b"
       },
       "fieldConfig": {
         "defaults": {
@@ -45,6 +45,12 @@
           "unit": "dthms"
         },
         "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 0
       },
       "hideTimeOverride": false,
       "id": 6,
@@ -67,7 +73,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.2",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -115,110 +121,12 @@
       "datasource": {
         "default": true,
         "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
+        "uid": "fdxeparwsatj4b"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-BlPu"
-          },
-          "mappings": [],
-          "max": 950,
-          "min": 750,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "pressurehpa"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 2,
-        "w": 6,
-        "x": 6,
-        "y": 0
-      },
-      "id": 10,
-      "options": {
-        "displayMode": "lcd",
-        "maxVizHeight": 300,
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "namePlacement": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "sizing": "auto",
-        "valueMode": "color"
-      },
-      "pluginVersion": "11.2.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-mqtt-datasource",
-            "uid": "cdrczkpo98wlca"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT bmp_pressure FROM sensor_readings",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [
-                  {
-                    "name": "bmp_pressure",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "sensor_readings",
-          "topic": "data"
-        }
-      ],
-      "title": "PRESSURE",
-      "transparent": true,
-      "type": "bargauge"
-    },
-    {
-      "datasource": {
-        "default": true,
-        "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-BlPu"
+            "mode": "continuous-BlYlRd"
           },
           "mappings": [],
           "thresholds": {
@@ -238,9 +146,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
+        "h": 2,
         "w": 6,
-        "x": 12,
+        "x": 6,
         "y": 0
       },
       "id": 22,
@@ -262,7 +170,7 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "11.2.2",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -272,7 +180,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT uva AS \"UVA\", uvb AS \"UVB\", uvc AS \"UVC\", \"timestamp\" FROM sensor_readings",
+          "rawSql": "SELECT uv_uva AS \"UVA\", \"timestamp\" FROM sensor_readings",
           "refId": "A",
           "sql": {
             "columns": [
@@ -337,7 +245,105 @@
       "datasource": {
         "default": true,
         "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
+        "uid": "fdxeparwsatj4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "max": 950,
+          "min": 750,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "pressurehpa"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "displayMode": "lcd",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "cdrczkpo98wlca"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT bmp_pressure FROM sensor_readings",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "bmp_pressure",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "sensor_readings",
+          "topic": "data"
+        }
+      ],
+      "title": "PRESSURE",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "fdxeparwsatj4b"
       },
       "fieldConfig": {
         "defaults": {
@@ -346,8 +352,6 @@
           },
           "decimals": 0,
           "mappings": [],
-          "max": 40,
-          "min": -65,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -366,7 +370,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 2,
         "w": 6,
         "x": 18,
         "y": 0
@@ -390,7 +394,7 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "11.2.2",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -400,45 +404,44 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bmp_temperature AS \"BMP\", uv_temp AS \"UV\", dallas_extern AS \"EXTERN\", dallas_intern AS \"INTERN\" FROM sensor_readings",
+          "rawSql": "SELECT bmp_temperature AS \"BMP\", \"timestamp\" FROM sensor_readings",
           "refId": "A",
           "sql": {
             "columns": [
               {
-                "alias": "\"BMP\"",
+                "alias": "\"UVA\"",
                 "parameters": [
                   {
-                    "name": "bmp_temperature",
+                    "name": "uv_uva",
                     "type": "functionParameter"
                   }
                 ],
                 "type": "function"
               },
               {
-                "alias": "\"UV\"",
+                "alias": "\"UVB\"",
                 "parameters": [
                   {
-                    "name": "uv_uv_temp",
+                    "name": "uv_uvb",
                     "type": "functionParameter"
                   }
                 ],
                 "type": "function"
               },
               {
-                "alias": "\"EXTERN\"",
+                "alias": "\"UVC\"",
                 "parameters": [
                   {
-                    "name": "dallas_28_03a0d446ef0a",
+                    "name": "uv_uvc",
                     "type": "functionParameter"
                   }
                 ],
                 "type": "function"
               },
               {
-                "alias": "\"INTERN\"",
                 "parameters": [
                   {
-                    "name": "dallas_28_6fc2d44578f0",
+                    "name": "\"timestamp\"",
                     "type": "functionParameter"
                   }
                 ],
@@ -458,7 +461,7 @@
           "table": "sensor_readings"
         }
       ],
-      "title": "Temperatures",
+      "title": "BMP Temperature",
       "transparent": true,
       "type": "bargauge"
     },
@@ -466,12 +469,136 @@
       "datasource": {
         "default": true,
         "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
+        "uid": "fdxeparwsatj4b"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-BlPu"
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 6,
+        "y": 2
+      },
+      "id": 26,
+      "options": {
+        "displayMode": "lcd",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bds7ryh2p4tmod"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT uv_uvb AS \"UVB\", \"timestamp\" FROM sensor_readings",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"UVA\"",
+                "parameters": [
+                  {
+                    "name": "uv_uva",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "alias": "\"UVB\"",
+                "parameters": [
+                  {
+                    "name": "uv_uvb",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "alias": "\"UVC\"",
+                "parameters": [
+                  {
+                    "name": "uv_uvc",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "sensor_readings"
+        }
+      ],
+      "title": "UVB",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "fdxeparwsatj4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
           },
           "custom": {
             "axisBorderShow": false,
@@ -507,8 +634,6 @@
             }
           },
           "mappings": [],
-          "max": 1000,
-          "min": 200,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -521,15 +646,14 @@
                 "value": 80
               }
             ]
-          },
-          "unit": "pressurehpa"
+          }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
+        "h": 10,
         "w": 6,
-        "x": 6,
+        "x": 12,
         "y": 2
       },
       "id": 7,
@@ -539,7 +663,7 @@
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": false
+          "showLegend": true
         },
         "tooltip": {
           "mode": "multi",
@@ -556,14 +680,199 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bmp_pressure, \"timestamp\" FROM sensor_readings",
+          "rawSql": "SELECT imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz, imu_magx, imu_magy, imu_magz,\n            uv_uva, uv_uvb, uv_uvc, uv_temperature, cpu_usage, ram_usage, total_ram,\n            disk_usage, disk_usage_gb, total_disk_gb, sys_temperature,\n            lat, lon, alt, headmot, roll, pitch, heading, nmea,\n            lat_hp, lon_hp, alt_hp, gps_error, bmp_pressure, bmp_temperature, bmp_altitude,\n            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp FROM sensor_readings ",
           "refId": "A",
           "sql": {
             "columns": [
               {
                 "parameters": [
                   {
-                    "name": "bmp_pressure",
+                    "name": "cpu_temp",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "cpu_usage",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "ram_usage",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "latitude",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "longitude",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "altitude",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "heading_motion",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "sensor_data"
+        }
+      ],
+      "title": "Pressure",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "byVariable": false,
+            "include": {
+              "names": [
+                "timestamp",
+                "bmp_pressure"
+              ]
+            }
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "fdxeparwsatj4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 18,
+        "y": 2
+      },
+      "id": 29,
+      "options": {
+        "displayMode": "lcd",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bds7ryh2p4tmod"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT uv_temperature AS \"UV\", \"timestamp\" FROM sensor_readings",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"UVA\"",
+                "parameters": [
+                  {
+                    "name": "uv_uva",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "alias": "\"UVB\"",
+                "parameters": [
+                  {
+                    "name": "uv_uvb",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "alias": "\"UVC\"",
+                "parameters": [
+                  {
+                    "name": "uv_uvc",
                     "type": "functionParameter"
                   }
                 ],
@@ -592,36 +901,22 @@
           "table": "sensor_readings"
         }
       ],
-      "title": "Pressure",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "byVariable": false,
-            "include": {
-              "names": [
-                "bmp_pressure",
-                "timestamp"
-              ]
-            }
-          }
-        }
-      ],
+      "title": "UV Temperature",
       "transparent": true,
-      "type": "timeseries"
+      "type": "bargauge"
     },
     {
       "datasource": {
         "default": true,
         "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
+        "uid": "fdxeparwsatj4b"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-BlPu"
+            "mode": "palette-classic-by-name"
           },
-          "decimals": 0,
+          "decimals": 1,
           "mappings": [],
           "max": 100,
           "min": 0,
@@ -631,6 +926,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           }
@@ -638,10 +937,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
+        "h": 2,
         "w": 6,
         "x": 0,
-        "y": 3
+        "y": 4
       },
       "id": 4,
       "interval": "5s",
@@ -664,7 +963,7 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "11.2.2",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -675,35 +974,15 @@
           "format": "table",
           "hide": false,
           "rawQuery": true,
-          "rawSql": "SELECT system_cpu_usage_percent AS \"CPU (%)\", system_ram_usage_percent AS \"RAM (%)\", system_temp_cpu_thermal AS \"CPU (ºC)\" FROM sensor_readings",
+          "rawSql": "SELECT cpu_usage AS \"CPU\" FROM sensor_readings",
           "refId": "A",
           "sql": {
             "columns": [
               {
-                "alias": "\"CPU (%)\"",
+                "alias": "\"CPU\"",
                 "parameters": [
                   {
-                    "name": "system_cpu_usage_percent",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"RAM (%)\"",
-                "parameters": [
-                  {
-                    "name": "system_ram_usage_percent",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"CPU (ºC)\"",
-                "parameters": [
-                  {
-                    "name": "system_temp_cpu_thermal",
+                    "name": "cpu_usage",
                     "type": "functionParameter"
                   }
                 ],
@@ -733,7 +1012,363 @@
       "datasource": {
         "default": true,
         "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
+        "uid": "fdxeparwsatj4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 6,
+        "y": 4
+      },
+      "id": 27,
+      "options": {
+        "displayMode": "lcd",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bds7ryh2p4tmod"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT uv_uvc AS \"UVC\", \"timestamp\" FROM sensor_readings",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"UVA\"",
+                "parameters": [
+                  {
+                    "name": "uv_uva",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "alias": "\"UVB\"",
+                "parameters": [
+                  {
+                    "name": "uv_uvb",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "alias": "\"UVC\"",
+                "parameters": [
+                  {
+                    "name": "uv_uvc",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "sensor_readings"
+        }
+      ],
+      "title": "UVC",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "fdxeparwsatj4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 18,
+        "y": 4
+      },
+      "id": 30,
+      "options": {
+        "displayMode": "lcd",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bds7ryh2p4tmod"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT ds18b20_temperature_interior, timestamp FROM sensor_readings",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"UVA\"",
+                "parameters": [
+                  {
+                    "name": "uv_uva",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "alias": "\"UVB\"",
+                "parameters": [
+                  {
+                    "name": "uv_uvb",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "alias": "\"UVC\"",
+                "parameters": [
+                  {
+                    "name": "uv_uvc",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "sensor_readings"
+        }
+      ],
+      "title": "DS18B20 Internal",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "fdxeparwsatj4b"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic-by-name"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "max": 80,
+          "min": 30,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 0,
+        "y": 6
+      },
+      "id": 1,
+      "interval": "5s",
+      "maxDataPoints": 1000,
+      "options": {
+        "displayMode": "lcd",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "cdrczkpo98wlca"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT sys_temperature AS \"CPU\" FROM sensor_readings",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"CPU\"",
+                "parameters": [
+                  {
+                    "name": "sys_temperature",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "sensor_readings",
+          "topic": "data"
+        }
+      ],
+      "timeFrom": "now-1h",
+      "timeShift": "1h",
+      "title": "CPU Temperature",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "fdxeparwsatj4b"
       },
       "fieldConfig": {
         "defaults": {
@@ -774,7 +1409,6 @@
             }
           },
           "mappings": [],
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -792,10 +1426,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 17,
+        "h": 11,
         "w": 6,
-        "x": 12,
-        "y": 4
+        "x": 6,
+        "y": 6
       },
       "id": 13,
       "options": {
@@ -820,7 +1454,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT uva AS \"UVA\", uvb AS \"UVB\", uvc AS \"UVC\", \"timestamp\" FROM sensor_readings",
+          "rawSql": "SELECT uv_uva AS \"UVA\", uv_uvb AS \"UVB\", uv_uvc AS \"UVC\", \"timestamp\" FROM sensor_readings",
           "refId": "A",
           "sql": {
             "columns": [
@@ -885,7 +1519,231 @@
       "datasource": {
         "default": true,
         "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
+        "uid": "fdxeparwsatj4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "max": 45,
+          "min": -60,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 18,
+        "y": 6
+      },
+      "id": 31,
+      "options": {
+        "displayMode": "lcd",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bds7ryh2p4tmod"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT ds18b20_temperature_exterior, timestamp FROM sensor_readings",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"UVA\"",
+                "parameters": [
+                  {
+                    "name": "uv_uva",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "alias": "\"UVB\"",
+                "parameters": [
+                  {
+                    "name": "uv_uvb",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "alias": "\"UVC\"",
+                "parameters": [
+                  {
+                    "name": "uv_uvc",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "sensor_readings"
+        }
+      ],
+      "title": "DS18B20 External",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "fdxeparwsatj4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "dthms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 8
+      },
+      "hideTimeOverride": false,
+      "id": 37,
+      "interval": "5s",
+      "maxDataPoints": 1000,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "cdrczkpo98wlca"
+          },
+          "editorMode": "builder",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT nmea FROM sensor_readings LIMIT 50 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "nmea",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "sensor_readings",
+          "topic": "data"
+        }
+      ],
+      "timeFrom": "now-1h",
+      "timeShift": "1h",
+      "title": "NMEA Sentence",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "fdxeparwsatj4b"
       },
       "fieldConfig": {
         "defaults": {
@@ -947,10 +1805,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 15,
+        "h": 17,
         "w": 6,
         "x": 18,
-        "y": 5
+        "y": 8
       },
       "id": 20,
       "interval": "1s",
@@ -976,45 +1834,14 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bmp_temperature AS \"BMP\", uv_temp AS \"UV\", dallas_intern AS \"INTERN\", dallas_extern AS \"EXTERN\", \"timestamp\" FROM sensor_readings",
+          "rawSql": "SELECT uv_temperature AS \"UV\", bmp_temperature AS \"BMP\", ds18b20_temperature_interior AS \"INTERIOR\", ds18b20_temperature_exterior AS \"EXTERIOR\", timestamp FROM sensor_readings ",
           "refId": "A",
           "sql": {
             "columns": [
               {
-                "alias": "\"BMP\"",
                 "parameters": [
                   {
-                    "name": "bmp_temperature",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"UV\"",
-                "parameters": [
-                  {
-                    "name": "uv_uv_temp",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"INTERN\"",
-                "parameters": [
-                  {
-                    "name": "dallas_28_6fc2d44578f0",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"EXTERN\"",
-                "parameters": [
-                  {
-                    "name": "dallas_28_03a0d446ef0a",
+                    "name": "cpu_temp",
                     "type": "functionParameter"
                   }
                 ],
@@ -1023,7 +1850,215 @@
               {
                 "parameters": [
                   {
-                    "name": "\"timestamp\"",
+                    "name": "cpu_usage",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "ram_usage",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "latitude",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "longitude",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "altitude",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "heading_motion",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "sensor_data"
+        }
+      ],
+      "title": "Temperatures",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "fdxeparwsatj4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 6,
+        "x": 0,
+        "y": 12
+      },
+      "id": 3,
+      "options": {
+        "basemap": {
+          "config": {},
+          "name": "Layer 0",
+          "opacity": 0.8,
+          "tooltip": false,
+          "type": "default"
+        },
+        "controls": {
+          "mouseWheelZoom": true,
+          "showAttribution": false,
+          "showDebug": false,
+          "showMeasure": false,
+          "showScale": false,
+          "showZoom": true
+        },
+        "layers": [
+          {
+            "config": {
+              "showLegend": false,
+              "style": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "opacity": 0.4,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "fixed": 5,
+                  "max": 15,
+                  "min": 2
+                },
+                "symbol": {
+                  "fixed": "img/icons/marker/circle.svg",
+                  "mode": "fixed"
+                },
+                "symbolAlign": {
+                  "horizontal": "center",
+                  "vertical": "center"
+                },
+                "textConfig": {
+                  "fontSize": 12,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "textAlign": "center",
+                  "textBaseline": "middle"
+                }
+              }
+            },
+            "location": {
+              "mode": "auto"
+            },
+            "name": "Coordinates",
+            "tooltip": true,
+            "type": "markers"
+          }
+        ],
+        "tooltip": {
+          "mode": "none"
+        },
+        "view": {
+          "allLayers": false,
+          "id": "coords",
+          "lastOnly": true,
+          "lat": 42.553666,
+          "layer": "Coordinates",
+          "lon": -4.646848,
+          "zoom": 8.5
+        }
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bdxatvvcczu9sb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT lat, lon FROM sensor_readings",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "lat",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "lon",
                     "type": "functionParameter"
                   }
                 ],
@@ -1043,219 +2078,26 @@
           "table": "sensor_readings"
         }
       ],
-      "title": "Temperatures",
+      "title": "GPS Coordinates",
       "transparent": true,
-      "type": "timeseries"
+      "type": "geomap"
     },
     {
       "datasource": {
         "default": true,
         "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
+        "uid": "fdxeparwsatj4b"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-BlPu"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          },
-          "unit": "lengthm"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-        "x": 0,
-        "y": 7
-      },
-      "hideTimeOverride": false,
-      "id": 38,
-      "interval": "5s",
-      "maxDataPoints": 1000,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "/.*/",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.2.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-mqtt-datasource",
-            "uid": "cdrczkpo98wlca"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT gps_distance AS \"Distance\" FROM sensor_readings",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [
-                  {
-                    "name": "gps_distance",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "sensor_readings",
-          "topic": "data"
-        }
-      ],
-      "timeFrom": "now-1h",
-      "timeShift": "1h",
-      "title": "Distance",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "default": true,
-        "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-BlPu"
+            "mode": "continuous-BlYlRd"
           },
           "decimals": 0,
           "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-        "x": 3,
-        "y": 7
-      },
-      "hideTimeOverride": false,
-      "id": 44,
-      "interval": "5s",
-      "maxDataPoints": 1000,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "/.*/",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.2.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-mqtt-datasource",
-            "uid": "cdrczkpo98wlca"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT gps_satellites AS \"SATELLITES\" FROM sensor_readings",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "alias": "\"SATELLITES\"",
-                "parameters": [
-                  {
-                    "name": "gps_gsv_total_satellites",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "sensor_readings",
-          "topic": "data"
-        }
-      ],
-      "timeFrom": "now-1h",
-      "timeShift": "1h",
-      "title": "Distance",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "default": true,
-        "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 1,
-          "mappings": [],
+          "max": 40000,
+          "min": 500,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1265,29 +2107,28 @@
               },
               {
                 "color": "red",
-                "value": 1.51
+                "value": 80
               }
             ]
-          }
+          },
+          "unit": "lengthm"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
+        "h": 2,
         "w": 6,
-        "x": 0,
-        "y": 11
+        "x": 12,
+        "y": 12
       },
-      "hideTimeOverride": false,
-      "id": 47,
-      "interval": "5s",
-      "maxDataPoints": 1000,
+      "id": 33,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
+        "displayMode": "lcd",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -1295,11 +2136,11 @@
           "fields": "",
           "values": false
         },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
       },
-      "pluginVersion": "11.2.2",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -1309,25 +2150,14 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT gps_hdop AS \"HDOP\", gps_vdop AS \"VDOP\", gps_pdop AS \"PDOP\", \"timestamp\" FROM sensor_readings",
+          "rawSql": "SELECT bmp_pressure FROM sensor_readings",
           "refId": "A",
           "sql": {
             "columns": [
               {
-                "alias": "\"Horizontal\"",
                 "parameters": [
                   {
-                    "name": "gps_rmc_speed_mps",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"Vertical\"",
-                "parameters": [
-                  {
-                    "name": "bmp_vertical_speed",
+                    "name": "bmp_pressure",
                     "type": "functionParameter"
                   }
                 ],
@@ -1348,17 +2178,15 @@
           "topic": "data"
         }
       ],
-      "timeFrom": "now-1h",
-      "timeShift": "1h",
-      "title": "GPS ACURRACY",
+      "title": "ALTITUDE",
       "transparent": true,
-      "type": "stat"
+      "type": "bargauge"
     },
     {
       "datasource": {
         "default": true,
         "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
+        "uid": "fdxeparwsatj4b"
       },
       "fieldConfig": {
         "defaults": {
@@ -1398,8 +2226,8 @@
               "mode": "off"
             }
           },
-          "decimals": 0,
           "mappings": [],
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1418,10 +2246,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 12,
+        "h": 11,
         "w": 6,
-        "x": 6,
-        "y": 11
+        "x": 12,
+        "y": 14
       },
       "id": 19,
       "options": {
@@ -1446,25 +2274,14 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bmp_altitude AS \"BMP\", gps_altitude AS \"GPS\", \"timestamp\", gps_height_geoid AS \"GEOID\" FROM sensor_readings",
+          "rawSql": "SELECT bmp_altitude AS \"BMP\", alt AS \"GPS\", alt_hp AS \"GPS Precision\", \"timestamp\" FROM sensor_readings",
           "refId": "A",
           "sql": {
             "columns": [
               {
-                "alias": "\"BMP\"",
                 "parameters": [
                   {
                     "name": "bmp_altitude",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"GPS\"",
-                "parameters": [
-                  {
-                    "name": "gps_gga_altitude",
                     "type": "functionParameter"
                   }
                 ],
@@ -1480,10 +2297,18 @@
                 "type": "function"
               },
               {
-                "alias": "\"GEOID\"",
                 "parameters": [
                   {
-                    "name": "gps_gga_height_geoid",
+                    "name": "alt",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "alt_hp",
                     "type": "functionParameter"
                   }
                 ],
@@ -1511,178 +2336,13 @@
       "datasource": {
         "default": true,
         "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 11,
-        "w": 6,
-        "x": 0,
-        "y": 15
-      },
-      "id": 3,
-      "options": {
-        "basemap": {
-          "config": {},
-          "name": "Layer 0",
-          "opacity": 0.6,
-          "tooltip": false,
-          "type": "xyz"
-        },
-        "controls": {
-          "mouseWheelZoom": true,
-          "showAttribution": false,
-          "showDebug": false,
-          "showMeasure": false,
-          "showScale": false,
-          "showZoom": true
-        },
-        "layers": [
-          {
-            "config": {
-              "showLegend": false,
-              "style": {
-                "color": {
-                  "fixed": "dark-purple"
-                },
-                "opacity": 0.4,
-                "rotation": {
-                  "fixed": 0,
-                  "max": 360,
-                  "min": -360,
-                  "mode": "mod"
-                },
-                "size": {
-                  "fixed": 5,
-                  "max": 15,
-                  "min": 2
-                },
-                "symbol": {
-                  "fixed": "img/icons/marker/x-mark.svg",
-                  "mode": "fixed"
-                },
-                "symbolAlign": {
-                  "horizontal": "center",
-                  "vertical": "center"
-                },
-                "textConfig": {
-                  "fontSize": 12,
-                  "offsetX": 0,
-                  "offsetY": 0,
-                  "textAlign": "center",
-                  "textBaseline": "middle"
-                }
-              }
-            },
-            "location": {
-              "mode": "auto"
-            },
-            "name": "Coordinates",
-            "tooltip": true,
-            "type": "markers"
-          }
-        ],
-        "tooltip": {
-          "mode": "none"
-        },
-        "view": {
-          "allLayers": true,
-          "id": "fit",
-          "lastOnly": false,
-          "lat": 0,
-          "layer": "Coordinates",
-          "lon": 0,
-          "zoom": 12
-        }
-      },
-      "pluginVersion": "11.2.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "bdxatvvcczu9sb"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "hide": false,
-          "rawQuery": true,
-          "rawSql": "SELECT gps_gga_latitude AS \"LATITUDE\", gps_gga_longitude AS \"LONGITUDE\" FROM sensor_readings",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "alias": "\"LATITUDE\"",
-                "parameters": [
-                  {
-                    "name": "gps_gga_latitude",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"LONGITUDE\"",
-                "parameters": [
-                  {
-                    "name": "gps_gga_longitude",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "sensor_readings"
-        }
-      ],
-      "title": "GPS Coordinates",
-      "transparent": true,
-      "type": "geomap"
-    },
-    {
-      "datasource": {
-        "default": true,
-        "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
+        "uid": "fdxeparwsatj4b"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
             "fixedColor": "super-light-blue",
-            "mode": "continuous-BlPu"
+            "mode": "shades"
           },
           "mappings": [],
           "thresholds": {
@@ -1714,10 +2374,10 @@
         ]
       },
       "gridPos": {
-        "h": 6,
+        "h": 8,
         "w": 6,
-        "x": 18,
-        "y": 20
+        "x": 6,
+        "y": 17
       },
       "id": 15,
       "interval": "5s",
@@ -1740,7 +2400,7 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "11.2.2",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -1750,65 +2410,41 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT uva AS \"UV\", bmp_pressure AS \"BMP\", acelx AS \"IMU\", dallas_intern AS \"DS18B20\", gps_gga_latitude AS \"GPS\", system_temp_cpu_thermal AS \"SYSTEM\" FROM sensor_readings",
+          "rawSql": "SELECT imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz, imu_magx, imu_magy, imu_magz,\r\n            uv_uva, uv_uvb, uv_uvc, uv_temperature, cpu_usage, ram_usage, total_ram,\r\n            disk_usage, disk_usage_gb, total_disk_gb, sys_temperature,\r\n            lat, lon, alt, headmot, roll, pitch, heading, nmea,\r\n            lat_hp, lon_hp, alt_hp, gps_error, bmp_pressure, bmp_temperature, bmp_altitude,\r\n            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp FROM sensor_readings ",
           "refId": "A",
           "sql": {
             "columns": [
               {
-                "alias": "\"UV\"",
                 "parameters": [
                   {
-                    "name": "uv_uva",
+                    "name": "cpu_temp",
                     "type": "functionParameter"
                   }
                 ],
                 "type": "function"
               },
               {
-                "alias": "\"BMP\"",
                 "parameters": [
                   {
-                    "name": "bmp_pressure",
+                    "name": "cpu_usage",
                     "type": "functionParameter"
                   }
                 ],
                 "type": "function"
               },
               {
-                "alias": "\"IMU\"",
                 "parameters": [
                   {
-                    "name": "imu_acelx",
+                    "name": "ram_usage",
                     "type": "functionParameter"
                   }
                 ],
                 "type": "function"
               },
               {
-                "alias": "\"DS18B20\"",
                 "parameters": [
                   {
-                    "name": "dallas_28_6fc2d44578f0",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"GPS\"",
-                "parameters": [
-                  {
-                    "name": "gps_gga_latitude",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"SYSTEM\"",
-                "parameters": [
-                  {
-                    "name": "system_cpu_usage_percent",
+                    "name": "latitude",
                     "type": "functionParameter"
                   }
                 ],
@@ -1825,7 +2461,7 @@
             ],
             "limit": 50
           },
-          "table": "sensor_readings"
+          "table": "sensor_data"
         }
       ],
       "timeFrom": "now-1h",
@@ -1837,12 +2473,43 @@
           "options": {
             "include": {
               "names": [
-                "IMU",
-                "UV",
-                "GPS",
-                "BMP",
-                "SYSTEM",
-                "DS18B20"
+                "imu_acelx",
+                "imu_acely",
+                "imu_acelz",
+                "imu_girox",
+                "imu_giroy",
+                "imu_giroz",
+                "imu_magx",
+                "imu_magy",
+                "imu_magz",
+                "uv_uva",
+                "uv_uvb",
+                "uv_uvc",
+                "uv_temperature",
+                "cpu_usage",
+                "ram_usage",
+                "total_ram",
+                "disk_usage",
+                "disk_usage_gb",
+                "total_disk_gb",
+                "sys_temperature",
+                "lat",
+                "lon",
+                "alt",
+                "headmot",
+                "roll",
+                "pitch",
+                "heading",
+                "nmea",
+                "lat_hp",
+                "lon_hp",
+                "alt_hp",
+                "gps_error",
+                "bmp_pressure",
+                "bmp_temperature",
+                "bmp_altitude",
+                "ds18b20_temperature_interior",
+                "ds18b20_temperature_exterior"
               ]
             }
           }
@@ -1855,234 +2522,12 @@
       "datasource": {
         "default": true,
         "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
+        "uid": "fdxeparwsatj4b"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-BlPu"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "velocityms"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 12,
-        "y": 21
-      },
-      "hideTimeOverride": false,
-      "id": 39,
-      "interval": "5s",
-      "maxDataPoints": 1000,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.2.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-mqtt-datasource",
-            "uid": "cdrczkpo98wlca"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT gps_speed_mps AS \"Horizontal\", bmp_vertical_speed AS \"Vertical\", \"timestamp\" FROM sensor_readings",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "alias": "\"Horizontal\"",
-                "parameters": [
-                  {
-                    "name": "gps_rmc_speed_mps",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"Vertical\"",
-                "parameters": [
-                  {
-                    "name": "bmp_vertical_speed",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "sensor_readings",
-          "topic": "data"
-        }
-      ],
-      "timeFrom": "now-1h",
-      "timeShift": "1h",
-      "title": "Velocities",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "default": true,
-        "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-BlPu"
-          },
-          "decimals": 0,
-          "mappings": [],
-          "max": 40000,
-          "min": 500,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "lengthm"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 6,
-        "x": 6,
-        "y": 23
-      },
-      "id": 33,
-      "options": {
-        "displayMode": "lcd",
-        "maxVizHeight": 300,
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "namePlacement": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "sizing": "auto",
-        "valueMode": "color"
-      },
-      "pluginVersion": "11.2.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-mqtt-datasource",
-            "uid": "cdrczkpo98wlca"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT bmp_altitude AS \"BMP\", gps_altitude AS \"GPS\" FROM sensor_readings",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "alias": "\"BMP\"",
-                "parameters": [
-                  {
-                    "name": "bmp_altitude",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"GPS\"",
-                "parameters": [
-                  {
-                    "name": "gps_gga_altitude",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "sensor_readings",
-          "topic": "data"
-        }
-      ],
-      "title": "ALTITUDE",
-      "transparent": true,
-      "type": "bargauge"
-    },
-    {
-      "datasource": {
-        "default": true,
-        "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
+            "fixedColor": "super-light-blue",
             "mode": "palette-classic-by-name"
           },
           "custom": {
@@ -2125,6 +2570,200 @@
               {
                 "color": "green",
                 "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "string"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "transparent",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 26,
+        "w": 10,
+        "x": 0,
+        "y": 25
+      },
+      "id": 36,
+      "interval": "5s",
+      "maxDataPoints": 1000,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bds7ryh2p4tmod"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    imu_acelx AS \"Accelerometer X\",\r\n    imu_acely AS \"Accelerometer Y\",\r\n    imu_acelz AS \"Accelerometer Z\",\r\n    imu_girox AS \"Gyroscope X\",\r\n    imu_giroy AS \"Gyroscope Y\",\r\n    imu_giroz AS \"Gyroscope Z\",\r\n    imu_magx AS \"Magnetometer X\",\r\n    imu_magy AS \"Magnetometer Y\",\r\n    imu_magz AS \"Magnetometer Z\",\r\n    uv_uva AS \"UV-A Index\",\r\n    uv_uvb AS \"UV-B Index\",\r\n    uv_uvc AS \"UV-C Index\",\r\n    uv_temperature AS \"UV Sensor Temperature\",\r\n    cpu_usage AS \"CPU Usage (%)\",\r\n    ram_usage AS \"RAM Usage (%)\",\r\n    total_ram AS \"Total RAM (MB)\",\r\n    disk_usage AS \"Disk Usage (%)\",\r\n    disk_usage_gb AS \"Disk Usage (GB)\",\r\n    total_disk_gb AS \"Total Disk (GB)\",\r\n    sys_temperature AS \"System Temperature\",\r\n    lat AS \"Latitude\",\r\n    lon AS \"Longitude\",\r\n    alt AS \"Altitude\",\r\n    headmot AS \"Heading Motion\",\r\n    roll AS \"Roll\",\r\n    pitch AS \"Pitch\",\r\n    heading AS \"Heading\",\r\n    nmea AS \"NMEA Sentence\",\r\n    lat_hp AS \"High-Precision Latitude\",\r\n    lon_hp AS \"High-Precision Longitude\",\r\n    alt_hp AS \"High-Precision Altitude\",\r\n    gps_error AS \"GPS Error\",\r\n    bmp_pressure AS \"BMP Pressure\",\r\n    bmp_temperature AS \"BMP Temperature\",\r\n    bmp_altitude AS \"BMP Altitude\",\r\n    ds18b20_temperature_interior AS \"Interior Temperature\",\r\n    ds18b20_temperature_exterior AS \"Exterior Temperature\",\r\n    timestamp AS \"Timestamp\"\r\nFROM \r\n    sensor_readings;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "cpu_temp",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "cpu_usage",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "ram_usage",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "latitude",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "sensor_data"
+        }
+      ],
+      "timeFrom": "now-1h",
+      "timeShift": "1h",
+      "title": "RAW Data",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "byVariable": false,
+            "include": {
+              "names": [
+                "UV-A Index",
+                "UV-B Index",
+                "UV-C Index",
+                "UV Sensor Temperature",
+                "System Temperature",
+                "Latitude",
+                "Longitude",
+                "Altitude",
+                "Heading Motion",
+                "High-Precision Latitude",
+                "High-Precision Longitude",
+                "High-Precision Altitude",
+                "BMP Pressure",
+                "BMP Temperature",
+                "BMP Altitude",
+                "Interior Temperature",
+                "Exterior Temperature",
+                "Timestamp"
+              ]
+            }
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "fdxeparwsatj4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic-by-name"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2136,13 +2775,12 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 26,
-        "w": 8,
-        "x": 0,
-        "y": 26
+        "h": 9,
+        "w": 14,
+        "x": 10,
+        "y": 25
       },
-      "id": 45,
-      "interval": "1s",
+      "id": 21,
       "options": {
         "legend": {
           "calcs": [],
@@ -2151,59 +2789,47 @@
           "showLegend": true
         },
         "tooltip": {
-          "mode": "multi",
+          "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "bds7ryh2p4tmod"
+            "uid": "fdxeparwsatj4b"
           },
           "editorMode": "code",
           "format": "table",
+          "hide": false,
           "rawQuery": true,
-          "rawSql": "SELECT\n    bmp_pressure AS PRESSURE, \n    bmp_temperature AS BMP_TEMP, \n    bmp_altitude AS BMP_ALT, \n    bmp_vertical_speed AS VERTICAL_SPEED,\n    dallas_intern AS \"INTERN\", \n    dallas_extern AS \"EXTERN\",\n    gps_speed_mps AS SPEED_MPS, \n    gps_gga_latitude AS LATITUDE, \n    gps_gga_longitude AS LONGITUDE, \n    gps_altitude AS GPS_ALTITUDE, \n    gps_height_geoid AS HEIGHT_GEOID, \n    gps_satellites AS SATELLITES,\n    timestamp\nFROM sensor_readings;",
+          "rawSql": "SELECT imu_girox AS \"GIROX\", imu_giroy AS \"GIROY\", imu_giroz AS \"GIROZ\", \"timestamp\" FROM sensor_readings",
           "refId": "A",
           "sql": {
             "columns": [
               {
-                "alias": "\"BMP\"",
                 "parameters": [
                   {
-                    "name": "bmp_temperature",
+                    "name": "imu_girox",
                     "type": "functionParameter"
                   }
                 ],
                 "type": "function"
               },
               {
-                "alias": "\"UV\"",
                 "parameters": [
                   {
-                    "name": "uv_uv_temp",
+                    "name": "imu_giroy",
                     "type": "functionParameter"
                   }
                 ],
                 "type": "function"
               },
               {
-                "alias": "\"INTERN\"",
                 "parameters": [
                   {
-                    "name": "dallas_28_6fc2d44578f0",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"EXTERN\"",
-                "parameters": [
-                  {
-                    "name": "dallas_28_03a0d446ef0a",
+                    "name": "imu_giroz",
                     "type": "functionParameter"
                   }
                 ],
@@ -2232,7 +2858,9 @@
           "table": "sensor_readings"
         }
       ],
-      "title": "RAW DATA",
+      "timeFrom": "now-1h",
+      "timeShift": "1h",
+      "title": "Giroscope",
       "transparent": true,
       "type": "timeseries"
     },
@@ -2240,7 +2868,300 @@
       "datasource": {
         "default": true,
         "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
+        "uid": "fdxeparwsatj4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic-by-name"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 14,
+        "x": 10,
+        "y": 34
+      },
+      "id": 16,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bdxatvvcczu9sb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT imu_acelx AS \"ACELX\", imu_acely AS \"ACELY\", imu_acelz AS \"ACELZ\", \"timestamp\" FROM sensor_readings",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "imu_acelx",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "imu_acely",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "imu_acelz",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "sensor_readings"
+        }
+      ],
+      "timeFrom": "now-1h",
+      "timeShift": "1h",
+      "title": "Acelerometer",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "fdxeparwsatj4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic-by-name"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 14,
+        "x": 10,
+        "y": 43
+      },
+      "id": 17,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "fdxeparwsatj4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT imu_magx AS \"MAGX\", imu_magy AS \"MAGY\", imu_magz AS \"MAGZ\", \"timestamp\" FROM sensor_readings",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "imu_magx",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "imu_magy",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "imu_magz",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "sensor_readings"
+        }
+      ],
+      "timeFrom": "now-1h",
+      "timeShift": "1h",
+      "title": "Magnetometer",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "fdxeparwsatj4b"
       },
       "fieldConfig": {
         "defaults": {
@@ -2418,10 +3339,10 @@
         ]
       },
       "gridPos": {
-        "h": 13,
-        "w": 16,
-        "x": 8,
-        "y": 26
+        "h": 26,
+        "w": 24,
+        "x": 0,
+        "y": 51
       },
       "id": 34,
       "interval": "1s",
@@ -2444,7 +3365,7 @@
           }
         ]
       },
-      "pluginVersion": "11.2.2",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -2454,7 +3375,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n    gps_gga_latitude AS LATITUDEGGA, \r\n    gps_gga_longitude AS LONGITUDEGGA, \r\n    gps_distance AS DISTANCE,\r\n    gps_altitude AS ALTITUDE, \r\n    gps_satellites AS SATELLITES,\r\n    gps_pdop AS PDOP,\r\n    gps_hdop AS HDOP,\r\n    gps_vdop AS VDOP,\r\n\r\n    timestamp\r\n\r\nFROM sensor_readings;\r\n",
+          "rawSql": "SELECT imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz, imu_magx, imu_magy, imu_magz,\r\n            uv_uva, uv_uvb, uv_uvc, uv_temperature, cpu_usage, ram_usage, total_ram,\r\n            disk_usage, disk_usage_gb, total_disk_gb, sys_temperature,\r\n            lat, lon, alt, headmot, roll, pitch, heading, nmea,\r\n            lat_hp, lon_hp, alt_hp, gps_error, bmp_pressure, bmp_temperature, bmp_altitude,\r\n            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp FROM sensor_readings ",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2483,553 +3404,49 @@
       ],
       "timeFrom": "now-1h",
       "timeShift": "1h",
-      "title": "GPS DATA LOGGER",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "default": true,
-        "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "center",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [
-            {
-              "options": {
-                "null": {
-                  "color": "#c4162a52",
-                  "index": 0,
-                  "text": "Error"
-                }
-              },
-              "type": "value"
-            },
-            {
-              "options": {
-                "match": "null+nan",
-                "result": {
-                  "color": "#c4162a52",
-                  "index": 1,
-                  "text": "Error"
-                }
-              },
-              "type": "special"
-            },
-            {
-              "options": {
-                "match": "empty",
-                "result": {
-                  "color": "#c4162a52",
-                  "index": 2,
-                  "text": "Error"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byType",
-              "options": "string"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "applyToRow": false,
-                  "mode": "basic",
-                  "type": "color-background",
-                  "wrapText": false
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#c4162a4a",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byType",
-              "options": "time"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "applyToRow": false,
-                  "mode": "basic",
-                  "type": "color-background",
-                  "wrapText": false
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#1f61c44f",
-                  "mode": "shades"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "temperature"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "mode": "basic",
-                  "type": "gauge"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "semi-dark-red",
-                  "mode": "shades"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "cpu_usage"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "mode": "basic",
-                  "type": "gauge",
-                  "valueDisplayMode": "text"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "text",
-                  "mode": "shades"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "ram_usage"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "mode": "basic",
-                  "type": "gauge",
-                  "valueDisplayMode": "text"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "purple",
-                  "mode": "shades"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 13,
-        "w": 16,
-        "x": 8,
-        "y": 39
-      },
-      "id": 46,
-      "interval": "1s",
-      "maxDataPoints": 1000,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "timestamp"
-          }
-        ]
-      },
-      "pluginVersion": "11.2.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "bds7ryh2p4tmod"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT \nacelx AS \"ACELX\", \nacely AS \"ACELY\", \nacelz AS \"ACELZ\", \ngirox AS \"GYROX\", \ngiroy AS \"GYROY\", \ngiroz AS \"GYROZ\", \nmagx AS \"MAGX\", \nmagy AS \"MAGY\", \nmagz AS \"MAGZ\", \n\"timestamp\" AS \"TIME\" \nFROM sensor_readings",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "alias": "\"ACELX\"",
-                "parameters": [
-                  {
-                    "name": "imu_acelx",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"ACELY\"",
-                "parameters": [
-                  {
-                    "name": "imu_acely",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"ACELZ\"",
-                "parameters": [
-                  {
-                    "name": "imu_acelz",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"GYROX\"",
-                "parameters": [
-                  {
-                    "name": "imu_girox",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"GYROY\"",
-                "parameters": [
-                  {
-                    "name": "imu_giroy",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"GYROZ\"",
-                "parameters": [
-                  {
-                    "name": "imu_giroz",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"MAGX\"",
-                "parameters": [
-                  {
-                    "name": "imu_magx",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"MAGY\"",
-                "parameters": [
-                  {
-                    "name": "imu_magy",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"MAGZ\"",
-                "parameters": [
-                  {
-                    "name": "imu_magz",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"TIME\"",
-                "parameters": [
-                  {
-                    "name": "\"timestamp\"",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "sensor_readings"
-        }
-      ],
-      "timeFrom": "now-1h",
-      "timeShift": "1h",
-      "title": "IMU DATA LOGGER",
+      "title": "Panel Title",
       "transformations": [
         {
           "id": "filterFieldsByName",
           "options": {
             "include": {
               "names": [
-                "ACELX",
-                "ACELY",
-                "ACELZ",
-                "GYROX",
-                "GYROY",
-                "GYROZ",
-                "MAGX",
-                "MAGY",
-                "MAGZ",
-                "TIME"
+                "lat",
+                "lon",
+                "alt",
+                "headmot",
+                "roll",
+                "pitch",
+                "timestamp",
+                "lat_hp",
+                "lon_hp",
+                "alt_hp",
+                "gps_error",
+                "heading"
               ]
             }
           }
         }
       ],
       "type": "table"
-    },
-    {
-      "datasource": {
-        "default": true,
-        "type": "grafana-postgresql-datasource",
-        "uid": "cdydf6pnwyfpca"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 23,
-        "w": 24,
-        "x": 0,
-        "y": 52
-      },
-      "id": 48,
-      "options": {
-        "basemap": {
-          "config": {},
-          "name": "Layer 0",
-          "opacity": 0.6,
-          "tooltip": false,
-          "type": "xyz"
-        },
-        "controls": {
-          "mouseWheelZoom": true,
-          "showAttribution": false,
-          "showDebug": false,
-          "showMeasure": false,
-          "showScale": false,
-          "showZoom": true
-        },
-        "layers": [
-          {
-            "config": {
-              "showLegend": false,
-              "style": {
-                "color": {
-                  "fixed": "dark-purple"
-                },
-                "opacity": 0.4,
-                "rotation": {
-                  "fixed": 0,
-                  "max": 360,
-                  "min": -360,
-                  "mode": "mod"
-                },
-                "size": {
-                  "fixed": 5,
-                  "max": 15,
-                  "min": 2
-                },
-                "symbol": {
-                  "fixed": "img/icons/marker/x-mark.svg",
-                  "mode": "fixed"
-                },
-                "symbolAlign": {
-                  "horizontal": "center",
-                  "vertical": "center"
-                },
-                "textConfig": {
-                  "fontSize": 12,
-                  "offsetX": 0,
-                  "offsetY": 0,
-                  "textAlign": "center",
-                  "textBaseline": "middle"
-                }
-              }
-            },
-            "location": {
-              "mode": "auto"
-            },
-            "name": "Coordinates",
-            "tooltip": true,
-            "type": "markers"
-          }
-        ],
-        "tooltip": {
-          "mode": "none"
-        },
-        "view": {
-          "allLayers": true,
-          "id": "fit",
-          "lastOnly": false,
-          "lat": 0,
-          "layer": "Coordinates",
-          "lon": 0,
-          "zoom": 12
-        }
-      },
-      "pluginVersion": "11.2.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "bdxatvvcczu9sb"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "hide": false,
-          "rawQuery": true,
-          "rawSql": "SELECT gps_gga_latitude AS \"LATITUDE\", gps_gga_longitude AS \"LONGITUDE\" FROM sensor_readings",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "alias": "\"LATITUDE\"",
-                "parameters": [
-                  {
-                    "name": "gps_gga_latitude",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"LONGITUDE\"",
-                "parameters": [
-                  {
-                    "name": "gps_gga_longitude",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "sensor_readings"
-        }
-      ],
-      "title": "GPS Coordinates",
-      "transparent": true,
-      "type": "geomap"
     }
   ],
-  "refresh": "5s",
+  "refresh": "",
   "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-6h",
-    "to": "now"
+    "from": "2024-09-09T21:46:13.031Z",
+    "to": "2024-09-10T17:28:09.000Z"
   },
   "timepicker": {
     "hidden": false
   },
-  "timezone": "browser",
-  "title": "UAXSAT IV VISUALIZATION",
+  "timezone": "utc",
+  "title": "UAXSat",
   "uid": "bdrdn0a3mwzy8bdd",
-  "version": 32,
+  "version": 38,
   "weekStart": ""
 }
