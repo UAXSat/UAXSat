@@ -1,80 +1,27 @@
-"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                                                                            *
-*                         Developed by Javier Bolanos                        *
-*                  https://github.com/javierbolanosllano                     *
-*                                                                            *
-*                      UAXSAT IV Project - 2024                              *
-*                   https://github.com/UAXSat/UAXSat                         *
-*                                                                            *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
-
-# receiver.py
-
-import serial
 import time
 import json
-import psycopg2
 import logging
-import RPi.GPIO as GPIO
+import psycopg2
+from serial.tools import list_ports
+from e220 import E220, MODE_NORMAL, AUX, M0, M1, VID_PID_LIST
 
-# Logger configuration
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Configuraci  n del logger
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger()
 
-# GPIO pin definitions
-M0_PIN = 17
-M1_PIN = 27
-AUX_PIN = 22
+def find_serial_port(vendor_id, product_id):
+    """Encuentra y devuelve el puerto serial para un dispositivo con el VID y PID dados"""
+    ports = list_ports.comports()
+    for port in ports:
+        if port.vid == vendor_id and port.pid == product_id:
+            return port.device
+    return None
 
-# Serial port configuration
-SERIAL_PORT = '/dev/ttyUSB0'  # Adjust according to your system
-BAUD_RATE = 9600
-
-# Initialize GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(M0_PIN, GPIO.OUT)
-GPIO.setup(M1_PIN, GPIO.OUT)
-GPIO.setup(AUX_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-def wait_aux_high(timeout=10):
-    """Wait until the AUX pin is HIGH."""
-    logger.debug("Waiting for AUX to be HIGH...")
-    end_time = time.time() + timeout
-    while GPIO.input(AUX_PIN) == GPIO.LOW:
-        if time.time() > end_time:
-            logger.error("Timeout waiting for AUX to be HIGH.")
-            return False
-        time.sleep(0.01)
-    logger.debug("AUX is HIGH.")
-    return True
-
-def wait_aux_low(timeout=10):
-    """Wait until the AUX pin is LOW."""
-    logger.debug("Waiting for AUX to be LOW...")
-    end_time = time.time() + timeout
-    while GPIO.input(AUX_PIN) == GPIO.HIGH:
-        if time.time() > end_time:
-            logger.error("Timeout waiting for AUX to be LOW.")
-            return False
-        time.sleep(0.01)
-    logger.debug("AUX is LOW.")
-    return True
-
-def enter_normal_mode():
-    """Configure the LoRa module in normal (transparent) mode."""
-    logger.info("Configuring the module in NORMAL mode...")
-    GPIO.output(M0_PIN, GPIO.LOW)
-    GPIO.output(M1_PIN, GPIO.LOW)
-    if wait_aux_high():
-        time.sleep(0.1)
-        logger.info("Module configured in NORMAL mode.")
-    else:
-        logger.error("Failed to configure module in NORMAL mode.")
-
-def connect_to_db():
-    """Connect to the database and return the connection and cursor."""
+def insert_data_to_db(data):
+    """Inserta los datos en la base de datos PostgreSQL"""
+    connection = None
+    cursor = None
     try:
-        logger.info("Connecting to the database...")
         connection = psycopg2.connect(
             database="cubesat",
             user="cubesat",
@@ -83,52 +30,38 @@ def connect_to_db():
             port="5432"
         )
         cursor = connection.cursor()
-        logger.info("Database connection established.")
-        return connection, cursor
-    except psycopg2.Error as error:
-        logger.error(f"Database connection error: {error}")
-        raise
 
-def insert_data_to_db(cursor, connection, data):
-    """Insert the received data into the database."""
-    try:
-        logger.info("Inserting data into the database...")
+        # Consulta de inserci  n con las nuevas columnas
         insert_query = """
         INSERT INTO sensor_readings (
-            imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz,
-            imu_magx, imu_magy, imu_magz, uv_uva, uv_uvb, uv_uvc, uv_uv_temp,
-            bmp_pressure, bmp_temperature, bmp_altitude, bmp_vertical_speed,
-            dallas_28_03a0d446ef0a, dallas_28_6fc2d44578f0,
-            gps_rmc_speed_mps, gps_vtg_speed_kmh,
-            gps_gga_latitude, gps_gga_longitude, gps_distance,
-            gps_gga_altitude, gps_gga_height_geoid, gps_gsv_total_satellites,
-            gps_gsv_total_azimuth, gps_gsv_total_elevation, gps_gsv_total_SNR,
-            HDOP, PDOP, VDOP,
-            system_cpu_usage_percent, system_ram_usage_percent,
-            system_temp_cpu_thermal, timestamp
+            imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz, imu_magx, imu_magy, imu_magz,
+            uv_uva, uv_uvb, uv_uvc, uv_temperature, cpu_usage, ram_usage, total_ram,
+            disk_usage, disk_usage_gb, total_disk_gb, sys_temperature,
+            lat, lon, alt, headmot, roll, pitch, heading, nmea,
+            lat_hp, lon_hp, alt_hp, gps_error, bmp_pressure, bmp_temperature, bmp_altitude,
+            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp
         ) VALUES (
-            %(imu_acelx)s, %(imu_acely)s, %(imu_acelz)s, %(imu_girox)s, %(imu_giroy)s, %(imu_giroz)s,
-            %(imu_magx)s, %(imu_magy)s, %(imu_magz)s, %(uv_uva)s, %(uv_uvb)s, %(uv_uvc)s, %(uv_uv_temp)s,
-            %(bmp_pressure)s, %(bmp_temperature)s, %(bmp_altitude)s, %(bmp_vertical_speed)s,
-            %(dallas_28_03a0d446ef0a)s, %(dallas_28_6fc2d44578f0)s,
-            %(gps_rmc_speed_mps)s, %(gps_vtg_speed_kmh)s,
-            %(gps_gga_latitude)s, %(gps_gga_longitude)s, %(gps_distance)s,
-            %(gps_gga_altitude)s, %(gps_gga_height_geoid)s, %(gps_gsv_total_satellites)s,
-            %(gps_gsv_total_azimuth)s, %(gps_gsv_total_elevation)s, %(gps_gsv_total_SNR)s,
-            %(system_cpu_usage_percent)s, %(system_ram_usage_percent)s,
-            %(system_temp_cpu_thermal)s, %(timestamp)s
-        );
+            %(imu_acelx)s, %(imu_acely)s, %(imu_acelz)s, %(imu_girox)s, %(imu_giroy)s, %(imu_giroz)s, %(imu_magx)s, %(imu_magy)s, %(imu_magz)s,
+            %(uv_uva)s, %(uv_uvb)s, %(uv_uvc)s, %(uv_temperature)s, %(cpu_usage)s, %(ram_usage)s, %(total_ram)s,
+            %(disk_usage)s, %(disk_usage_gb)s, %(total_disk_gb)s, %(sys_temperature)s,
+            %(lat)s, %(lon)s, %(alt)s, %(headmot)s, %(roll)s, %(pitch)s, %(heading)s, %(nmea)s,
+            %(lat_hp)s, %(lon_hp)s, %(alt_hp)s, %(gps_error)s, %(bmp_pressure)s, %(bmp_temperature)s, %(bmp_altitude)s,
+            %(ds18b20_temperature_interior)s, %(ds18b20_temperature_exterior)s, %(timestamp)s
+        )
         """
 
-        # Helper function to convert values to float
-        def to_float(value):
-            try:
-                return float(value)
-            except (TypeError, ValueError):
-                return None
+        # Preparar los datos para la inserci  n
+        gps_data = data.get('GPS', [{}])
+        gps_data = gps_data[0] if gps_data else {}
 
-        # Data mapping for the query
-        data_map = {
+        dallas_data = data.get('Dallas', {})
+        
+        # Extraer temperaturas del sensor DS18B20
+        ds18b20_temp_interior = dallas_data.get('28-03a0d446ef0a')
+        ds18b20_temp_exterior = dallas_data.get('28-6fc2d44578f0')
+
+        # Ejecutar la consulta de inserci  n
+        cursor.execute(insert_query, {
             'imu_acelx': data.get('IMU', {}).get('ACELX'),
             'imu_acely': data.get('IMU', {}).get('ACELY'),
             'imu_acelz': data.get('IMU', {}).get('ACELZ'),
@@ -138,100 +71,110 @@ def insert_data_to_db(cursor, connection, data):
             'imu_magx': data.get('IMU', {}).get('MAGX'),
             'imu_magy': data.get('IMU', {}).get('MAGY'),
             'imu_magz': data.get('IMU', {}).get('MAGZ'),
-            'uv_uva': data.get('UV', {}).get('UVA'),
-            'uv_uvb': data.get('UV', {}).get('UVB'),
-            'uv_uvc': data.get('UV', {}).get('UVC'),
-            'uv_uv_temp': data.get('UV', {}).get('UV Temp'),
+            'lat': gps_data.get('latitude'),
+            'lon': gps_data.get('longitude'),
+            'alt': gps_data.get('altitude'),
+            'headmot': gps_data.get('heading_of_motion'),
+            'roll': gps_data.get('roll'),
+            'pitch': gps_data.get('pitch'),
+            'heading': gps_data.get('heading'),
+            'nmea': gps_data.get('nmea_sentence'),
+            'lat_hp': gps_data.get('high_precision_latitude'),
+            'lon_hp': gps_data.get('high_precision_longitude'),
+            'alt_hp': gps_data.get('high_precision_altitude'),
+            'gps_error': data.get('GPS', [None])[1] if len(data.get('GPS', [])) > 1 else None,
             'bmp_pressure': data.get('BMP', {}).get('pressure'),
             'bmp_temperature': data.get('BMP', {}).get('temperature'),
             'bmp_altitude': data.get('BMP', {}).get('altitude'),
-            'bmp_vertical_speed': to_float(data.get('BMP', {}).get('vertical_speed')),
-            'dallas_28_03a0d446ef0a': data.get('Dallas', {}).get('28-03a0d446ef0a'),
-            'dallas_28_6fc2d44578f0': data.get('Dallas', {}).get('28-6fc2d44578f0'),
-            'gps_rmc_speed_mps': to_float(data.get('GPS', {}).get('RMC', {}).get('speed_mps')),
-            'gps_vtg_speed_kmh': to_float(data.get('GPS', {}).get('VTG', {}).get('speed_kmh')),
-            'gps_gga_latitude': to_float(data.get('GPS', {}).get('GGA', {}).get('latitude')),
-            'gps_gga_longitude': to_float(data.get('GPS', {}).get('GGA', {}).get('longitude')),
-            'gps_distance': to_float(data.get('GPS', {}).get('distance')),
-            'gps_gga_altitude': to_float(data.get('GPS', {}).get('GGA', {}).get('altitude')),
-            'gps_gga_height_geoid': to_float(data.get('GPS', {}).get('GGA', {}).get('height_geoid')),
-            'gps_gsv_total_satellites': data.get('GPS', {}).get('GSV', {}).get('total_satellites'),
-            'gps_gsv_total_azimuth': to_float(data.get('GPS', {}).get('GSV', {}).get('total_azimuth')),
-            'gps_gsv_total_elevation': to_float(data.get('GPS', {}).get('GSV', {}).get('total_elevation')),
-            'gps_gsv_total_SNR': to_float(data.get('GPS', {}).get('GSV', {}).get('total_SNR')),
-            'system_cpu_usage_percent': data.get('System', {}).get('CPU Usage (%)'),
-            'system_ram_usage_percent': data.get('System', {}).get('RAM Usage (%)'),
-            'system_temp_cpu_thermal': data.get('System', {}).get('CPU Temperature'),
+            'uv_uva': data.get('UV', {}).get('UVA'),
+            'uv_uvb': data.get('UV', {}).get('UVB'),
+            'uv_uvc': data.get('UV', {}).get('UVC'),
+            'uv_temperature': data.get('UV', {}).get('UV Temp'),
+            'cpu_usage': data.get('System', {}).get('CPU Usage (%)'),
+            'ram_usage': data.get('System', {}).get('RAM Usage (MB)'),
+            'total_ram': data.get('System', {}).get('Total RAM (MB)'),
+            'disk_usage': data.get('System', {}).get('Disk Usage (%)'),
+            'disk_usage_gb': data.get('System', {}).get('Disk Usage (GB)'),
+            'total_disk_gb': data.get('System', {}).get('Total Disk (GB)'),
+            'sys_temperature': data.get('System', {}).get('Temperature (  C)'),
+            'ds18b20_temperature_interior': ds18b20_temp_interior,
+            'ds18b20_temperature_exterior': ds18b20_temp_exterior,
             'timestamp': data.get('timestamp')
-        }
+        })
 
-        # Execute the insert query
-        cursor.execute(insert_query, data_map)
+        # Confirmar los cambios en la base de datos
         connection.commit()
-        logger.info("Data inserted successfully into the database.")
+        logger.info("Datos insertados en la base de datos.")
 
-    except Exception as e:
-        logger.error(f"Error inserting data into the database: {e}")
-        connection.rollback()
-
-def receive_message(cursor, connection):
-    """Receive messages via LoRa and process the data between markers."""
-    buffer = ""
-    try:
-        with serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1) as ser:
-            logger.info("Serial port opened for reception.")
-            while True:
-                if ser.in_waiting > 0:
-                    chunk = ser.read(ser.in_waiting).decode('utf-8', errors='ignore').strip()
-                    buffer += chunk
-                    logger.debug(f"Updated buffer: {buffer}")
-
-                    # Process complete messages
-                    while '<<<' in buffer and '>>>' in buffer:
-                        start = buffer.find('<<<') + 3
-                        end = buffer.find('>>>', start)
-                        if end != -1:
-                            message_content = buffer[start:end]
-                            buffer = buffer[end+3:]  # Update the buffer
-                            logger.debug(f"Extracted complete message: {message_content}")
-                            try:
-                                data = json.loads(message_content)
-                                logger.info(data)
-                                logger.debug(data)
-                                logger.info("Sensor data received and deserialized.")
-                                logger.debug(f"Deserialized data: {data}")
-                                insert_data_to_db(cursor, connection, data)
-                            except json.JSONDecodeError as e:
-                                logger.error(f"Error deserializing message: {e}")
-                        else:
-                            break  # Wait for the rest of the message
-                else:
-                    time.sleep(0.1)
-    except serial.SerialException as e:
-        logger.error(f"Serial communication error: {e}")
-    except Exception as e:
-        logger.error(f"Unexpected error in receive_message: {e}")
-
-def main():
-    try:
-        logger.info("Starting receiver program...")
-        enter_normal_mode()
-        connection, cursor = connect_to_db()
-        receive_message(cursor, connection)
-    except KeyboardInterrupt:
-        logger.info("Program interrupted by the user.")
-    except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+    except (psycopg2.Error, Exception) as error:
+        logger.error(f"Error al insertar en la base de datos: {error}")
     finally:
         if cursor:
             cursor.close()
-            logger.debug("Database cursor closed.")
         if connection:
             connection.close()
-            logger.debug("Database connection closed.")
-        logger.info("Ending receiver program. Cleaning up GPIO...")
-        GPIO.cleanup()
-        logger.debug("GPIO cleaned up.")
 
-if __name__ == '__main__':
+def main():
+    uart_port = None
+    for vid, pid in VID_PID_LIST:
+        uart_port = find_serial_port(vid, pid)
+        if uart_port:
+            break
+
+    if uart_port is None:
+        logger.error("Dispositivo no encontrado. Por favor, verifica tus conexiones.")
+        exit(1)
+
+    logger.info(f"Dispositivo encontrado en {uart_port}, inicializando el m  dulo E220...")
+
+    lora_module = None
+    try:
+        lora_module = E220(m0_pin=M0, m1_pin=M1, aux_pin=AUX, uart_port=uart_port)
+        lora_module.set_mode(MODE_NORMAL)
+
+        logger.info("Escuchando mensajes entrantes...")
+
+        buffer = ""  # Buffer para almacenar datos recibidos
+
+        while True:
+            received_message = lora_module.receive_data()
+            if received_message:
+                buffer += received_message  # A  adir datos recibidos al buffer
+
+                # Buscar el marcador de inicio y fin en el buffer
+                start_marker = "<<<"
+                end_marker = ">>>"
+
+                start_index = buffer.find(start_marker)
+                end_index = buffer.find(end_marker)
+
+                # Procesar solo si se encuentra un mensaje completo
+                if start_index != -1 and end_index != -1 and end_index > start_index:
+                    complete_message = buffer[start_index + len(start_marker):end_index]
+                    logger.info(f"Mensaje JSON recibido: {complete_message}")
+
+                    try:
+                        data_dict = json.loads(complete_message)
+                        insert_data_to_db(data_dict)
+                    except json.JSONDecodeError as e:
+                        logger.error(f"Error al decodificar JSON: {e}")
+                    except Exception as e:
+                        logger.error(f"Error inesperado al procesar el mensaje JSON: {e}")
+
+                    buffer = buffer[end_index + len(end_marker):]
+
+            time.sleep(0.25)
+
+    except KeyboardInterrupt:
+        logger.info("Recepci  n interrumpida por el usuario.")
+    except Exception as e:
+        logger.error(f"Se produjo un error: {e}")
+    finally:
+        if lora_module:
+            lora_module.close()
+        logger.info("Puerto serial cerrado.")
+        time.sleep(1)  # Espera para dar tiempo a que los hilos secundarios se cierren
+
+
+if __name__ == "__main__":
     main()
