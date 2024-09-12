@@ -634,8 +634,6 @@
             }
           },
           "mappings": [],
-          "max": 1000,
-          "min": 200,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -648,8 +646,7 @@
                 "value": 80
               }
             ]
-          },
-          "unit": "pressurehpa"
+          }
         },
         "overrides": []
       },
@@ -683,7 +680,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz, imu_magx, imu_magy, imu_magz,\n            uv_uva, uv_uvb, uv_uvc, uv_temperature, cpu_usage, ram_usage, total_ram,\n            disk_usage, disk_usage_gb, total_disk_gb, sys_temperature,\n            lat, lon, alt, headmot, roll, pitch, heading, nmea,\n            lat_hp, lon_hp, alt_hp, bmp_pressure, bmp_temperature, bmp_altitude,\n            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp FROM sensor_readings ",
+          "rawSql": "SELECT imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz, imu_magx, imu_magy, imu_magz,\n            uv_uva, uv_uvb, uv_uvc, uv_temperature, cpu_usage, ram_usage, total_ram,\n            disk_usage, disk_usage_gb, total_disk_gb, sys_temperature,\n            lat, lon, alt, headmot, roll, pitch, heading, nmea,\n            lat_hp, lon_hp, alt_hp, gps_error, bmp_pressure, bmp_temperature, bmp_altitude,\n            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp FROM sensor_readings ",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1412,8 +1409,6 @@
             }
           },
           "mappings": [],
-          "max": 500,
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1659,9 +1654,7 @@
           "color": {
             "mode": "thresholds"
           },
-          "decimals": 3,
           "mappings": [],
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1671,25 +1664,25 @@
               }
             ]
           },
-          "unit": "lengthm"
+          "unit": "dthms"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
+        "w": 6,
         "x": 0,
         "y": 8
       },
       "hideTimeOverride": false,
-      "id": 38,
+      "id": 37,
       "interval": "5s",
       "maxDataPoints": 1000,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
-        "orientation": "horizontal",
+        "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
@@ -1712,14 +1705,14 @@
           "editorMode": "builder",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT distance FROM sensor_readings LIMIT 50 ",
+          "rawSql": "SELECT nmea FROM sensor_readings LIMIT 50 ",
           "refId": "A",
           "sql": {
             "columns": [
               {
                 "parameters": [
                   {
-                    "name": "distance",
+                    "name": "nmea",
                     "type": "functionParameter"
                   }
                 ],
@@ -1742,116 +1735,7 @@
       ],
       "timeFrom": "now-1h",
       "timeShift": "1h",
-      "title": "Distance",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "default": true,
-        "type": "grafana-postgresql-datasource",
-        "uid": "fdxeparwsatj4b"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 3,
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          },
-          "unit": "lengthm"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-        "x": 3,
-        "y": 8
-      },
-      "hideTimeOverride": false,
-      "id": 39,
-      "interval": "5s",
-      "maxDataPoints": 1000,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "/.*/",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.2.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-mqtt-datasource",
-            "uid": "cdrczkpo98wlca"
-          },
-          "editorMode": "builder",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT lat AS \"LAT\", lon AS \"LON\" FROM sensor_readings LIMIT 50 ",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "alias": "\"LAT\"",
-                "parameters": [
-                  {
-                    "name": "lat",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"LON\"",
-                "parameters": [
-                  {
-                    "name": "lon",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "sensor_readings",
-          "topic": "data"
-        }
-      ],
-      "timeFrom": "now-1h",
-      "timeShift": "1h",
-      "title": "Coordinates",
+      "title": "NMEA Sentence",
       "transparent": true,
       "type": "stat"
     },
@@ -2095,7 +1979,7 @@
               "showLegend": false,
               "style": {
                 "color": {
-                  "fixed": "red"
+                  "fixed": "dark-green"
                 },
                 "opacity": 0.4,
                 "rotation": {
@@ -2110,7 +1994,7 @@
                   "min": 2
                 },
                 "symbol": {
-                  "fixed": "img/icons/marker/x-mark.svg",
+                  "fixed": "img/icons/marker/circle.svg",
                   "mode": "fixed"
                 },
                 "symbolAlign": {
@@ -2138,13 +2022,13 @@
           "mode": "none"
         },
         "view": {
-          "allLayers": true,
-          "id": "fit",
-          "lastOnly": false,
-          "lat": 0,
+          "allLayers": false,
+          "id": "coords",
+          "lastOnly": true,
+          "lat": 42.553666,
           "layer": "Coordinates",
-          "lon": 0,
-          "zoom": 12
+          "lon": -4.646848,
+          "zoom": 8.5
         }
       },
       "pluginVersion": "11.2.0",
@@ -2458,7 +2342,7 @@
         "defaults": {
           "color": {
             "fixedColor": "super-light-blue",
-            "mode": "palette-classic-by-name"
+            "mode": "shades"
           },
           "mappings": [],
           "thresholds": {
@@ -2526,7 +2410,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT imu_acelx AS \"IMU\",\r\n            uv_uva AS \"UV\", \r\n            cpu_usage AS \"SYSTEM\",\r\n            lat AS \"GPS\", \r\n            bmp_pressure AS \"BMP\",\r\n            ds18b20_temperature_interior AS \"DS18B20\", timestamp FROM sensor_readings ",
+          "rawSql": "SELECT imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz, imu_magx, imu_magy, imu_magz,\r\n            uv_uva, uv_uvb, uv_uvc, uv_temperature, cpu_usage, ram_usage, total_ram,\r\n            disk_usage, disk_usage_gb, total_disk_gb, sys_temperature,\r\n            lat, lon, alt, headmot, roll, pitch, heading, nmea,\r\n            lat_hp, lon_hp, alt_hp, gps_error, bmp_pressure, bmp_temperature, bmp_altitude,\r\n            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp FROM sensor_readings ",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2589,12 +2473,43 @@
           "options": {
             "include": {
               "names": [
-                "IMU",
-                "UV",
-                "GPS",
-                "BMP",
-                "SYSTEM",
-                "DS18B20"
+                "imu_acelx",
+                "imu_acely",
+                "imu_acelz",
+                "imu_girox",
+                "imu_giroy",
+                "imu_giroz",
+                "imu_magx",
+                "imu_magy",
+                "imu_magz",
+                "uv_uva",
+                "uv_uvb",
+                "uv_uvc",
+                "uv_temperature",
+                "cpu_usage",
+                "ram_usage",
+                "total_ram",
+                "disk_usage",
+                "disk_usage_gb",
+                "total_disk_gb",
+                "sys_temperature",
+                "lat",
+                "lon",
+                "alt",
+                "headmot",
+                "roll",
+                "pitch",
+                "heading",
+                "nmea",
+                "lat_hp",
+                "lon_hp",
+                "alt_hp",
+                "gps_error",
+                "bmp_pressure",
+                "bmp_temperature",
+                "bmp_altitude",
+                "ds18b20_temperature_interior",
+                "ds18b20_temperature_exterior"
               ]
             }
           }
@@ -2708,7 +2623,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n    imu_acelx AS \"Accel X\",\r\n    imu_acely AS \"Accel Y\",\r\n    imu_acelz AS \"Accel Z\",\r\n    imu_girox AS \"Gyro X\",\r\n    imu_giroy AS \"Gyro Y\",\r\n    imu_giroz AS \"GyroZ\",\r\n    imu_magx AS \"Mag X\",\r\n    imu_magy AS \"Mag Y\",\r\n    imu_magz AS \"Mag Z\",\r\n    uv_uva AS \"UVA\",\r\n    uv_uvb AS \"UVB\",\r\n    uv_uvc AS \"UVC\",\r\n    uv_temperature AS \"UV Sensor Temperature\",\r\n    cpu_usage AS \"CPU Usage (%)\",\r\n    ram_usage AS \"RAM Usage (%)\",\r\n    total_ram AS \"Total RAM (MB)\",\r\n    disk_usage AS \"Disk Usage (%)\",\r\n    disk_usage_gb AS \"Disk Usage (GB)\",\r\n    total_disk_gb AS \"Total Disk (GB)\",\r\n    sys_temperature AS \"System Temperature\",\r\n    lat AS \"Latitude\",\r\n    lon AS \"Longitude\",\r\n    headmot AS \"HeadMot\",\r\n    distance AS \"Distance\",\r\n    bmp_pressure AS \"BMP Press\",\r\n    bmp_temperature AS \"BMP Temp\",\r\n    bmp_altitude AS \"BMP Alt\",\r\n    ds18b20_temperature_interior AS \"Interior Temp\",\r\n    ds18b20_temperature_exterior AS \"Exterior Temp\",\r\n    timestamp AS \"Timestamp\"\r\nFROM \r\n    sensor_readings;\r\n",
+          "rawSql": "SELECT \r\n    imu_acelx AS \"Accelerometer X\",\r\n    imu_acely AS \"Accelerometer Y\",\r\n    imu_acelz AS \"Accelerometer Z\",\r\n    imu_girox AS \"Gyroscope X\",\r\n    imu_giroy AS \"Gyroscope Y\",\r\n    imu_giroz AS \"Gyroscope Z\",\r\n    imu_magx AS \"Magnetometer X\",\r\n    imu_magy AS \"Magnetometer Y\",\r\n    imu_magz AS \"Magnetometer Z\",\r\n    uv_uva AS \"UV-A Index\",\r\n    uv_uvb AS \"UV-B Index\",\r\n    uv_uvc AS \"UV-C Index\",\r\n    uv_temperature AS \"UV Sensor Temperature\",\r\n    cpu_usage AS \"CPU Usage (%)\",\r\n    ram_usage AS \"RAM Usage (%)\",\r\n    total_ram AS \"Total RAM (MB)\",\r\n    disk_usage AS \"Disk Usage (%)\",\r\n    disk_usage_gb AS \"Disk Usage (GB)\",\r\n    total_disk_gb AS \"Total Disk (GB)\",\r\n    sys_temperature AS \"System Temperature\",\r\n    lat AS \"Latitude\",\r\n    lon AS \"Longitude\",\r\n    alt AS \"Altitude\",\r\n    headmot AS \"Heading Motion\",\r\n    roll AS \"Roll\",\r\n    pitch AS \"Pitch\",\r\n    heading AS \"Heading\",\r\n    nmea AS \"NMEA Sentence\",\r\n    lat_hp AS \"High-Precision Latitude\",\r\n    lon_hp AS \"High-Precision Longitude\",\r\n    alt_hp AS \"High-Precision Altitude\",\r\n    gps_error AS \"GPS Error\",\r\n    bmp_pressure AS \"BMP Pressure\",\r\n    bmp_temperature AS \"BMP Temperature\",\r\n    bmp_altitude AS \"BMP Altitude\",\r\n    ds18b20_temperature_interior AS \"Interior Temperature\",\r\n    ds18b20_temperature_exterior AS \"Exterior Temperature\",\r\n    timestamp AS \"Timestamp\"\r\nFROM \r\n    sensor_readings;\r\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2772,20 +2687,24 @@
             "byVariable": false,
             "include": {
               "names": [
+                "UV-A Index",
+                "UV-B Index",
+                "UV-C Index",
                 "UV Sensor Temperature",
                 "System Temperature",
                 "Latitude",
                 "Longitude",
-                "Timestamp",
-                "Exterior Temp",
-                "Interior Temp",
-                "BMP Alt",
-                "BMP Temp",
-                "BMP Press",
-                "HeadMot",
-                "UVC",
-                "UVB",
-                "UVA"
+                "Altitude",
+                "Heading Motion",
+                "High-Precision Latitude",
+                "High-Precision Longitude",
+                "High-Precision Altitude",
+                "BMP Pressure",
+                "BMP Temperature",
+                "BMP Altitude",
+                "Interior Temperature",
+                "Exterior Temperature",
+                "Timestamp"
               ]
             }
           }
@@ -3456,7 +3375,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz, imu_magx, imu_magy, imu_magz,\r\n            uv_uva, uv_uvb, uv_uvc, uv_temperature, cpu_usage, ram_usage, total_ram,\r\n            disk_usage, disk_usage_gb, total_disk_gb, sys_temperature,\r\n            lat, lon, alt, headmot, roll, pitch, heading, nmea,\r\n            lat_hp, lon_hp, alt_hp, distance, bmp_pressure, bmp_temperature, bmp_altitude,\r\n            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp FROM sensor_readings ",
+          "rawSql": "SELECT imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz, imu_magx, imu_magy, imu_magz,\r\n            uv_uva, uv_uvb, uv_uvc, uv_temperature, cpu_usage, ram_usage, total_ram,\r\n            disk_usage, disk_usage_gb, total_disk_gb, sys_temperature,\r\n            lat, lon, alt, headmot, roll, pitch, heading, nmea,\r\n            lat_hp, lon_hp, alt_hp, gps_error, bmp_pressure, bmp_temperature, bmp_altitude,\r\n            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp FROM sensor_readings ",
           "refId": "A",
           "sql": {
             "columns": [
@@ -3494,9 +3413,16 @@
               "names": [
                 "lat",
                 "lon",
+                "alt",
                 "headmot",
-                "distance",
-                "timestamp"
+                "roll",
+                "pitch",
+                "timestamp",
+                "lat_hp",
+                "lon_hp",
+                "alt_hp",
+                "gps_error",
+                "heading"
               ]
             }
           }
@@ -3512,8 +3438,8 @@
     "list": []
   },
   "time": {
-    "from": "2024-09-15T11:12:47.000Z",
-    "to": "2024-09-15T13:54:16.000Z"
+    "from": "2024-09-09T21:46:13.031Z",
+    "to": "2024-09-10T17:28:09.000Z"
   },
   "timepicker": {
     "hidden": false
@@ -3521,6 +3447,6 @@
   "timezone": "utc",
   "title": "UAXSat",
   "uid": "bdrdn0a3mwzy8bdd",
-  "version": 52,
+  "version": 38,
   "weekStart": ""
 }
