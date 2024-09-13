@@ -29,7 +29,7 @@ def initialize_gps(port, baudrate, timeout):
 
 def get_GPS_data(baudrate=38400, timeout=1, hwid="1546:01A9", description=None):
     """
-    Esta función inicializa el GPS, extrae los datos y los devuelve en forma de tupla.
+    Esta funci  n inicializa el GPS, extrae los datos y los devuelve en forma de diccionario.
     """
     try:
         # Encontrar el puerto del GPS
@@ -44,21 +44,23 @@ def get_GPS_data(baudrate=38400, timeout=1, hwid="1546:01A9", description=None):
         stream_nmea = gps.stream_nmea()
         hp_geo = gps.hp_geo_coords()
 
-        # Devuelve los datos como una tupla
-        return (
-            geo.lat,                # Latitude
-            geo.lon,                # Longitude
-            geo.height / 1000,      # Altitude
-            geo.headMot,            # Heading of Motion
-            veh.roll,               # Roll
-            veh.pitch,              # Pitch
-            veh.heading,            # Heading
-            stream_nmea,            # NMEA Sentence
-            hp_geo.latHp,           # High Precision Latitude
-            hp_geo.lonHp,           # High Precision Longitude
-            hp_geo.heightHp / 1000  # High Precision Altitude
-        )
+        # Crear un diccionario con los datos
+        gps_data = {
+            "latitude": geo.lat if geo else None,
+            "longitude": geo.lon if geo else None,
+            "altitude": geo.height / 1000 if geo else None,
+            "heading_of_motion": geo.headMot if geo else None,
+            "roll": veh.roll if veh else None,
+            "pitch": veh.pitch if veh else None,
+            "heading": veh.heading if veh else None,
+            "nmea_sentence": stream_nmea if stream_nmea else None,
+            "high_precision_latitude": hp_geo.latHp if hp_geo else None,
+            "high_precision_longitude": hp_geo.lonHp if hp_geo else None,
+            "high_precision_altitude": hp_geo.heightHp / 1000 if hp_geo else None
+        }
+
+        return gps_data, None
 
     except Exception as e:
-        # En caso de error, devuelve una tupla con None y el mensaje de error
-        return (None, None, None, None, None, None, None, None, None, None, None, f"Error: {str(e)}")
+        # En caso de error, devuelve un mensaje de error
+        return None
