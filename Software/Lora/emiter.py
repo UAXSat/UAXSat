@@ -17,7 +17,7 @@ from datetime import datetime
 import logging
 from serial.tools import list_ports
 from e220 import E220
-from constants import M0, M1, AUX, VID_PID_LIST, MODE_NORMAL
+from constants import M0, M1, AUX, VID_PID_LIST, MODE_NORMAL, initial_lat, initial_lon
 
 from Modules.IMUmodule import get_IMU_data
 from Modules.UVmodule import get_UV_data
@@ -31,21 +31,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger()
 
 def find_serial_port(vendor_id, product_id):
-    """
-    Encuentra y devuelve el puerto serial para un dispositivo con el VID y PID dados.
-    
-    Parámetros:
-    -----------
-    vendor_id : int
-        Identificador del proveedor (VID).
-    product_id : int
-        Identificador del producto (PID).
-    
-    Retorna:
-    --------
-    str o None
-        El puerto serial si se encuentra, o None si no.
-    """
+    """Encuentra y devuelve el puerto serial para un dispositivo con el VID y PID dados."""
     ports = list_ports.comports()
     for port in ports:
         if port.vid == vendor_id and port.pid == product_id:
@@ -53,14 +39,7 @@ def find_serial_port(vendor_id, product_id):
     return None
 
 def get_all_sensor_data():
-    """
-    Recoge datos de todos los sensores conectados.
-    
-    Retorna:
-    --------
-    dict
-        Diccionario con los datos obtenidos de los sensores.
-    """
+    """Recoge datos de todos los sensores conectados."""
     sensor_data = {}
 
     # Obtener datos de los diferentes sensores
@@ -69,7 +48,7 @@ def get_all_sensor_data():
         sensor_data['UV'] = get_UV_data()           # AS7331
         sensor_data['BMP'] = get_BMP_data()         # BMP390
         sensor_data['Dallas'] = get_DS18B20_data()  # DS18B20
-        sensor_data['GPS'] = get_GPS_data()         # GPS NEO M9N
+        sensor_data['GPS'] = get_GPS_data(initial_lat, initial_lon), # GPS NEO M9N
         sensor_data['System'] = get_system_data()   # Sistema (CPU, RAM...)
     except Exception as e:
         logger.error(f"Error al obtener datos de sensores: {e}")
@@ -78,18 +57,7 @@ def get_all_sensor_data():
     return sensor_data
 
 def initialize_lora_module():
-    """
-    Inicializa el módulo LoRa y lo pone en modo normal.
-    
-    Retorna:
-    --------
-    E220
-        Instancia del módulo LoRa inicializado.
-    
-    Lanza:
-    ------
-    Exception si no se encuentra el dispositivo o falla la inicialización.
-    """
+    """Inicializa el módulo LoRa y lo pone en modo normal."""
     uart_port = None
     for vid, pid in VID_PID_LIST:
         uart_port = find_serial_port(vid, pid)
@@ -112,16 +80,7 @@ def initialize_lora_module():
         raise e
 
 def send_data_loop(lora_module, interval=5):
-    """
-    Bucle principal para recopilar y enviar datos de sensores a través de LoRa.
-    
-    Parámetros:
-    -----------
-    lora_module : E220
-        Instancia del módulo LoRa.
-    interval : int
-        Tiempo (en segundos) entre envíos de datos.
-    """
+    """Bucle principal para recopilar y enviar datos de sensores a través de LoRa."""
     while True:
         try:
             # Obtener todos los datos de los sensores
