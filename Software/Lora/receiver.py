@@ -1,19 +1,12 @@
-"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                                                                            *
-*                         Developed by Javier Bolanos                        *
-*                  https://github.com/javierbolanosllano                     *
-*                                                                            *
-*                      UAXSAT IV Project - 2024                              *
-*                   https://github.com/UAXSat/UAXSat                         *
-*                                                                            *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
+# receivernew.py
 
-# receiver.py
+import time
 import json
 import logging
 import psycopg2
+from serial.tools import list_ports
 from e220 import E220
-from constants import M0, M1, AUX, VID_PID_LIST
+from constants import M0, M1, AUX, VID_PID_LIST, MODE_NORMAL, initial_lat, initial_lon
 
 # Configuración del logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -87,15 +80,15 @@ def insert_data_to_db(cursor, connection, data):
             uv_uva, uv_uvb, uv_uvc, uv_temperature, cpu_usage, ram_usage, total_ram,
             disk_usage, disk_usage_gb, total_disk_gb, sys_temperature,
             lat, lon, alt, headmot, roll, pitch, heading, nmea,
-            lat_hp, lon_hp, alt_hp, gps_error, bmp_pressure, bmp_temperature, bmp_altitude,
-            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp
+            lat_hp, lon_hp, alt_hp, bmp_pressure, bmp_temperature, bmp_altitude,
+            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp, distance
         ) VALUES (
             %(imu_acelx)s, %(imu_acely)s, %(imu_acelz)s, %(imu_girox)s, %(imu_giroy)s, %(imu_giroz)s, %(imu_magx)s, %(imu_magy)s, %(imu_magz)s,
             %(uv_uva)s, %(uv_uvb)s, %(uv_uvc)s, %(uv_temperature)s, %(cpu_usage)s, %(ram_usage)s, %(total_ram)s,
             %(disk_usage)s, %(disk_usage_gb)s, %(total_disk_gb)s, %(sys_temperature)s,
             %(lat)s, %(lon)s, %(alt)s, %(headmot)s, %(roll)s, %(pitch)s, %(heading)s, %(nmea)s,
-            %(lat_hp)s, %(lon_hp)s, %(alt_hp)s, %(gps_error)s, %(bmp_pressure)s, %(bmp_temperature)s, %(bmp_altitude)s,
-            %(ds18b20_temperature_interior)s, %(ds18b20_temperature_exterior)s, %(timestamp)s
+            %(lat_hp)s, %(lon_hp)s, %(alt_hp)s, %(bmp_pressure)s, %(bmp_temperature)s, %(bmp_altitude)s,
+            %(ds18b20_temperature_interior)s, %(ds18b20_temperature_exterior)s, %(timestamp)s,%(distance)s
         )
         """
 
@@ -127,7 +120,6 @@ def insert_data_to_db(cursor, connection, data):
             'lat_hp': gps_data.get('high_precision_latitude'),
             'lon_hp': gps_data.get('high_precision_longitude'),
             'alt_hp': gps_data.get('high_precision_altitude'),
-            'gps_error': gps_data.get('error'),
             'bmp_pressure': data.get('BMP', {}).get('pressure'),
             'bmp_temperature': data.get('BMP', {}).get('temperature'),
             'bmp_altitude': data.get('BMP', {}).get('altitude'),
@@ -144,7 +136,8 @@ def insert_data_to_db(cursor, connection, data):
             'sys_temperature': data.get('System', {}).get('Temperature (°C)'),
             'ds18b20_temperature_interior': ds18b20_temp_interior,
             'ds18b20_temperature_exterior': ds18b20_temp_exterior,
-            'timestamp': data.get('timestamp')
+            'timestamp': data.get('timestamp'),
+            'distance': gps_data.get('distance')
         })
 
         # Confirmar los cambios en la base de datos
