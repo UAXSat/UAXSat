@@ -1,20 +1,11 @@
-"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                                                                            *
-*                         Developed by Javier Bolanos                        *
-*                  https://github.com/javierbolanosllano                     *
-*                                                                            *
-*                      UAXSAT IV Project - 2024                              *
-*                   https://github.com/UAXSat/UAXSat                         *
-*                                                                            *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
-
 # receiver.py
+
 import time
+import json
+import logging
 import psycopg2
 from serial.tools import list_ports
 from e220 import E220, MODE_NORMAL, AUX, M0, M1, VID_PID_LIST
-import json
-import logging
 
 # Configuración del logger en nivel DEBUG
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -110,8 +101,9 @@ def insert_data_to_db(data):
     except Exception as error:
         logger.error(f"Error al insertar en la base de datos: {error}")
     finally:
-        if connection:
+        if cursor:
             cursor.close()
+        if connection:
             connection.close()
 
 def main():
@@ -161,13 +153,11 @@ def main():
                     try:
                         data_dict = json.loads(complete_message)
                         logger.debug(f"Mensaje JSON decodificado: {data_dict}")
+                        insert_data_to_db(data_dict)
                     except json.JSONDecodeError as e:
                         logger.error(f"Error al decodificar JSON: {e}")
                         buffer = ""  # Reiniciar buffer en caso de error en el JSON
                         continue
-
-                    # Insertar los datos en la base de datos
-                    insert_data_to_db(data_dict)
 
                     # Limpiar el buffer hasta el fin del marcador procesado
                     buffer = buffer[end_index + len(end_marker):]
@@ -178,6 +168,11 @@ def main():
 
     except Exception as e:
         logger.error(f"Error al inicializar el módulo LoRa: {e}")
+    finally:
+        if lora_module:
+            lora_module.close()
+            logger.info("Comunicación UART cerrada.")
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()

@@ -1,26 +1,21 @@
-"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                                                                            *
-*                         Developed by Javier Bolanos                        *
-*                  https://github.com/javierbolanosllano                     *
-*                                                                            *
-*                      UAXSAT IV Project - 2024                              *
-*                   https://github.com/UAXSat/UAXSat                         *
-*                                                                            *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
-
-import time
+# receiverauxtest.py
 import json
 import logging
 import psycopg2
-from serial.tools import list_ports
-from e220 import E220, MODE_NORMAL, AUX, M0, M1, VID_PID_LIST
+import time
+import os
+import sys
+import threading  # Para manejar hilos
+from serial.tools import list_ports  # Importar list_ports
+
+from e220 import E220
+from constants import M0, M1, AUX, VID_PID_LIST
 
 # Configuración del logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
 def find_serial_port(vendor_id, product_id):
-    """Encuentra y devuelve el puerto serial para un dispositivo con el VID y PID dados."""
     ports = list_ports.comports()
     for port in ports:
         if port.vid == vendor_id and port.pid == product_id:
@@ -28,9 +23,6 @@ def find_serial_port(vendor_id, product_id):
     return None
 
 def connect_to_db():
-    """Conecta a la base de datos PostgreSQL y retorna la conexión y el cursor."""
-    connection = None
-    cursor = None
     try:
         connection = psycopg2.connect(
             database="cubesat",
@@ -46,7 +38,6 @@ def connect_to_db():
         raise error
 
 def insert_data_to_db(cursor, connection, data):
-    """Inserta los datos en la base de datos PostgreSQL."""
     try:
         insert_query = """
         INSERT INTO sensor_readings (
@@ -66,17 +57,11 @@ def insert_data_to_db(cursor, connection, data):
         )
         """
 
-        # Preparar los datos para la inserción
-        gps_data = data.get('GPS', [{}])
-        gps_data = gps_data[0] if gps_data else {}
-
+        gps_data = data.get('GPS', [{}])[0] if data.get('GPS') else {}
         dallas_data = data.get('Dallas', {})
-        
-        # Extraer temperaturas del sensor DS18B20
         ds18b20_temp_interior = dallas_data.get('28-03a0d446ef0a')
         ds18b20_temp_exterior = dallas_data.get('28-6fc2d44578f0')
 
-        # Ejecutar la consulta de inserción
         cursor.execute(insert_query, {
             'imu_acelx': data.get('IMU', {}).get('ACELX'),
             'imu_acely': data.get('IMU', {}).get('ACELY'),
@@ -98,8 +83,6 @@ def insert_data_to_db(cursor, connection, data):
             'lat_hp': gps_data.get('high_precision_latitude'),
             'lon_hp': gps_data.get('high_precision_longitude'),
             'alt_hp': gps_data.get('high_precision_altitude'),
-            'gps_error': data.get('GPS', [None])[1] if len(data.get('GPS', [])) > 1 else None,
-            'distance': data.get('distance'),
             'bmp_pressure': data.get('BMP', {}).get('pressure'),
             'bmp_temperature': data.get('BMP', {}).get('temperature'),
             'bmp_altitude': data.get('BMP', {}).get('altitude'),
@@ -119,16 +102,14 @@ def insert_data_to_db(cursor, connection, data):
             'timestamp': data.get('timestamp')
         })
 
-        # Confirmar los cambios en la base de datos
         connection.commit()
         logger.info("Datos insertados en la base de datos.")
 
     except (psycopg2.Error, Exception) as error:
         logger.error(f"Error al insertar en la base de datos: {error}")
-        connection.rollback()  # Revertir si hay un error
+        connection.rollback()
 
 def receive_data_from_lora(lora_module, cursor, connection):
-    """Recibe datos del módulo LoRa, los procesa y los almacena en la base de datos."""
     buffer = ""
     start_marker = "<<<"
     end_marker = ">>>"
@@ -136,13 +117,11 @@ def receive_data_from_lora(lora_module, cursor, connection):
     while True:
         received_message = lora_module.receive_data()
         if received_message:
-            buffer += received_message  # Acumular en el buffer
+            buffer += received_message
 
-            # Buscar el marcador de inicio y fin
             start_index = buffer.find(start_marker)
             end_index = buffer.find(end_marker)
 
-            # Procesar el mensaje completo si está presente
             if start_index != -1 and end_index != -1 and end_index > start_index:
                 complete_message = buffer[start_index + len(start_marker):end_index]
                 logger.info(f"Mensaje JSON recibido: {complete_message}")
@@ -155,10 +134,23 @@ def receive_data_from_lora(lora_module, cursor, connection):
                 except Exception as e:
                     logger.error(f"Error inesperado al procesar el mensaje JSON: {e}")
 
-                # Limpiar el buffer
                 buffer = buffer[end_index + len(end_marker):]
 
         time.sleep(0.25)
+
+def monitor_aux_pin(lora_module):
+    low_time = None
+    while True:
+        if lora_module.aux.is_active:
+            low_time = None
+        else:
+            if low_time is None:
+                low_time = time.time()
+            elif time.time() - low_time > 30:
+                logger.error("El pin AUX ha estado en bajo por más de 30 segundos. Reiniciando el programa...")
+                os.execl(sys.executable, sys.executable, *sys.argv)
+
+        time.sleep(1)
 
 def main():
     uart_port = None
@@ -168,23 +160,23 @@ def main():
             break
 
     if uart_port is None:
-        logger.error("Dispositivo no encontrado. Por favor, verifica tus conexiones.")
+        logger.error("Dispositivo no encontrado. Verifique las conexiones.")
         exit(1)
 
     logger.info(f"Dispositivo encontrado en {uart_port}, inicializando el módulo E220...")
 
-    lora_module = None
-    connection, cursor = None, None
     try:
         lora_module = E220(m0_pin=M0, m1_pin=M1, aux_pin=AUX, uart_port=uart_port)
         lora_module.set_mode(MODE_NORMAL)
 
-        logger.info("Escuchando mensajes entrantes...")
-
-        # Conectar a la base de datos
         connection, cursor = connect_to_db()
 
-        # Recibir datos desde el módulo LoRa
+        # Iniciar el hilo para monitorear el pin AUX
+        aux_monitor_thread = threading.Thread(target=monitor_aux_pin, args=(lora_module,))
+        aux_monitor_thread.daemon = True
+        aux_monitor_thread.start()
+
+        logger.info("Escuchando mensajes entrantes...")
         receive_data_from_lora(lora_module, cursor, connection)
 
     except KeyboardInterrupt:
@@ -199,7 +191,7 @@ def main():
         if lora_module:
             lora_module.close()
         logger.info("Puerto serial cerrado.")
-        time.sleep(1)  # Espera para dar tiempo a que los hilos secundarios se cierren
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()

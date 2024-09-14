@@ -1,22 +1,11 @@
-"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                                                                            *
-*                         Developed by Javier Bolanos                        *
-*                  https://github.com/javierbolanosllano                     *
-*                                                                            *
-*                      UAXSAT IV Project - 2024                              *
-*                   https://github.com/UAXSat/UAXSat                         *
-*                                                                            *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
+# emiternew.py
 
-#!/usr/bin/env python3
-
-# emitter.py
 import json
 import time
-from datetime import datetime
-import logging
+from datetime import datetime  # Para obtener el timestamp
 from serial.tools import list_ports
 from e220 import E220, MODE_NORMAL, AUX, M0, M1, VID_PID_LIST
+import logging  # Para mejorar el seguimiento de errores y eventos importantes
 
 from Modules.IMUmodule import get_IMU_data
 from Modules.UVmodule import get_UV_data
@@ -30,7 +19,21 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger()
 
 def find_serial_port(vendor_id, product_id):
-    """Encuentra y devuelve el puerto serial para un dispositivo con el VID y PID dados."""
+    """
+    Encuentra y devuelve el puerto serial para un dispositivo con el VID y PID dados.
+    
+    Parámetros:
+    -----------
+    vendor_id : int
+        Identificador del proveedor (VID).
+    product_id : int
+        Identificador del producto (PID).
+    
+    Retorna:
+    --------
+    str o None
+        El puerto serial si se encuentra, o None si no.
+    """
     ports = list_ports.comports()
     for port in ports:
         if port.vid == vendor_id and port.pid == product_id:
@@ -38,7 +41,14 @@ def find_serial_port(vendor_id, product_id):
     return None
 
 def get_all_sensor_data():
-    """Recoge datos de todos los sensores conectados."""
+    """
+    Recoge datos de todos los sensores conectados.
+    
+    Retorna:
+    --------
+    dict
+        Diccionario con los datos obtenidos de los sensores.
+    """
     sensor_data = {}
 
     # Obtener datos de los diferentes sensores
@@ -56,7 +66,18 @@ def get_all_sensor_data():
     return sensor_data
 
 def initialize_lora_module():
-    """Inicializa el módulo LoRa y lo pone en modo normal."""
+    """
+    Inicializa el módulo LoRa y lo pone en modo normal.
+    
+    Retorna:
+    --------
+    E220
+        Instancia del módulo LoRa inicializado.
+    
+    Lanza:
+    ------
+    Exception si no se encuentra el dispositivo o falla la inicialización.
+    """
     uart_port = None
     for vid, pid in VID_PID_LIST:
         uart_port = find_serial_port(vid, pid)
@@ -79,7 +100,16 @@ def initialize_lora_module():
         raise e
 
 def send_data_loop(lora_module, interval=5):
-    """Bucle principal para recopilar y enviar datos de sensores a través de LoRa."""
+    """
+    Bucle principal para recopilar y enviar datos de sensores a través de LoRa.
+    
+    Parámetros:
+    -----------
+    lora_module : E220
+        Instancia del módulo LoRa.
+    interval : int
+        Tiempo (en segundos) entre envíos de datos.
+    """
     while True:
         try:
             # Obtener todos los datos de los sensores
