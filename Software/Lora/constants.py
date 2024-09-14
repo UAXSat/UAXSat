@@ -8,6 +8,8 @@
 *                                                                            *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
 
+# constants.py
+
 # CONSTANTS (GPIO pin numbers for M0, M1, AUX)
 M0 = 17
 M1 = 27
@@ -24,3 +26,12 @@ VID_PID_LIST = [
     (0x10C4, 0xEA60),  # Example VID and PID for the E220 module
     (0x1A86, 0x7523)   # Another possible VID and PID
 ]
+
+# Define the initial coordenates (latitude and longitude)
+initial_lat = 40.416775    # Puerta del Sol, Madrid
+initial_lon = -3.703790    # Puerta del Sol, Madrid
+
+'''
+initial_lat = 40.416775  # Ejemplo de latitud inicial
+initial_lon = -3.703790  # Ejemplo de longitud inicial
+'''
