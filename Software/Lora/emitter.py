@@ -1,9 +1,12 @@
 # emitter.py
+# emitter.py
 import json
 import time
 from datetime import datetime
 import logging
+from serial.tools import list_ports
 from e220 import E220
+from constants import M0, M1, AUX, VID_PID_LIST, MODE_NORMAL, initial_lat, initial_lon
 
 # Import sensor modules
 from Modules.IMUmodule import get_IMU_data
@@ -17,12 +20,6 @@ from Modules.SYSTEMmodule import get_system_data
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# List of USB device VID and PID pairs to search for
-VID_PID_LIST = [
-    (0x10C4, 0xEA60),  # Example VID and PID for the E220 module
-    (0x1A86, 0x7523)   # Another possible VID and PID
-]
-
 def get_all_sensor_data():
     """
     Gather data from all connected sensors.
@@ -34,7 +31,7 @@ def get_all_sensor_data():
         'UV': get_UV_data(),
         'BMP': get_BMP_data(),
         'Dallas': get_DS18B20_data(),
-        'GPS': get_GPS_data(),
+        'GPS': get_GPS_data(initial_lat, initial_lon),
         'System': get_system_data()
     }
     logger.debug(f"Sensor data collected: {sensor_data}")
