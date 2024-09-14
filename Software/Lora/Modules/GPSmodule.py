@@ -15,6 +15,9 @@ from ublox_gps import UbloxGps
 from math import radians, sin, cos, sqrt, atan2
 
 def find_gps_port(description=None, hwid=None):
+    """
+    Encuentra el puerto del GPS basado en la descripción o el HWID proporcionado.
+    """
     ports = list_ports.comports()
     for port in ports:
         if description and description in port.description:
@@ -24,6 +27,9 @@ def find_gps_port(description=None, hwid=None):
     raise Exception("GPS port not found")
 
 def initialize_gps(port, baudrate, timeout):
+    """
+    Inicializa la conexión con el GPS usando el puerto proporcionado.
+    """
     serial_port = serial.Serial(port, baudrate=baudrate, timeout=timeout)
     gps = UbloxGps(serial_port)
     return gps, serial_port
@@ -49,7 +55,7 @@ def haversine(lat1, lon1, lat2, lon2):
 
     return distance
 
-def get_GPS_data(initial_lat, initial_lon, baudrate=38400, timeout=1, hwid="1546:01A9", description=None):
+def get_GPS_data(initial_lat=None, initial_lon=None, baudrate=38400, timeout=1, hwid="1546:01A9", description=None):
     """
     Esta función inicializa el GPS, extrae los datos y calcula la distancia desde unas coordenadas iniciales.
     """
@@ -71,7 +77,7 @@ def get_GPS_data(initial_lat, initial_lon, baudrate=38400, timeout=1, hwid="1546
         longitude = geo.lon if geo else None
 
         # Calcular la distancia desde las coordenadas iniciales
-        if latitude is not None and longitude is not None:
+        if latitude is not None and longitude is not None and initial_lat is not None and initial_lon is not None:
             distance = haversine(initial_lat, initial_lon, latitude, longitude)
         else:
             distance = None
@@ -89,7 +95,7 @@ def get_GPS_data(initial_lat, initial_lon, baudrate=38400, timeout=1, hwid="1546
             "high_precision_latitude": hp_geo.latHp if hp_geo else None,
             "high_precision_longitude": hp_geo.lonHp if hp_geo else None,
             "high_precision_altitude": hp_geo.heightHp / 1000 if hp_geo else None,
-            "distance": distance if latitude is not None and longitude is not None else None  
+            "distance": distance
         }
 
         return gps_data, None
