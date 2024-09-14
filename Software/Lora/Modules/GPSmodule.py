@@ -102,4 +102,4 @@ def get_GPS_data(initial_lat=None, initial_lon=None, baudrate=38400, timeout=1, 
 
     except Exception as e:
         # En caso de error, devuelve un mensaje de error
-        return None, str(e)
+        return None

@@ -16,7 +16,8 @@ import time
 from datetime import datetime
 import logging
 from serial.tools import list_ports
-from e220 import E220, MODE_NORMAL, AUX, M0, M1, VID_PID_LIST
+from e220 import E220
+from constants import M0, M1, AUX, VID_PID_LIST, MODE_NORMAL, initial_lat, initial_lon
 
 from Modules.IMUmodule import get_IMU_data
 from Modules.UVmodule import get_UV_data
@@ -47,7 +48,7 @@ def get_all_sensor_data():
         sensor_data['UV'] = get_UV_data()           # AS7331
         sensor_data['BMP'] = get_BMP_data()         # BMP390
         sensor_data['Dallas'] = get_DS18B20_data()  # DS18B20
-        sensor_data['GPS'] = get_GPS_data()         # GPS NEO M9N
+        sensor_data['GPS'] = get_GPS_data(initial_lat, initial_lon), # GPS NEO M9N
         sensor_data['System'] = get_system_data()   # Sistema (CPU, RAM...)
     except Exception as e:
         logger.error(f"Error al obtener datos de sensores: {e}")
