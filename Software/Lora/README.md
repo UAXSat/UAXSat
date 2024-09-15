@@ -91,6 +91,10 @@ CREATE TABLE sensor_readings (
     temperature FLOAT,
     lat FLOAT,
     lon FLOAT,
+<<<<<<< HEAD
+    headmot FLOAT,
+    distance FLOAT,
+=======
     alt FLOAT,
     headmot FLOAT,
     roll FLOAT,
@@ -101,6 +105,7 @@ CREATE TABLE sensor_readings (
     lon_hp FLOAT,
     alt_hp FLOAT,
     gps_error FLOAT,
+>>>>>>> main
     bmp_pressure FLOAT,
     bmp_temperature FLOAT,
     bmp_altitude FLOAT,
@@ -189,5 +194,90 @@ This allows you to continuously view the latest data.
 When you’re finished with your PostgreSQL session, exit the psql prompt by typing:
 ```sql
 \q
-``
+```
+
+# Servicio para Emisor LoRa
+
+Este documento describe cómo crear un servicio `systemd` para ejecutar un emisor LoRa utilizando un script de Python en un sistema Linux.
+
+## Instrucciones
+
+### 1. Crear el archivo de servicio
+
+Primero, crea un archivo de servicio llamado `emisor.service` en el directorio `/etc/systemd/system/`.
+
+```bash
+sudo nano /etc/systemd/system/emisor.service
+```
+
+### 2. Escribir el contenido del archivo de servicio
+
+Añade el siguiente contenido en el archivo emisor.service. Asegúrate de ajustar la ruta de tu script Python y verificar la ruta del ejecutable de Python (/usr/bin/python3 en este ejemplo).
+
+```ini
+[Unit]
+Description=Servicio para Emisor LoRa
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/cubesat/UAXSat/Software/Lora/emitter.py
+WorkingDirectory=/home/cubesat/UAXSat/Software/Lora/
+Restart=always
+RestartSec=10
+User=cubesat
+Group=cubesat
+StandardOutput=file:/var/log/emisor.log
+StandardError=file:/var/log/emisor_error.log
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### 3. Verificar permisos de ejecución
+
+Asegúrate de que el script de Python tenga permisos de ejecución. Usa el siguiente comando:
+
+```bash
+chmod +x /home/cubesat/UAXSat/Software/Lora/emiterauxtest.py
+```
+
+### 4. Recargar systemd
+
+Una vez creado y guardado el archivo de servicio, recarga la configuración de systemd para que detecte el nuevo servicio:
+
+```bash
+sudo systemctl daemon-reload
+```
+
+### 5. Iniciar y habilitar el servicio
+
+Para iniciar el servicio manualmente:
+
+```bash
+sudo systemctl start emisor.service
+```
+
+Para habilitar el servicio y que se ejecute automáticamente al arrancar el sistema:
+
+```bash
+sudo systemctl enable emisor.service
+```
+
+### 6. Verificar el estado del servicio
+
+Puedes verificar el estado del servicio con el siguiente comando:
+
+```bash
+sudo systemctl status emisor.service
+```
+
+### 7. Ver logs del servicio
+
+En caso de errores o para depurar el servicio, puedes ver los registros usando:
+
+```bash
+sudo journalctl -u emisor.service
+cat /var/log/emisor.log
+cat /var/log/emisor_error.log
+```
 This will close the connection to the database and exit the PostgreSQL environment.

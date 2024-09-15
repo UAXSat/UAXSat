@@ -1,97 +1,121 @@
 """* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *                                                                            *
-*                    Developed by Javier Lendínez                            *
-*                    https://github.com/javilendi                            *
+*                         Developed by Javier Bolanos                        *
+*                  https://github.com/javierbolanosllano                     *
 *                                                                            *
 *                      UAXSAT IV Project - 2024                              *
 *                   https://github.com/UAXSat/UAXSat                         *
 *                                                                            *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
 
-
+# GPSmodule.py
 import serial
 from serial.tools import list_ports
 from ublox_gps import UbloxGps
+from math import radians, sin, cos, sqrt, atan2
 
-class GPSHandler:
-    def __init__(self, baudrate, timeout, description=None, hwid=None):
-        self.baudrate = baudrate
-        self.timeout = timeout
-        self.description = description
-        self.hwid = hwid
-        self.port = self.find_gps_port(description, hwid)
-        self.serial_port = None
-        self.gps = None
-        self.initialize_gps()
+def find_gps_port(description=None, hwid=None):
+    """
+    Encuentra el puerto del GPS basado en la descripción o el HWID proporcionado.
+    """
+    ports = list_ports.comports()
+    for port in ports:
+        if description and description in port.description:
+            return port.device
+        if hwid and hwid in port.hwid:
+            return port.device
+    raise Exception("GPS port not found")
 
-    def find_gps_port(self, description, hwid):
-        ports = list_ports.comports()
-        for port in ports:
-            if description and description in port.description:
-                return port.device
-            if hwid and hwid in port.hwid:
-                return port.device
-        return None
-
-    def initialize_gps(self):
-        if not self.port:
-            raise Exception("GPS port not found.")
-        self.serial_port = serial.Serial(self.port, baudrate=self.baudrate, timeout=self.timeout)
-        self.gps = UbloxGps(self.serial_port)
-
-    def GPSprogram(self):
-        if not self.gps or not self.serial_port or not self.serial_port.is_open:
-            self.initialize_gps()  # Re-initialize GPS if not properly initialized
-        try:
-            while True:
-                data = {
-                    'Latitude': None,
-                    'Longitude': None,
-                    'Altitude': None,
-                    'Heading of Motion': None,
-                    'Roll': None,
-                    'Pitch': None,
-                    'Heading': None,
-                    'NMEA Sentence': None,
-                }
-
-                geo = self.gps.geo_coords()
-                veh = self.gps.veh_attitude()
-                stream_nmea = self.gps.stream_nmea()
-                hp_geo = self.gps.hp_geo_coords()
-
-                if geo is not None:
-                    data['Latitude'] = geo.lat
-                    data['Longitude'] = geo.lon
-                    data['Altitude'] = geo.height/1000
-                    data['Heading of Motion'] = geo.headMot
-
-                if veh is not None:
-                    data['Roll'] = veh.roll
-                    data['Pitch'] = veh.pitch
-                    data['Heading'] = veh.heading
-
-                if stream_nmea is not None:
-                    data['NMEA Sentence'] = stream_nmea
-
-                if hp_geo is not None:
-                    data['Latitude'] = hp_geo.latHp
-                    data['Longitude'] = hp_geo.lonHp
-                    data['Altitude'] = hp_geo.heightHp/1000
-                
-                return data
-                    
-        except (ValueError, IOError) as err:
-            return {"Error": str(err)}
-        
-if __name__ == '__main__':
-    import sys
-    gps_handler = GPSHandler(baudrate=38400, timeout=1, description=None, hwid="1546:01A9")
+def initialize_gps(port, baudrate, timeout):
+    """
+    Inicializa la conexión con el GPS usando el puerto proporcionado.
+    """
     try:
-        while True:
-            gps_handler.GPSprogram()  # Add a small delay to prevent CPU overuse
+        serial_port = serial.Serial(port, baudrate=baudrate, timeout=timeout)
+        gps = UbloxGps(serial_port)
+        return gps, serial_port
+    except serial.SerialException as e:
+        raise Exception(f"Error al conectar con el puerto {port}: {e}")
+
+def haversine(lat1, lon1, lat2, lon2):
+    """
+    Calcula la distancia entre dos puntos dados por sus coordenadas (lat1, lon1) y (lat2, lon2).
+    La distancia se devuelve en metros.
+    """
+    R = 6371000  # Radio de la Tierra en metros
+
+    # Convertir grados a radianes
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+
+    # Diferencias
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    # Fórmula de haversine
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    distance = R * c
+
+    return distance
+
+def get_GPS_data(initial_lat=None, initial_lon=None, baudrate=38400, timeout=1, hwid="1546:01A9", description=None):
+    """
+    Esta función inicializa el GPS, extrae los datos y calcula la distancia desde unas coordenadas iniciales.
+    """
+    serial_port = None
+    try:
+        # Encontrar el puerto del GPS
+        port = find_gps_port(description, hwid)
+
+        # Inicializar el GPS
+        gps, serial_port = initialize_gps(port, baudrate, timeout)
+
+        # Obtener datos GPS
+        geo = gps.geo_coords()
+
+        # Comprobar si se obtuvieron coordenadas GPS
+        latitude = geo.lat if geo else None
+        longitude = geo.lon if geo else None
+
+        # Calcular la distancia desde las coordenadas iniciales
+        if latitude is not None and longitude is not None and initial_lat is not None and initial_lon is not None:
+            distance = haversine(initial_lat, initial_lon, latitude, longitude)
+        else:
+            distance = None
+
+        # Crear un diccionario con los datos
+        gps_data = {
+            "latitude": latitude,
+            "longitude": longitude,
+            "heading_of_motion": geo.headMot if geo else None,
+            "distance": distance
+        }
+
+        return gps_data
+
     except Exception as e:
-        print(f"An error occurred: {e}")
-        sys.exit(1)
-    
-    
+        raise Exception(f"Error al obtener datos del GPS: {e}")
+
+    finally:
+        # Asegurarse de cerrar el puerto serial si fue abierto
+        if serial_port and serial_port.is_open:
+            serial_port.close()
+
+if __name__ == "__main__":
+    # Coordenadas iniciales de referencia
+    initial_lat = 40.416775  # Ejemplo: Latitud de Madrid
+    initial_lon = -3.703790  # Ejemplo: Longitud de Madrid
+
+    try:
+        # Obtener los datos del GPS
+        gps_data = get_GPS_data(initial_lat=initial_lat, initial_lon=initial_lon)
+
+        # Mostrar los datos en la consola
+        print("Datos del GPS:")
+        print(f"Latitud: {gps_data['latitude']}")
+        print(f"Longitud: {gps_data['longitude']}")
+        print(f"Dirección del movimiento: {gps_data['heading_of_motion']}")
+        print(f"Distancia desde la posición inicial: {gps_data['distance']} metros")
+
+    except Exception as e:
+        print(f"Error: {e}")

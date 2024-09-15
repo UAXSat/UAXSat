@@ -1,26 +1,34 @@
-"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                                                                            *
-*                         Developed by Javier Bolanos                        *
-*                  https://github.com/javierbolanosllano                     *
-*                                                                            *
-*                      UAXSAT IV Project - 2024                              *
-*                   https://github.com/UAXSat/UAXSat                         *
-*                                                                            *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
+# receivernew.py
 
 import time
 import json
 import logging
 import psycopg2
 from serial.tools import list_ports
-from e220 import E220, MODE_NORMAL, AUX, M0, M1, VID_PID_LIST
+from e220 import E220
+from constants import M0, M1, AUX, VID_PID_LIST, MODE_NORMAL, initial_lat, initial_lon
 
+# Configuración del logger
 # Configuración del logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
 def find_serial_port(vendor_id, product_id):
-    """Encuentra y devuelve el puerto serial para un dispositivo con el VID y PID dados."""
+    """
+    Encuentra el puerto serial para un dispositivo dado su VID y PID.
+
+    Parámetros:
+    -----------
+    vendor_id : int
+        Identificador de proveedor (VID).
+    product_id : int
+        Identificador de producto (PID).
+
+    Retorna:
+    --------
+    str o None
+        El puerto serial si se encuentra, o None si no.
+    """
     ports = list_ports.comports()
     for port in ports:
         if port.vid == vendor_id and port.pid == product_id:
@@ -28,9 +36,16 @@ def find_serial_port(vendor_id, product_id):
     return None
 
 def connect_to_db():
-    """Conecta a la base de datos PostgreSQL y retorna la conexión y el cursor."""
-    connection = None
-    cursor = None
+    """
+    Conecta a la base de datos PostgreSQL.
+
+    Retorna:
+    --------
+    connection : psycopg2.connection
+        Conexión a la base de datos.
+    cursor : psycopg2.cursor
+        Cursor para ejecutar comandos SQL.
+    """
     try:
         connection = psycopg2.connect(
             database="cubesat",
@@ -46,36 +61,45 @@ def connect_to_db():
         raise error
 
 def insert_data_to_db(cursor, connection, data):
-    """Inserta los datos en la base de datos PostgreSQL."""
+    """
+    Inserta datos en la base de datos PostgreSQL.
+
+    Parámetros:
+    -----------
+    cursor : psycopg2.cursor
+        Cursor de la base de datos.
+    connection : psycopg2.connection
+        Conexión a la base de datos.
+    data : dict
+        Diccionario con los datos del sensor a insertar.
+    """
     try:
+        # Consulta SQL de inserción
         insert_query = """
         INSERT INTO sensor_readings (
             imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz, imu_magx, imu_magy, imu_magz,
             uv_uva, uv_uvb, uv_uvc, uv_temperature, cpu_usage, ram_usage, total_ram,
             disk_usage, disk_usage_gb, total_disk_gb, sys_temperature,
             lat, lon, alt, headmot, roll, pitch, heading, nmea,
-            lat_hp, lon_hp, alt_hp, gps_error, bmp_pressure, bmp_temperature, bmp_altitude,
-            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp
+            lat_hp, lon_hp, alt_hp, bmp_pressure, bmp_temperature, bmp_altitude,
+            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp, distance
         ) VALUES (
             %(imu_acelx)s, %(imu_acely)s, %(imu_acelz)s, %(imu_girox)s, %(imu_giroy)s, %(imu_giroz)s, %(imu_magx)s, %(imu_magy)s, %(imu_magz)s,
             %(uv_uva)s, %(uv_uvb)s, %(uv_uvc)s, %(uv_temperature)s, %(cpu_usage)s, %(ram_usage)s, %(total_ram)s,
             %(disk_usage)s, %(disk_usage_gb)s, %(total_disk_gb)s, %(sys_temperature)s,
             %(lat)s, %(lon)s, %(alt)s, %(headmot)s, %(roll)s, %(pitch)s, %(heading)s, %(nmea)s,
-            %(lat_hp)s, %(lon_hp)s, %(alt_hp)s, %(gps_error)s, %(bmp_pressure)s, %(bmp_temperature)s, %(bmp_altitude)s,
-            %(ds18b20_temperature_interior)s, %(ds18b20_temperature_exterior)s, %(timestamp)s
+            %(lat_hp)s, %(lon_hp)s, %(alt_hp)s, %(bmp_pressure)s, %(bmp_temperature)s, %(bmp_altitude)s,
+            %(ds18b20_temperature_interior)s, %(ds18b20_temperature_exterior)s, %(timestamp)s,%(distance)s
         )
         """
 
-        # Preparar los datos para la inserción
-        gps_data = data.get('GPS', [{}])
-        gps_data = gps_data[0] if gps_data else {}
-
+        # Procesar datos del GPS y sensores
+        gps_data = data.get('GPS', [{}])[0] if data.get('GPS') else {}
         dallas_data = data.get('Dallas', {})
-        
-        # Extraer temperaturas del sensor DS18B20
         ds18b20_temp_interior = dallas_data.get('28-03a0d446ef0a')
         ds18b20_temp_exterior = dallas_data.get('28-6fc2d44578f0')
 
+        # Ejecutar la consulta de inserción
         # Ejecutar la consulta de inserción
         cursor.execute(insert_query, {
             'imu_acelx': data.get('IMU', {}).get('ACELX'),
@@ -98,8 +122,6 @@ def insert_data_to_db(cursor, connection, data):
             'lat_hp': gps_data.get('high_precision_latitude'),
             'lon_hp': gps_data.get('high_precision_longitude'),
             'alt_hp': gps_data.get('high_precision_altitude'),
-            'gps_error': data.get('GPS', [None])[1] if len(data.get('GPS', [])) > 1 else None,
-            'distance': data.get('distance'),
             'bmp_pressure': data.get('BMP', {}).get('pressure'),
             'bmp_temperature': data.get('BMP', {}).get('temperature'),
             'bmp_altitude': data.get('BMP', {}).get('altitude'),
@@ -114,9 +136,11 @@ def insert_data_to_db(cursor, connection, data):
             'disk_usage_gb': data.get('System', {}).get('Disk Usage (GB)'),
             'total_disk_gb': data.get('System', {}).get('Total Disk (GB)'),
             'sys_temperature': data.get('System', {}).get('Temperature (°C)'),
+            'sys_temperature': data.get('System', {}).get('Temperature (°C)'),
             'ds18b20_temperature_interior': ds18b20_temp_interior,
             'ds18b20_temperature_exterior': ds18b20_temp_exterior,
-            'timestamp': data.get('timestamp')
+            'timestamp': data.get('timestamp'),
+            'distance': gps_data.get('distance')
         })
 
         # Confirmar los cambios en la base de datos
@@ -128,7 +152,18 @@ def insert_data_to_db(cursor, connection, data):
         connection.rollback()  # Revertir si hay un error
 
 def receive_data_from_lora(lora_module, cursor, connection):
-    """Recibe datos del módulo LoRa, los procesa y los almacena en la base de datos."""
+    """
+    Recibe datos del módulo LoRa, los procesa y los almacena en la base de datos.
+
+    Parámetros:
+    -----------
+    lora_module : E220
+        Instancia del módulo LoRa.
+    cursor : psycopg2.cursor
+        Cursor para ejecutar comandos SQL.
+    connection : psycopg2.connection
+        Conexión a la base de datos.
+    """
     buffer = ""
     start_marker = "<<<"
     end_marker = ">>>"
@@ -168,26 +203,27 @@ def main():
             break
 
     if uart_port is None:
-        logger.error("Dispositivo no encontrado. Por favor, verifica tus conexiones.")
+        logger.error("Dispositivo no encontrado. Verifique las conexiones.")
         exit(1)
 
     logger.info(f"Dispositivo encontrado en {uart_port}, inicializando el módulo E220...")
+    logger.info(f"Dispositivo encontrado en {uart_port}, inicializando el módulo E220...")
 
-    lora_module = None
-    connection, cursor = None, None
     try:
+        # Inicializar el módulo LoRa
         lora_module = E220(m0_pin=M0, m1_pin=M1, aux_pin=AUX, uart_port=uart_port)
         lora_module.set_mode(MODE_NORMAL)
 
-        logger.info("Escuchando mensajes entrantes...")
-
         # Conectar a la base de datos
         connection, cursor = connect_to_db()
+
+        logger.info("Escuchando mensajes entrantes...")
 
         # Recibir datos desde el módulo LoRa
         receive_data_from_lora(lora_module, cursor, connection)
 
     except KeyboardInterrupt:
+        logger.info("Recepción interrumpida por el usuario.")
         logger.info("Recepción interrumpida por el usuario.")
     except Exception as e:
         logger.error(f"Se produjo un error: {e}")
@@ -196,10 +232,14 @@ def main():
             cursor.close()
         if connection:
             connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
         if lora_module:
             lora_module.close()
         logger.info("Puerto serial cerrado.")
-        time.sleep(1)  # Espera para dar tiempo a que los hilos secundarios se cierren
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()

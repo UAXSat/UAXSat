@@ -16,7 +16,8 @@ import time
 from datetime import datetime
 import logging
 from serial.tools import list_ports
-from e220 import E220, MODE_NORMAL, AUX, M0, M1, VID_PID_LIST
+from e220 import E220
+from constants import M0, M1, AUX, VID_PID_LIST, MODE_NORMAL, initial_lat, initial_lon
 
 from Modules.IMUmodule import get_IMU_data
 from Modules.UVmodule import get_UV_data
