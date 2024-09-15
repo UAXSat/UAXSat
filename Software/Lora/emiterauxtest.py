@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-# emitter.py
 import json
 import time
 from datetime import datetime
@@ -92,9 +91,9 @@ def monitor_aux_pin(lora_module):
         else:
             if low_time is None:
                 low_time = time.time()
-            elif time.time() - low_time > 30:  # Reiniciar si AUX está bajo por más de 30 seg
-                logger.error("El pin AUX ha estado en bajo por más de 30 segundos. Reiniciando el programa...")
-                os.execl(sys.executable, sys.executable, *sys.argv)  # Reiniciar el script
+            elif time.time() - low_time > 60:  # Reiniciar si AUX está bajo por más de 60 seg
+                logger.error("El pin AUX ha estado en bajo por más de 60 segundos. Terminando el programa...")
+                sys.exit(1)  # Terminar el script con un código de salida diferente de cero para indicar un error
 
         time.sleep(1)  # Verificar cada segundo
 
