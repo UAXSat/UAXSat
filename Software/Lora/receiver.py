@@ -9,6 +9,7 @@ from e220 import E220
 from constants import M0, M1, AUX, VID_PID_LIST, MODE_NORMAL, initial_lat, initial_lon
 
 # Configuración del logger
+# Configuración del logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
@@ -99,6 +100,7 @@ def insert_data_to_db(cursor, connection, data):
         ds18b20_temp_exterior = dallas_data.get('28-6fc2d44578f0')
 
         # Ejecutar la consulta de inserción
+        # Ejecutar la consulta de inserción
         cursor.execute(insert_query, {
             'imu_acelx': data.get('IMU', {}).get('ACELX'),
             'imu_acely': data.get('IMU', {}).get('ACELY'),
@@ -133,6 +135,7 @@ def insert_data_to_db(cursor, connection, data):
             'disk_usage': data.get('System', {}).get('Disk Usage (%)'),
             'disk_usage_gb': data.get('System', {}).get('Disk Usage (GB)'),
             'total_disk_gb': data.get('System', {}).get('Total Disk (GB)'),
+            'sys_temperature': data.get('System', {}).get('Temperature (°C)'),
             'sys_temperature': data.get('System', {}).get('Temperature (°C)'),
             'ds18b20_temperature_interior': ds18b20_temp_interior,
             'ds18b20_temperature_exterior': ds18b20_temp_exterior,
@@ -204,6 +207,7 @@ def main():
         exit(1)
 
     logger.info(f"Dispositivo encontrado en {uart_port}, inicializando el módulo E220...")
+    logger.info(f"Dispositivo encontrado en {uart_port}, inicializando el módulo E220...")
 
     try:
         # Inicializar el módulo LoRa
@@ -220,9 +224,14 @@ def main():
 
     except KeyboardInterrupt:
         logger.info("Recepción interrumpida por el usuario.")
+        logger.info("Recepción interrumpida por el usuario.")
     except Exception as e:
         logger.error(f"Se produjo un error: {e}")
     finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
         if cursor:
             cursor.close()
         if connection:
