@@ -194,7 +194,6 @@ This allows you to continuously view the latest data.
 When you’re finished with your PostgreSQL session, exit the psql prompt by typing:
 ```sql
 \q
-<<<<<<< HEAD
 ```
 
 # Servicio para Emisor LoRa
@@ -281,7 +280,4 @@ sudo journalctl -u emisor.service
 cat /var/log/emisor.log
 cat /var/log/emisor_error.log
 ```
-=======
-``
->>>>>>> main
 This will close the connection to the database and exit the PostgreSQL environment.
