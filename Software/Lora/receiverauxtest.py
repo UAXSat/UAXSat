@@ -44,21 +44,18 @@ def insert_data_to_db(cursor, connection, data):
             imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz, imu_magx, imu_magy, imu_magz,
             uv_uva, uv_uvb, uv_uvc, uv_temperature, cpu_usage, ram_usage, total_ram,
             disk_usage, disk_usage_gb, total_disk_gb, sys_temperature,
-            lat, lon, alt, headmot, roll, pitch, heading, nmea,
-            lat_hp, lon_hp, alt_hp, bmp_pressure, bmp_temperature, bmp_altitude,
-            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp, distance
+            lat, lon, headmot, distance, bmp_pressure, bmp_temperature, bmp_altitude,
+            ds18b20_temperature_interior, ds18b20_temperature_exterior, timestamp
         ) VALUES (
             %(imu_acelx)s, %(imu_acely)s, %(imu_acelz)s, %(imu_girox)s, %(imu_giroy)s, %(imu_giroz)s, %(imu_magx)s, %(imu_magy)s, %(imu_magz)s,
             %(uv_uva)s, %(uv_uvb)s, %(uv_uvc)s, %(uv_temperature)s, %(cpu_usage)s, %(ram_usage)s, %(total_ram)s,
             %(disk_usage)s, %(disk_usage_gb)s, %(total_disk_gb)s, %(sys_temperature)s,
-            %(lat)s, %(lon)s, %(alt)s, %(headmot)s, %(roll)s, %(pitch)s, %(heading)s, %(nmea)s,
-            %(lat_hp)s, %(lon_hp)s, %(alt_hp)s, %(bmp_pressure)s, %(bmp_temperature)s, %(bmp_altitude)s,
-            %(ds18b20_temperature_interior)s, %(ds18b20_temperature_exterior)s, %(timestamp)s,%(distance)s
+            %(lat)s, %(lon)s, %(headmot)s, %(distance)s, %(bmp_pressure)s, %(bmp_temperature)s, %(bmp_altitude)s,
+            %(ds18b20_temperature_interior)s, %(ds18b20_temperature_exterior)s, %(timestamp)s
         )
         """
 
         # Procesar datos del GPS y sensores
-        gps_data = data.get('GPS', [{}])[0] if data.get('GPS') else {}
         dallas_data = data.get('Dallas', {})
         ds18b20_temp_interior = dallas_data.get('28-03a0d446ef0a')
         ds18b20_temp_exterior = dallas_data.get('28-6fc2d44578f0')
@@ -74,17 +71,9 @@ def insert_data_to_db(cursor, connection, data):
             'imu_magx': data.get('IMU', {}).get('MAGX'),
             'imu_magy': data.get('IMU', {}).get('MAGY'),
             'imu_magz': data.get('IMU', {}).get('MAGZ'),
-            'lat': gps_data.get('latitude'),
-            'lon': gps_data.get('longitude'),
-            'alt': gps_data.get('altitude'),
-            'headmot': gps_data.get('heading_of_motion'),
-            'roll': gps_data.get('roll'),
-            'pitch': gps_data.get('pitch'),
-            'heading': gps_data.get('heading'),
-            'nmea': gps_data.get('nmea_sentence'),
-            'lat_hp': gps_data.get('high_precision_latitude'),
-            'lon_hp': gps_data.get('high_precision_longitude'),
-            'alt_hp': gps_data.get('high_precision_altitude'),
+            'lat': data.get('GPS', {}).get('latitude'),
+            'lon': data.get('GPS', {}).get('longitude'),
+            'headmot': data.get('GPS', {}).get('heading_of_motion'),
             'bmp_pressure': data.get('BMP', {}).get('pressure'),
             'bmp_temperature': data.get('BMP', {}).get('temperature'),
             'bmp_altitude': data.get('BMP', {}).get('altitude'),
@@ -102,7 +91,7 @@ def insert_data_to_db(cursor, connection, data):
             'ds18b20_temperature_interior': ds18b20_temp_interior,
             'ds18b20_temperature_exterior': ds18b20_temp_exterior,
             'timestamp': data.get('timestamp'),
-            'distance': gps_data.get('distance')
+            'distance': data.get('GPS', {}).get('distance')
         })
 
         connection.commit()
