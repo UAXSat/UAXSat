@@ -54,7 +54,7 @@ echo "Instalación de PostgreSQL, Grafana y librerías Python completada."
 
 """ Ejecuta los siguientes comandos para proceder a la instalacion
 
-chmod +x install.sh
-./install.sh
+# chmod +x install.sh
+# ./install.sh
 
 """

@@ -13,23 +13,36 @@ import psutil
 
 def get_system_data():
     """Recoge estadísticas del sistema de la Raspberry Pi."""
-    # Obtener las estadísticas del sistema
-    system_stats = {
-        "CPU Usage (%)": psutil.cpu_percent(interval=1),
-        "RAM Usage (MB)": psutil.virtual_memory().used / (1024 ** 2),
-        "Total RAM (MB)": psutil.virtual_memory().total / (1024 ** 2),
-        "Disk Usage (%)": psutil.disk_usage('/').percent,
-        "Disk Usage (GB)": psutil.disk_usage('/').used / (1024 ** 3),
-        "Total Disk (GB)": psutil.disk_usage('/').total / (1024 ** 3),
-    }
-    
-    # Obtener información de la temperatura del sistema
+
+    # Uso de CPU
+    cpu_usage = psutil.cpu_percent(interval=1)
+
+    # Uso de RAM
+    virtual_mem = psutil.virtual_memory()
+    ram_usage_percent = virtual_mem.percent
+
+    # Sensores (temperatura y ventiladores)
     temp_sensors = psutil.sensors_temperatures()
-    if 'cpu_thermal' in temp_sensors:
-        # Acceder a la primera temperatura en la lista de sensores
-        cpu_temp = temp_sensors['cpu_thermal'][0].current
-        system_stats["Temperature (°C)"] = cpu_temp
-    else:
-        system_stats["Temperature (°C)"] = "N/A"  # No disponible si no hay datos
+    fan_sensors = psutil.sensors_fans()
+
+    # Construcción del diccionario con las estadísticas solicitadas
+    system_stats = {
+        "CPU Usage (%)": cpu_usage,
+        "RAM Usage (%)": ram_usage_percent,
+        "Sensors": {
+            "Temperatures": {
+                sensor: [{
+                    "Current": temp.current
+                } for temp in temps]
+                for sensor, temps in temp_sensors.items()
+            },
+            "Fans": {
+                fan: [{
+                    "Current RPM": f.current
+                } for f in fans]
+                for fan, fans in fan_sensors.items()
+            }
+        }
+    }
 
     return system_stats

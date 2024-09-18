@@ -151,7 +151,7 @@ def process_gsv(parts):
         'total_satellites': int(parts[3]) if len(parts) > 3 else None
     }
 
-def get_GPS_data(ref_lat=None, ref_lon=None, baudrate=9600, timeout=1, hwid="1546:01A9", descripti>
+def get_GPS_data(ref_lat=None, ref_lon=None, baudrate=9600, timeout=1, hwid="1546:01A9", description="None"):
     """
     Obtiene datos del GPS, busca el puerto, inicializa la conexi  n y lee los datos.
     """
