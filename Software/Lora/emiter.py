@@ -8,17 +8,20 @@
 *                                                                            *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
 
-#!/usr/bin/env python3
-
 # emitter.py
-import json
-import time
-from datetime import datetime
-import logging
-from serial.tools import list_ports
-from e220 import E220
-from constants import M0, M1, AUX, VID_PID_LIST, MODE_NORMAL
 
+import serial
+import time
+import json
+import logging
+import RPi.GPIO as GPIO
+import psycopg2
+
+# Logger configuration
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Import sensor modules
 from Modules.IMUmodule import get_IMU_data
 from Modules.UVmodule import get_UV_data
 from Modules.BMPmodule import get_BMP_data
@@ -26,149 +29,264 @@ from Modules.DS18B20module import get_DS18B20_data
 from Modules.GPSmodule import get_GPS_data
 from Modules.SYSTEMmodule import get_system_data
 
-# Configuración del logger
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger()
+# GPIO pin definitions
+M0_PIN = 17
+M1_PIN = 27
+AUX_PIN = 22
 
-def find_serial_port(vendor_id, product_id):
-    """
-    Encuentra y devuelve el puerto serial para un dispositivo con el VID y PID dados.
-    
-    Parámetros:
-    -----------
-    vendor_id : int
-        Identificador del proveedor (VID).
-    product_id : int
-        Identificador del producto (PID).
-    
-    Retorna:
-    --------
-    str o None
-        El puerto serial si se encuentra, o None si no.
-    """
-    ports = list_ports.comports()
-    for port in ports:
-        if port.vid == vendor_id and port.pid == product_id:
-            return port.device
-    return None
+# Serial port configuration
+SERIAL_PORT = '/dev/ttyUSB0'  # Adjust according to your system
+BAUD_RATE = 9600  # Must match the LoRa module configuration
+
+# Initialize GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(M0_PIN, GPIO.OUT)
+GPIO.setup(M1_PIN, GPIO.OUT)
+GPIO.setup(AUX_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+def wait_aux_high(timeout=10):
+    """Wait until the AUX pin is HIGH."""
+    logger.debug("Waiting for AUX to be HIGH...")
+    end_time = time.time() + timeout
+    while GPIO.input(AUX_PIN) == GPIO.LOW:
+        if time.time() > end_time:
+            logger.error("Timeout waiting for AUX to be HIGH.")
+            return False
+        time.sleep(0.01)
+    logger.debug("AUX is HIGH.")
+    return True
+
+def wait_aux_low(timeout=10):
+    """Wait until the AUX pin is LOW."""
+    logger.debug("Waiting for AUX to be LOW...")
+    end_time = time.time() + timeout
+    while GPIO.input(AUX_PIN) == GPIO.HIGH:
+        if time.time() > end_time:
+            logger.error("Timeout waiting for AUX to be LOW.")
+            return False
+        time.sleep(0.01)
+    logger.debug("AUX is LOW.")
+    return True
+
+def enter_normal_mode():
+    """Configure the LoRa module in normal (transparent) mode."""
+    logger.info("Configuring the module in NORMAL mode...")
+    GPIO.output(M0_PIN, GPIO.LOW)
+    GPIO.output(M1_PIN, GPIO.LOW)
+    if wait_aux_high():
+        time.sleep(0.1)
+        logger.info("Module configured in NORMAL mode.")
+    else:
+        logger.error("Failed to configure the module in NORMAL mode.")
 
 def get_all_sensor_data():
-    """
-    Recoge datos de todos los sensores conectados.
-    
-    Retorna:
-    --------
-    dict
-        Diccionario con los datos obtenidos de los sensores.
-    """
     sensor_data = {}
-
-    # Obtener datos de los diferentes sensores
     try:
-        sensor_data['IMU'] = get_IMU_data()         # ICM20948
-        sensor_data['UV'] = get_UV_data()           # AS7331
-        sensor_data['BMP'] = get_BMP_data()         # BMP390
-        sensor_data['Dallas'] = get_DS18B20_data()  # DS18B20
-        sensor_data['GPS'] = get_GPS_data()         # GPS NEO M9N
-        sensor_data['System'] = get_system_data()   # Sistema (CPU, RAM...)
+        logger.info("Collecting sensor data...")
+        initial_lat = None  # Define your initial latitude if necessary
+        initial_lon = None  # Define your initial longitude if necessary
+
+        sensor_data['IMU'] = get_IMU_data()
+        logger.debug(f"IMU data: {sensor_data['IMU']}")
+
+        sensor_data['UV'] = get_UV_data()
+        logger.debug(f"UV data: {sensor_data['UV']}")
+
+        sensor_data['BMP'] = get_BMP_data()
+        logger.debug(f"BMP data: {sensor_data['BMP']}")
+
+        sensor_data['Dallas'] = get_DS18B20_data()
+        logger.debug(f"Dallas data: {sensor_data['Dallas']}")
+
+        sensor_data['GPS'] = get_GPS_data(initial_lat, initial_lon)
+        logger.debug(f"GPS data: {sensor_data['GPS']}")
+
+        sensor_data['System'] = get_system_data()
+        logger.debug(f"System data: {sensor_data['System']}")
+
+        sensor_data['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+        logger.debug(f"Timestamp: {sensor_data['timestamp']}")
+
+        logger.info("Sensor data collected successfully.")
+        return sensor_data
     except Exception as e:
-        logger.error(f"Error al obtener datos de sensores: {e}")
-        raise e
+        logger.error(f"Error obtaining sensor data: {e}")
+        return None
 
-    return sensor_data
-
-def initialize_lora_module():
-    """
-    Inicializa el módulo LoRa y lo pone en modo normal.
-    
-    Retorna:
-    --------
-    E220
-        Instancia del módulo LoRa inicializado.
-    
-    Lanza:
-    ------
-    Exception si no se encuentra el dispositivo o falla la inicialización.
-    """
-    uart_port = None
-    for vid, pid in VID_PID_LIST:
-        uart_port = find_serial_port(vid, pid)
-        if uart_port:
-            break
-
-    if uart_port is None:
-        logger.error("Dispositivo no encontrado. Verifique las conexiones.")
-        raise Exception("Dispositivo LoRa no encontrado")
-
-    logger.info(f"Dispositivo LoRa encontrado en {uart_port}, inicializando el módulo E220...")
-
+def serialize_sensor_data(sensor_data):
     try:
-        lora_module = E220(m0_pin=M0, m1_pin=M1, aux_pin=AUX, uart_port=uart_port)
-        lora_module.set_mode(MODE_NORMAL)
-        logger.info("Módulo E220 en modo de operación normal.")
-        return lora_module
+        logger.info("Serializing sensor data...")
+        serialized_data = json.dumps(sensor_data)
+        logger.debug(f"Serialized data: {serialized_data}")
+        return serialized_data
     except Exception as e:
-        logger.error(f"Error al inicializar el módulo LoRa: {e}")
-        raise e
+        logger.error(f"Error serializing data: {e}")
+        return None
 
-def send_data_loop(lora_module, interval=5):
-    """
-    Bucle principal para recopilar y enviar datos de sensores a través de LoRa.
-    
-    Parámetros:
-    -----------
-    lora_module : E220
-        Instancia del módulo LoRa.
-    interval : int
-        Tiempo (en segundos) entre envíos de datos.
-    """
-    while True:
-        try:
-            # Obtener todos los datos de los sensores
-            all_sensor_data = get_all_sensor_data()
+def connect_to_db():
+    """Connect to the database and return the connection and cursor."""
+    try:
+        logger.info("Connecting to the database...")
+        connection = psycopg2.connect(
+            database="cubesat",
+            user="cubesat",
+            password="cubesat",
+            host="localhost",
+            port="5432"
+        )
+        cursor = connection.cursor()
+        logger.info("Database connection established.")
+        return connection, cursor
+    except psycopg2.Error as error:
+        logger.error(f"Error connecting to the database: {error}")
+        return None, None
 
-            # Añadir timestamp a los datos
-            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            all_sensor_data['timestamp'] = timestamp
+def insert_data_to_db(cursor, connection, data):
+    """Insert the received data into the database."""
+    try:
+        logger.info("Inserting data into the database...")
+        insert_query = """
+        INSERT INTO sensor_readings (
+            imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz,
+            imu_magx, imu_magy, imu_magz, uv_uva, uv_uvb, uv_uvc, uv_uv_temp,
+            bmp_pressure, bmp_temperature, bmp_altitude, bmp_vertical_speed,
+            dallas_28_03a0d446ef0a, dallas_28_6fc2d44578f0,
+            gps_rmc_utc_time, gps_rmc_speed_mps, gps_vtg_speed_kmh,
+            gps_gga_utc_time, gps_gga_latitude, gps_gga_longitude, gps_distance,
+            gps_gga_altitude, gps_gga_height_geoid, gps_gsv_total_satellites,
+            gps_gsv_total_azimuth, gps_gsv_total_elevation, gps_gsv_total_SNR,
+            system_cpu_usage_percent, system_ram_usage_percent,
+            system_temp_cpu_thermal, timestamp
+        ) VALUES (
+            %(imu_acelx)s, %(imu_acely)s, %(imu_acelz)s, %(imu_girox)s, %(imu_giroy)s, %(imu_giroz)s,
+            %(imu_magx)s, %(imu_magy)s, %(imu_magz)s, %(uv_uva)s, %(uv_uvb)s, %(uv_uvc)s, %(uv_uv_temp)s,
+            %(bmp_pressure)s, %(bmp_temperature)s, %(bmp_altitude)s, %(bmp_vertical_speed)s,
+            %(dallas_28_03a0d446ef0a)s, %(dallas_28_6fc2d44578f0)s,
+            %(gps_rmc_utc_time)s, %(gps_rmc_speed_mps)s, %(gps_vtg_speed_kmh)s,
+            %(gps_gga_utc_time)s, %(gps_gga_latitude)s, %(gps_gga_longitude)s, %(gps_distance)s,
+            %(gps_gga_altitude)s, %(gps_gga_height_geoid)s, %(gps_gsv_total_satellites)s,
+            %(gps_gsv_total_azimuth)s, %(gps_gsv_total_elevation)s, %(gps_gsv_total_SNR)s,
+            %(system_cpu_usage_percent)s, %(system_ram_usage_percent)s,
+            %(system_temp_cpu_thermal)s, %(timestamp)s
+        );
+        """
 
-            # Convertir los datos a formato JSON
-            all_sensor_data_json = json.dumps(all_sensor_data)
+        # Helper function to convert values to float
+        def to_float(value):
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                return None
 
-            # Preparar el mensaje con los markers
-            message = f"<<<{all_sensor_data_json}>>>"
+        # Data mapping for the query
+        data_map = {
+            'imu_acelx': data.get('IMU', {}).get('ACELX'),
+            'imu_acely': data.get('IMU', {}).get('ACELY'),
+            'imu_acelz': data.get('IMU', {}).get('ACELZ'),
+            'imu_girox': data.get('IMU', {}).get('GIROX'),
+            'imu_giroy': data.get('IMU', {}).get('GIROY'),
+            'imu_giroz': data.get('IMU', {}).get('GIROZ'),
+            'imu_magx': data.get('IMU', {}).get('MAGX'),
+            'imu_magy': data.get('IMU', {}).get('MAGY'),
+            'imu_magz': data.get('IMU', {}).get('MAGZ'),
+            'uv_uva': data.get('UV', {}).get('UVA'),
+            'uv_uvb': data.get('UV', {}).get('UVB'),
+            'uv_uvc': data.get('UV', {}).get('UVC'),
+            'uv_uv_temp': data.get('UV', {}).get('UV Temp'),
+            'bmp_pressure': data.get('BMP', {}).get('pressure'),
+            'bmp_temperature': data.get('BMP', {}).get('temperature'),
+            'bmp_altitude': data.get('BMP', {}).get('altitude'),
+            'bmp_vertical_speed': to_float(data.get('BMP', {}).get('vertical_speed')),
+            'dallas_28_03a0d446ef0a': data.get('Dallas', {}).get('28-03a0d446ef0a'),
+            'dallas_28_6fc2d44578f0': data.get('Dallas', {}).get('28-6fc2d44578f0'),
+            'gps_rmc_utc_time': data.get('GPS', {}).get('RMC', {}).get('utc_time'),
+            'gps_rmc_speed_mps': to_float(data.get('GPS', {}).get('RMC', {}).get('speed_mps')),
+            'gps_vtg_speed_kmh': to_float(data.get('GPS', {}).get('VTG', {}).get('speed_kmh')),
+            'gps_gga_utc_time': data.get('GPS', {}).get('GGA', {}).get('utc_time'),
+            'gps_gga_latitude': to_float(data.get('GPS', {}).get('GGA', {}).get('latitude')),
+            'gps_gga_longitude': to_float(data.get('GPS', {}).get('GGA', {}).get('longitude')),
+            'gps_distance': to_float(data.get('GPS', {}).get('distance')),
+            'gps_gga_altitude': to_float(data.get('GPS', {}).get('GGA', {}).get('altitude')),
+            'gps_gga_height_geoid': to_float(data.get('GPS', {}).get('GGA', {}).get('height_geoid')),
+            'gps_gsv_total_satellites': data.get('GPS', {}).get('GSV', {}).get('total_satellites'),
+            'gps_gsv_total_azimuth': to_float(data.get('GPS', {}).get('GSV', {}).get('total_azimuth')),
+            'gps_gsv_total_elevation': to_float(data.get('GPS', {}).get('GSV', {}).get('total_elevation')),
+            'gps_gsv_total_SNR': to_float(data.get('GPS', {}).get('GSV', {}).get('total_SNR')),
+            'system_cpu_usage_percent': data.get('System', {}).get('CPU Usage (%)'),
+            'system_ram_usage_percent': data.get('System', {}).get('RAM Usage (%)'),
+            'system_temp_cpu_thermal': data.get('System', {}).get('CPU Temperature'),
+            'timestamp': data.get('timestamp')
+        }
 
-            # Imprimir los datos en formato JSON con timestamp y markers
-            logger.info(f"Datos a enviar: {message}")
+        # Execute the insert query
+        cursor.execute(insert_query, data_map)
+        connection.commit()
+        logger.info("Data inserted successfully into the database.")
 
-            # Enviar los datos por LoRa
-            lora_module.send_data(message)
-            logger.info("Datos enviados correctamente.")
+    except Exception as e:
+        logger.error(f"Error inserting data into the database: {e}")
+        connection.rollback()
 
-            # Pausa entre lecturas para evitar saturar la CPU
-            time.sleep(interval)
+def send_message(message):
+    """Send a message via LoRa."""
+    logger.info(f"Sending message: {message}")
+    try:
+        with serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1) as ser:
+            ser.write(message.encode('utf-8'))
+            if not wait_aux_low():
+                logger.error("Failed to send message: AUX did not go LOW.")
+                return
+            if not wait_aux_high():
+                logger.error("Failed to send message: AUX did not return HIGH.")
+                return
+        logger.info("Message sent.")
+    except serial.SerialException as e:
+        logger.error(f"Serial communication error: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error sending the message: {e}")
 
-        except Exception as e:
-            logger.error(f"Error en el envío de datos: {e}")
-            time.sleep(interval)  # Pausar antes de intentar de nuevo
+def send_sensor_data(cursor, connection):
+    sensor_data = get_all_sensor_data()
+    if sensor_data:
+        message_content = serialize_sensor_data(sensor_data)
+        if message_content:
+            # Wrap the message with markers <<< and >>>
+            full_message = f'<<<{message_content}>>>'
+            send_message(full_message)
+            # Save data to the database
+            insert_data_to_db(cursor, connection, sensor_data)
+        else:
+            logger.error("Could not serialize the data.")
+    else:
+        logger.error("Data not sent due to an error in collection.")
 
 def main():
+    connection = None
+    cursor = None
     try:
-        # Inicializar el módulo LoRa
-        lora_module = initialize_lora_module()
-
-        # Iniciar el bucle de envío de datos
-        logger.info("Iniciando el envío de datos a tierra...")
-        send_data_loop(lora_module, interval=5)
-
+        logger.info("Starting emitter program...")
+        enter_normal_mode()
+        connection, cursor = connect_to_db()
+        if not connection or not cursor:
+            logger.error("Could not establish connection to the database.")
+            return
+        while True:
+            send_sensor_data(cursor, connection)
+            time.sleep(5)  # Wait 5 seconds before sending again
     except KeyboardInterrupt:
-        logger.info("Programa interrumpido por el usuario.")
+        logger.info("Program interrupted by the user.")
     except Exception as e:
-        logger.error(f"Error fatal en la ejecución: {e}")
+        logger.error(f"Unexpected error: {e}")
     finally:
-        # Asegurarse de que el puerto serial se cierre correctamente
-        if 'lora_module' in locals():
-            lora_module.close()
-        logger.info("Puerto serial cerrado correctamente.")
+        if cursor:
+            cursor.close()
+            logger.debug("Database cursor closed.")
+        if connection:
+            connection.close()
+            logger.debug("Database connection closed.")
+        logger.info("Ending emitter program. Cleaning up GPIO...")
+        GPIO.cleanup()
+        logger.debug("GPIO cleaned up.")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

@@ -7,9 +7,9 @@ import logging
 import RPi.GPIO as GPIO
 
 # Importar funciones de PostgreSQL y de LoRa desde los módulos
-from db_functions import connect_to_db, insert_data_to_db
-from lora_functions import wait_aux_high, wait_aux_low, enter_normal_mode
-from constants import M0_PIN, M1_PIN, AUX_PIN, initial_lat, initial_lon, SERIAL_PORT, BAUD_RATE
+from db_functions import *
+from lora_functions import *
+from constants import *
 
 # Importar módulos de sensores
 from Modules.IMUmodule import get_IMU_data

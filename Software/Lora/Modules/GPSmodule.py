@@ -152,7 +152,7 @@ def process_gsa(parts):
         'vdop': vdop
     }
 
-def get_GPS_data(ref_lat=None, ref_lon=None, baudrate=9600, timeout=1, hwid="1546:01A9", descripti>
+def get_GPS_data(ref_lat=None, ref_lon=None, baudrate=9600, timeout=1, hwid="1546:01A9", description="None"):
     """
     Obtiene datos del GPS, busca el puerto, inicializa la conexión y lee los datos.
     """
