@@ -1,37 +1,21 @@
-"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                                                                            *
-*                         Developed by Javier Bolanos                        *
-*                  https://github.com/javierbolanosllano                     *
-*                                                                            *
-*                      UAXSAT IV Project - 2024                              *
-*                   https://github.com/UAXSat/UAXSat                         *
-*                                                                            *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
-
 # constants.py
 
-# CONSTANTS (GPIO pin numbers for M0, M1, AUX)
-M0 = 17
-M1 = 27
-AUX = 22
+import RPi.GPIO as GPIO
 
-# Define operating modes for the E220 module
-MODE_NORMAL = (0, 0)
-MODE_WOR_TRANSMIT = (0, 1)
-MODE_WOR_RECEIVE = (1, 0)
-MODE_SLEEP = (1, 1)
+# Definiciones de pines GPIO
+M0_PIN = 17
+M1_PIN = 27
+AUX_PIN = 22
 
-# Define VID and PID for the E220 module
-VID_PID_LIST = [
-    (0x10C4, 0xEA60),  # Example VID and PID for the E220 module
-    (0x1A86, 0x7523)   # Another possible VID and PID
-]
+initial_lat = 37.76922  # Latitud Inicial (Jaén)
+initial_lon = -3.79028  # Longitud Final (Jaén)
 
-# Define the initial coordenates (latitude and longitude)
-initial_lat = 40.416775    # Puerta del Sol, Madrid
-initial_lon = -3.703790    # Puerta del Sol, Madrid
+# Configuración del puerto serial
+SERIAL_PORT = '/dev/ttyUSB0'  # Ajusta según tu sistema
+BAUD_RATE = 9600  # Debe coincidir con la configuración del módulo LoRa
 
-'''
-initial_lat = 40.416775  # Ejemplo de latitud inicial
-initial_lon = -3.703790  # Ejemplo de longitud inicial
-'''
+# Inicializar GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(M0_PIN, GPIO.OUT)
+GPIO.setup(M1_PIN, GPIO.OUT)
+GPIO.setup(AUX_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
