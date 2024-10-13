@@ -41,11 +41,10 @@ sudo systemctl status grafana-server
 echo "Instalando librerías de Python necesarias..."
 sudo pip3 install adafruit-circuitpython-icm20x --break-system-packages
 sudo pip3 install adafruit-circuitpython-bmp3xx --break-system-packages
-sudo pip3 install sparkfun-ublox-gps --break-system-packages
 sudo pip3 install adafruit-blinka --break-system-packages
 sudo pip3 install adafruit-circuitpython-busdevice --break-system-packages
 sudo pip3 install psycopg2-binary --break-system-packages
-sudo pip3 install gpiozero --break-system-packages
+sudo pip3 install RPi.GPIO --break-system-packages
 
 sudo usermod -aG gpio $USER
 
