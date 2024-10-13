@@ -1,65 +1,80 @@
-#!/usr/bin/env python3
+"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                            *
+*                         Developed by Javier Bolanos                        *
+*                  https://github.com/javierbolanosllano                     *
+*                                                                            *
+*                      UAXSAT IV Project - 2024                              *
+*                   https://github.com/UAXSat/UAXSat                         *
+*                                                                            *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
+
+# receiver.py
 
 import serial
 import time
 import json
 import psycopg2
 import logging
-from gpiozero import DigitalOutputDevice, DigitalInputDevice
+import RPi.GPIO as GPIO
 
-# Configuración del logger
-logging.basicConfig(level=logging.DEBUG)
+# Logger configuration
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Definición de pines GPIO
+# GPIO pin definitions
 M0_PIN = 17
 M1_PIN = 27
 AUX_PIN = 22
 
-# Configuración del puerto serial
-SERIAL_PORT = '/dev/ttyUSB0'  # Ajusta según tu sistema
+# Serial port configuration
+SERIAL_PORT = '/dev/ttyUSB0'  # Adjust according to your system
 BAUD_RATE = 9600
 
-# Inicialización de los pines GPIO
-m0 = DigitalOutputDevice(M0_PIN)
-m1 = DigitalOutputDevice(M1_PIN)
-aux = DigitalInputDevice(AUX_PIN, pull_up=True)
+# Initialize GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(M0_PIN, GPIO.OUT)
+GPIO.setup(M1_PIN, GPIO.OUT)
+GPIO.setup(AUX_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-def wait_aux_high():
-    """Espera hasta que el pin AUX esté en HIGH."""
-    logger.debug("Esperando a que AUX esté en HIGH...")
-    timeout = time.time() + 10  # Timeout de 10 segundos
-    while not aux.value:
-        logger.debug(f"Valor actual de AUX: {aux.value}")
-        time.sleep(0.5)
-        if time.time() > timeout:
-            logger.error("Timeout esperando a que AUX esté en HIGH.")
-            break
-    if aux.value:
-        logger.debug("AUX está en HIGH.")
-    else:
-        logger.error("No se pudo establecer comunicación con el módulo LoRa.")
-
-def wait_aux_low():
-    """Espera hasta que el pin AUX esté en LOW."""
-    logger.debug("Esperando a que AUX esté en LOW...")
-    while aux.value:
+def wait_aux_high(timeout=10):
+    """Wait until the AUX pin is HIGH."""
+    logger.debug("Waiting for AUX to be HIGH...")
+    end_time = time.time() + timeout
+    while GPIO.input(AUX_PIN) == GPIO.LOW:
+        if time.time() > end_time:
+            logger.error("Timeout waiting for AUX to be HIGH.")
+            return False
         time.sleep(0.01)
-    logger.debug("AUX está en LOW.")
+    logger.debug("AUX is HIGH.")
+    return True
+
+def wait_aux_low(timeout=10):
+    """Wait until the AUX pin is LOW."""
+    logger.debug("Waiting for AUX to be LOW...")
+    end_time = time.time() + timeout
+    while GPIO.input(AUX_PIN) == GPIO.HIGH:
+        if time.time() > end_time:
+            logger.error("Timeout waiting for AUX to be LOW.")
+            return False
+        time.sleep(0.01)
+    logger.debug("AUX is LOW.")
+    return True
 
 def enter_normal_mode():
-    """Configura el módulo LoRa en modo normal (transparente)."""
-    logger.info("Configurando el módulo en modo NORMAL...")
-    m0.off()
-    m1.off()
-    wait_aux_high()
-    time.sleep(0.1)
-    logger.info("Módulo configurado en modo NORMAL.")
+    """Configure the LoRa module in normal (transparent) mode."""
+    logger.info("Configuring the module in NORMAL mode...")
+    GPIO.output(M0_PIN, GPIO.LOW)
+    GPIO.output(M1_PIN, GPIO.LOW)
+    if wait_aux_high():
+        time.sleep(0.1)
+        logger.info("Module configured in NORMAL mode.")
+    else:
+        logger.error("Failed to configure module in NORMAL mode.")
 
 def connect_to_db():
-    """Conecta a la base de datos y retorna la conexión y cursor."""
+    """Connect to the database and return the connection and cursor."""
     try:
-        logger.info("Conectando a la base de datos...")
+        logger.info("Connecting to the database...")
         connection = psycopg2.connect(
             database="cubesat",
             user="cubesat",
@@ -68,52 +83,51 @@ def connect_to_db():
             port="5432"
         )
         cursor = connection.cursor()
-        logger.info("Conexión a la base de datos establecida.")
+        logger.info("Database connection established.")
         return connection, cursor
     except psycopg2.Error as error:
-        logger.error(f"Error al conectar a la base de datos: {error}")
+        logger.error(f"Database connection error: {error}")
         raise
 
 def insert_data_to_db(cursor, connection, data):
-    """Inserta los datos recibidos a la nueva tabla."""
+    """Insert the received data into the database."""
     try:
-        logger.info("Insertando datos en la base de datos...")
+        logger.info("Inserting data into the database...")
         insert_query = """
         INSERT INTO sensor_readings (
             imu_acelx, imu_acely, imu_acelz, imu_girox, imu_giroy, imu_giroz,
             imu_magx, imu_magy, imu_magz, uv_uva, uv_uvb, uv_uvc, uv_uv_temp,
-            bmp_pressure, bmp_temperature, bmp_altitude,
+            bmp_pressure, bmp_temperature, bmp_altitude, bmp_vertical_speed,
             dallas_28_03a0d446ef0a, dallas_28_6fc2d44578f0,
-            gps_rmc_utc_time, gps_rmc_speed_mps, gps_vtg_speed_kmh,
-            gps_gga_utc_time, gps_gga_latitude, gps_gga_longitude,
+            gps_rmc_speed_mps, gps_vtg_speed_kmh,
+            gps_gga_latitude, gps_gga_longitude, gps_distance,
             gps_gga_altitude, gps_gga_height_geoid, gps_gsv_total_satellites,
+            gps_gsv_total_azimuth, gps_gsv_total_elevation, gps_gsv_total_SNR,
+            HDOP, PDOP, VDOP,
             system_cpu_usage_percent, system_ram_usage_percent,
-            system_temp_cpu_thermal, system_temp_rp1_adc,
-            system_temp_w1_slave_temp_1, system_temp_w1_slave_temp_2,
-            system_fan_pwmfan_rpm, timestamp
+            system_temp_cpu_thermal, timestamp
         ) VALUES (
             %(imu_acelx)s, %(imu_acely)s, %(imu_acelz)s, %(imu_girox)s, %(imu_giroy)s, %(imu_giroz)s,
             %(imu_magx)s, %(imu_magy)s, %(imu_magz)s, %(uv_uva)s, %(uv_uvb)s, %(uv_uvc)s, %(uv_uv_temp)s,
-            %(bmp_pressure)s, %(bmp_temperature)s, %(bmp_altitude)s,
+            %(bmp_pressure)s, %(bmp_temperature)s, %(bmp_altitude)s, %(bmp_vertical_speed)s,
             %(dallas_28_03a0d446ef0a)s, %(dallas_28_6fc2d44578f0)s,
-            %(gps_rmc_utc_time)s, %(gps_rmc_speed_mps)s, %(gps_vtg_speed_kmh)s,
-            %(gps_gga_utc_time)s, %(gps_gga_latitude)s, %(gps_gga_longitude)s,
+            %(gps_rmc_speed_mps)s, %(gps_vtg_speed_kmh)s,
+            %(gps_gga_latitude)s, %(gps_gga_longitude)s, %(gps_distance)s,
             %(gps_gga_altitude)s, %(gps_gga_height_geoid)s, %(gps_gsv_total_satellites)s,
+            %(gps_gsv_total_azimuth)s, %(gps_gsv_total_elevation)s, %(gps_gsv_total_SNR)s,
             %(system_cpu_usage_percent)s, %(system_ram_usage_percent)s,
-            %(system_temp_cpu_thermal)s, %(system_temp_rp1_adc)s,
-            %(system_temp_w1_slave_temp_1)s, %(system_temp_w1_slave_temp_2)s,
-            %(system_fan_pwmfan_rpm)s, %(timestamp)s
+            %(system_temp_cpu_thermal)s, %(timestamp)s
         );
         """
 
-        # Función auxiliar para convertir valores a float
+        # Helper function to convert values to float
         def to_float(value):
             try:
                 return float(value)
             except (TypeError, ValueError):
                 return None
 
-        # Mapa de datos para la consulta
+        # Data mapping for the query
         data_map = {
             'imu_acelx': data.get('IMU', {}).get('ACELX'),
             'imu_acely': data.get('IMU', {}).get('ACELY'),
@@ -125,101 +139,99 @@ def insert_data_to_db(cursor, connection, data):
             'imu_magy': data.get('IMU', {}).get('MAGY'),
             'imu_magz': data.get('IMU', {}).get('MAGZ'),
             'uv_uva': data.get('UV', {}).get('UVA'),
-            'uv_uva': data.get('UV', {}).get('UVA'),
             'uv_uvb': data.get('UV', {}).get('UVB'),
             'uv_uvc': data.get('UV', {}).get('UVC'),
             'uv_uv_temp': data.get('UV', {}).get('UV Temp'),
             'bmp_pressure': data.get('BMP', {}).get('pressure'),
             'bmp_temperature': data.get('BMP', {}).get('temperature'),
             'bmp_altitude': data.get('BMP', {}).get('altitude'),
+            'bmp_vertical_speed': to_float(data.get('BMP', {}).get('vertical_speed')),
             'dallas_28_03a0d446ef0a': data.get('Dallas', {}).get('28-03a0d446ef0a'),
             'dallas_28_6fc2d44578f0': data.get('Dallas', {}).get('28-6fc2d44578f0'),
-            'gps_rmc_utc_time': data.get('GPS', {}).get('RMC', {}).get('utc_time'),
             'gps_rmc_speed_mps': to_float(data.get('GPS', {}).get('RMC', {}).get('speed_mps')),
             'gps_vtg_speed_kmh': to_float(data.get('GPS', {}).get('VTG', {}).get('speed_kmh')),
-            'gps_gga_utc_time': data.get('GPS', {}).get('GGA', {}).get('utc_time'),
             'gps_gga_latitude': to_float(data.get('GPS', {}).get('GGA', {}).get('latitude')),
             'gps_gga_longitude': to_float(data.get('GPS', {}).get('GGA', {}).get('longitude')),
+            'gps_distance': to_float(data.get('GPS', {}).get('distance')),
             'gps_gga_altitude': to_float(data.get('GPS', {}).get('GGA', {}).get('altitude')),
             'gps_gga_height_geoid': to_float(data.get('GPS', {}).get('GGA', {}).get('height_geoid')),
             'gps_gsv_total_satellites': data.get('GPS', {}).get('GSV', {}).get('total_satellites'),
+            'gps_gsv_total_azimuth': to_float(data.get('GPS', {}).get('GSV', {}).get('total_azimuth')),
+            'gps_gsv_total_elevation': to_float(data.get('GPS', {}).get('GSV', {}).get('total_elevation')),
+            'gps_gsv_total_SNR': to_float(data.get('GPS', {}).get('GSV', {}).get('total_SNR')),
             'system_cpu_usage_percent': data.get('System', {}).get('CPU Usage (%)'),
             'system_ram_usage_percent': data.get('System', {}).get('RAM Usage (%)'),
-            'system_temp_cpu_thermal': data.get('System', {}).get('Sensors', {}).get('Temperatures', {}).get('cpu_thermal', [{}])[0].get('Current'),
-            'system_temp_rp1_adc': data.get('System', {}).get('Sensors', {}).get('Temperatures', {}).get('rp1_adc', [{}])[0].get('Current'),
-            'system_temp_w1_slave_temp_1': data.get('System', {}).get('Sensors', {}).get('Temperatures', {}).get('w1_slave_temp', [{}])[0].get('Current'),
-            'system_temp_w1_slave_temp_2': data.get('System', {}).get('Sensors', {}).get('Temperatures', {}).get('w1_slave_temp', [{}])[1].get('Current') if len(data.get('System', {}).get('Sensors', {}).get('Temperatures', {}).get('w1_slave_temp', [])) > 1 else None,
-            'system_fan_pwmfan_rpm': data.get('System', {}).get('Sensors', {}).get('Fans', {}).get('pwmfan', [{}])[0].get('Current RPM'),
+            'system_temp_cpu_thermal': data.get('System', {}).get('CPU Temperature'),
             'timestamp': data.get('timestamp')
         }
 
-        logger.debug(f"Datos a insertar: {data_map}")
-
+        # Execute the insert query
         cursor.execute(insert_query, data_map)
         connection.commit()
-        logger.info("Datos insertados correctamente en la base de datos.")
+        logger.info("Data inserted successfully into the database.")
 
     except Exception as e:
-        logger.error(f"Error al insertar en la base de datos: {e}")
+        logger.error(f"Error inserting data into the database: {e}")
         connection.rollback()
 
-def receive_message():
-    """Recibe mensajes a través de LoRa y procesa los datos entre marcadores."""
+def receive_message(cursor, connection):
+    """Receive messages via LoRa and process the data between markers."""
     buffer = ""
-    with serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1) as ser:
-        logger.info("Puerto serial abierto para recepción.")
-        while True:
-            if ser.in_waiting > 0:
-                chunk = ser.read(ser.in_waiting).decode('utf-8', errors='replace')
-                buffer += chunk
-                logger.debug(f"Buffer actualizado: {buffer}")
+    try:
+        with serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1) as ser:
+            logger.info("Serial port opened for reception.")
+            while True:
+                if ser.in_waiting > 0:
+                    chunk = ser.read(ser.in_waiting).decode('utf-8', errors='ignore').strip()
+                    buffer += chunk
+                    logger.debug(f"Updated buffer: {buffer}")
 
-                # Procesar los mensajes completos
-                while '<<<' in buffer and '>>>' in buffer:
-                    start = buffer.find('<<<') + 3
-                    end = buffer.find('>>>', start)
-                    if end != -1:
-                        message_content = buffer[start:end]
-                        buffer = buffer[end+3:]  # Actualizar el buffer
-                        logger.debug(f"Mensaje completo extraído: {message_content}")
-                        try:
-                            data = json.loads(message_content)
-                            logger.info("Datos de sensores recibidos y deserializados.")
-                            logger.debug(f"Datos deserializados: {data}")
-                            insert_data_to_db(cursor, connection, data)
-                        except json.JSONDecodeError as e:
-                            logger.error(f"Error al deserializar el mensaje: {e}")
-                    else:
-                        break  # Esperar a que llegue el resto del mensaje
-            else:
-                time.sleep(0.1)
+                    # Process complete messages
+                    while '<<<' in buffer and '>>>' in buffer:
+                        start = buffer.find('<<<') + 3
+                        end = buffer.find('>>>', start)
+                        if end != -1:
+                            message_content = buffer[start:end]
+                            buffer = buffer[end+3:]  # Update the buffer
+                            logger.debug(f"Extracted complete message: {message_content}")
+                            try:
+                                data = json.loads(message_content)
+                                logger.info(data)
+                                logger.debug(data)
+                                logger.info("Sensor data received and deserialized.")
+                                logger.debug(f"Deserialized data: {data}")
+                                insert_data_to_db(cursor, connection, data)
+                            except json.JSONDecodeError as e:
+                                logger.error(f"Error deserializing message: {e}")
+                        else:
+                            break  # Wait for the rest of the message
+                else:
+                    time.sleep(0.1)
+    except serial.SerialException as e:
+        logger.error(f"Serial communication error: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error in receive_message: {e}")
 
 def main():
-    global connection, cursor
-    connection = None
-    cursor = None
     try:
-        logger.info("Iniciando programa del receptor...")
+        logger.info("Starting receiver program...")
         enter_normal_mode()
         connection, cursor = connect_to_db()
-        receive_message()
+        receive_message(cursor, connection)
     except KeyboardInterrupt:
-        logger.info("Programa interrumpido por el usuario.")
+        logger.info("Program interrupted by the user.")
     except Exception as e:
-        logger.error(f"Error inesperado: {e}")
+        logger.error(f"Unexpected error: {e}")
     finally:
         if cursor:
             cursor.close()
-            logger.debug("Cursor de base de datos cerrado.")
+            logger.debug("Database cursor closed.")
         if connection:
             connection.close()
-            logger.debug("Conexión a la base de datos cerrada.")
-        logger.info("Finalizando programa del receptor. Limpiando GPIO...")
-        m0.close()
-        m1.close()
-        aux.close()
-        logger.debug("GPIO limpiado.")
+            logger.debug("Database connection closed.")
+        logger.info("Ending receiver program. Cleaning up GPIO...")
+        GPIO.cleanup()
+        logger.debug("GPIO cleaned up.")
 
 if __name__ == '__main__':
     main()
-
