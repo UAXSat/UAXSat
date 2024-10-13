@@ -5,26 +5,12 @@ import time
 import logging
 import RPi.GPIO as GPIO
 
-from lora_functions import wait_aux_high, wait_aux_low, enter_config_mode, enter_normal_mode
+from lora_functions import *
+from constants import *
 
 # Logger configuration
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
-# GPIO Pins definition
-M0_PIN = 17
-M1_PIN = 27
-AUX_PIN = 22
-
-# Serial port configuration
-SERIAL_PORT = '/dev/ttyUSB0'
-BAUD_RATE = 9600
-
-# GPIO setup
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(M0_PIN, GPIO.OUT)
-GPIO.setup(M1_PIN, GPIO.OUT)
-GPIO.setup(AUX_PIN, GPIO.IN)
 
 def send_at_command(command):
     with serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1) as ser:
