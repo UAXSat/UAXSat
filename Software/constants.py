@@ -20,7 +20,7 @@ initial_lat = 37.76922  # Latitud Inicial (Jaén)
 initial_lon = -3.79028  # Longitud Final (Jaén)
 
 # Configuración del puerto UART para el módulo LoRa
-SERIAL_PORT = '/dev/ttyS0'  # UART port LoRa Module
+SERIAL_PORT = '/dev/ttyAMA0'  # UART port LoRa Module
 BAUD_RATE = 9600  # Debe coincidir con la configuración del módulo LoRa
 
 # Inicializar GPIO

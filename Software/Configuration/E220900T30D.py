@@ -19,23 +19,15 @@ import sys
 import os
 
 # Agregar la carpeta anterior (/home/cubesat/UAXSat/Software/Lora) al sys.path
-sys.path.append("/home/cubesat/UAXSat/Software/Lora")
+sys.path.append("/home/cubesat/UAXSat/Software")
 
 # Ahora puedes importar el módulo lora_functions
-from Utils.lora_functions import wait_aux_high, wait_aux_low, enter_config_mode, enter_normal_mode
+from lora_functions import *
+from constants import *
 
 # Logger configuration
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
-# GPIO Pins definition
-M0_PIN = 17
-M1_PIN = 27
-AUX_PIN = 22
-
-# Serial port configuration
-SERIAL_PORT = '/dev/ttyUSB0'
-BAUD_RATE = 9600
 
 # GPIO setup
 GPIO.setmode(GPIO.BCM)
