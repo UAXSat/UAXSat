@@ -1,12 +1,12 @@
-"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                                                                            *
-*                         Developed by Javier Bolanos                        *
-*                  https://github.com/javierbolanosllano                     *
-*                                                                            *
-*                      UAXSAT IV Project - 2024                              *
-*                   https://github.com/UAXSat/UAXSat                         *
-*                                                                            *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
+"""- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
+
+                         Developed by Javier Bolanos
+                    https://github.com/javierbolanosllano
+
+                           UAXSAT IV Project - 2024
+                       https://github.com/UAXSat/UAXSat
+
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - """
 
 # IMUmodule.py
 import time
@@ -47,3 +47,18 @@ def read_sensor_data(icm):
 def get_IMU_data():
     imu = initialize_sensor()
     return read_sensor_data(imu)
+
+# Función principal para ejecución continua
+def main():
+    imu = initialize_sensor()
+    while True:
+        imudata = read_sensor_data(imu)
+        if imudata:
+            print(imudata)
+        else:
+            print("Error initializing the IMU")
+        time.sleep(1)
+
+# Ejecutar el sensor si se ejecuta como script principal
+if __name__ == "__main__":
+    main()

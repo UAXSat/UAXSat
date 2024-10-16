@@ -1,8 +1,28 @@
-# lora_module.py
+"""- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
+
+                         Developed by Javier Bolanos
+                    https://github.com/javierbolanosllano
+
+                           UAXSAT IV Project - 2024
+                       https://github.com/UAXSat/UAXSat
+
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - """
+
+#!/usr/bin/env python3
+
+# E220900T30D.py
 import serial
 import time
 import logging
 import RPi.GPIO as GPIO
+import sys
+import os
+
+# Agregar la carpeta anterior (/home/cubesat/UAXSat/Software/Lora) al sys.path
+sys.path.append("/home/cubesat/UAXSat/Software/Lora")
+
+# Ahora puedes importar el módulo lora_functions
+from Utils.lora_functions import wait_aux_high, wait_aux_low, enter_config_mode, enter_normal_mode
 
 # Logger configuration
 logging.basicConfig(level=logging.DEBUG)
@@ -22,28 +42,6 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(M0_PIN, GPIO.OUT)
 GPIO.setup(M1_PIN, GPIO.OUT)
 GPIO.setup(AUX_PIN, GPIO.IN)
-
-def wait_aux_high():
-    while GPIO.input(AUX_PIN) == GPIO.LOW:
-        time.sleep(0.01)
-
-def wait_aux_low():
-    while GPIO.input(AUX_PIN) == GPIO.HIGH:
-        time.sleep(0.01)
-
-def enter_config_mode():
-    GPIO.output(M0_PIN, GPIO.HIGH)
-    GPIO.output(M1_PIN, GPIO.HIGH)
-    wait_aux_high()
-    time.sleep(0.1)
-    logger.debug("Entered configuration mode.")
-
-def enter_normal_mode():
-    GPIO.output(M0_PIN, GPIO.LOW)
-    GPIO.output(M1_PIN, GPIO.LOW)
-    wait_aux_high()
-    time.sleep(0.1)
-    logger.debug("Entered normal mode.")
 
 def send_at_command(command):
     with serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1) as ser:
@@ -106,7 +104,7 @@ def receive_message():
             if ser.in_waiting > 0:
                 message = ser.readline()
                 try:
-                    decoded_message = message.decode('utf-8', errors='replace').strip()
+                    decoded_message = message.decode('utf-8', errors='ignore').strip()
                     logger.info(f"Mensaje recibido: {decoded_message}")
                     return decoded_message
                 except UnicodeDecodeError as e:
@@ -116,6 +114,7 @@ def receive_message():
                 wait_aux_high()
             else:
                 time.sleep(0.1)
+
 
 def clean_gpio():
     logger.debug("Limpiando GPIO...")

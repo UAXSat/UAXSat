@@ -72,3 +72,20 @@ class DallasSensor:
 def get_DS18B20_data():
     dallas_sensor = DallasSensor()
     return dallas_sensor.get_sensor_info()  # Llamamos a la funci  n correcta
+
+def main():
+    dallas_sensor = DallasSensor()
+    
+    while True:
+        sensor_info = dallas_sensor.get_sensor_info()
+        if sensor_info:
+            for sensor_id, temperature in sensor_info.items():
+                print(f"Sensor ID: {sensor_id}, Temperature: {temperature:.2f} °C")
+        else:
+            print("No sensors found. Retrying in 5 seconds...")
+        
+        time.sleep(1)
+
+if __name__ == '__main__':
+    main()
+

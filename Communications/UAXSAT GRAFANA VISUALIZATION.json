@@ -77,7 +77,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \"timestamp\" FROM sensor_readings",
+          "rawSql": "SELECT\n  \"timestamp\"           -- Selects the timestamp column, indicating when the sensor readings were recorded\nFROM\n  sensor_readings;      -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -177,7 +177,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bmp_pressure FROM sensor_readings",
+          "rawSql": "SELECT\n  bmp_pressure            -- Selects the pressure value recorded by the BMP sensor\nFROM\n  sensor_readings;        -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -272,7 +272,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT uva AS \"UVA\", uvb AS \"UVB\", uvc AS \"UVC\", \"timestamp\" FROM sensor_readings",
+          "rawSql": "SELECT\n  uva AS \"UVA\",              -- Selects the UVA value recorded by the sensor and renames it as \"UVA\"\n  uvb AS \"UVB\",              -- Selects the UVB value recorded by the sensor and renames it as \"UVB\"\n  uvc AS \"UVC\",              -- Selects the UVC value recorded by the sensor and renames it as \"UVC\"\n  \"timestamp\"                -- Selects the timestamp to indicate when these UV readings were recorded\nFROM\n  sensor_readings;           -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -400,7 +400,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bmp_temperature AS \"BMP\", uv_temp AS \"UV\", dallas_extern AS \"EXTERN\", dallas_intern AS \"INTERN\" FROM sensor_readings",
+          "rawSql": "SELECT\n  bmp_temperature AS \"BMP\",        -- Selects the temperature value recorded by the BMP sensor and renames it as \"BMP\"\n  uv_temp AS \"UV\",                 -- Selects the temperature value related to the UV sensor and renames it as \"UV\"\n  dallas_intern AS \"INTERN\",       -- Selects the internal temperature value from the DS18B20 sensor and renames it as \"INTERN\"\n  dallas_extern AS \"EXTERN\",       -- Selects the external temperature value from the DS18B20 sensor and renames it as \"EXTERN\"\n  \"timestamp\"                      -- Selects the timestamp to indicate when these temperature readings were recorded\nFROM\n  sensor_readings;                 -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -556,7 +556,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bmp_pressure, \"timestamp\" FROM sensor_readings",
+          "rawSql": "SELECT\n  bmp_pressure,           -- Selects the pressure value recorded by the BMP sensor\n  \"timestamp\"             -- Selects the timestamp to indicate when the pressure reading was recorded\nFROM\n  sensor_readings;        -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -675,7 +675,7 @@
           "format": "table",
           "hide": false,
           "rawQuery": true,
-          "rawSql": "SELECT system_cpu_usage_percent AS \"CPU (%)\", system_ram_usage_percent AS \"RAM (%)\", system_temp_cpu_thermal AS \"CPU (ºC)\" FROM sensor_readings",
+          "rawSql": "SELECT\n  system_cpu_usage_percent AS \"CPU (%)\",    -- Selects the CPU usage percentage and renames it as \"CPU (%)\"\n  system_ram_usage_percent AS \"RAM (%)\",    -- Selects the RAM usage percentage and renames it as \"RAM (%)\"\n  system_temp_cpu_thermal AS \"CPU (ºC)\"     -- Selects the CPU temperature and renames it as \"CPU (ºC)\"\nFROM\n  sensor_readings;                          -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -820,7 +820,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT uva AS \"UVA\", uvb AS \"UVB\", uvc AS \"UVC\", \"timestamp\" FROM sensor_readings",
+          "rawSql": "SELECT\n  uva AS \"UVA\",              -- Selects the UVA value recorded by the sensor and renames it as \"UVA\"\n  uvb AS \"UVB\",              -- Selects the UVB value recorded by the sensor and renames it as \"UVB\"\n  uvc AS \"UVC\",              -- Selects the UVC value recorded by the sensor and renames it as \"UVC\"\n  \"timestamp\"                -- Selects the timestamp to indicate when these UV readings were recorded\nFROM\n  sensor_readings;           -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -976,7 +976,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bmp_temperature AS \"BMP\", uv_temp AS \"UV\", dallas_intern AS \"INTERN\", dallas_extern AS \"EXTERN\", \"timestamp\" FROM sensor_readings",
+          "rawSql": "SELECT\n  bmp_temperature AS \"BMP\",        -- Selects the temperature value recorded by the BMP sensor and renames it as \"BMP\"\n  uv_temp AS \"UV\",                 -- Selects the temperature value related to the UV sensor and renames it as \"UV\"\n  dallas_intern AS \"INTERN\",       -- Selects the internal temperature value from the DS18B20 sensor and renames it as \"INTERN\"\n  dallas_extern AS \"EXTERN\",       -- Selects the external temperature value from the DS18B20 sensor and renames it as \"EXTERN\"\n  \"timestamp\"                      -- Selects the timestamp to indicate when these temperature readings were recorded\nFROM\n  sensor_readings;                 -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1111,7 +1111,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT gps_distance AS \"Distance\" FROM sensor_readings",
+          "rawSql": "SELECT\n  gps_distance AS \"DISTANCE\"   -- Selects the GPS-calculated distance and renames it as \"Distance\"\nFROM\n  sensor_readings;             -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1208,7 +1208,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT gps_satellites AS \"SATELLITES\" FROM sensor_readings",
+          "rawSql": "SELECT\n  gps_satellites AS \"SATELLITES\"   -- Selects the number of satellites detected by the GPS and renames it as \"SATELLITES\"\nFROM\n  sensor_readings;                 -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1256,6 +1256,8 @@
           },
           "decimals": 1,
           "mappings": [],
+          "max": 3,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1264,8 +1266,12 @@
                 "value": null
               },
               {
+                "color": "#EAB839",
+                "value": 1.35
+              },
+              {
                 "color": "red",
-                "value": 1.51
+                "value": 1.5
               }
             ]
           }
@@ -1309,7 +1315,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT gps_hdop AS \"HDOP\", gps_vdop AS \"VDOP\", gps_pdop AS \"PDOP\", \"timestamp\" FROM sensor_readings",
+          "rawSql": "SELECT\n  gps_hdop AS \"HDOP\",       -- Selects the Horizontal Dilution of Precision (HDOP) value from the GPS and renames it as \"HDOP\"\n  gps_vdop AS \"VDOP\",       -- Selects the Vertical Dilution of Precision (VDOP) value from the GPS and renames it as \"VDOP\"\n  gps_pdop AS \"PDOP\",       -- Selects the Position Dilution of Precision (PDOP) value from the GPS and renames it as \"PDOP\"\n  \"timestamp\"               -- Selects the timestamp column to show when these GPS readings were recorded\nFROM\n  sensor_readings;          -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1446,7 +1452,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bmp_altitude AS \"BMP\", gps_altitude AS \"GPS\", \"timestamp\", gps_height_geoid AS \"GEOID\" FROM sensor_readings",
+          "rawSql": "SELECT\n  bmp_altitude AS \"BMP\",          -- Selects the altitude value measured by the BMP sensor and renames it as \"BMP\"\n  gps_altitude AS \"GPS\",          -- Selects the altitude value measured by the GPS and renames it as \"GPS\"\n  \"timestamp\",                    -- Selects the timestamp to indicate when these altitude readings were recorded\n  gps_height_geoid AS \"GEOID\"     -- Selects the geoid height value from the GPS and renames it as \"GEOID\"\nFROM\n  sensor_readings;                -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1630,7 +1636,7 @@
           "format": "table",
           "hide": false,
           "rawQuery": true,
-          "rawSql": "SELECT gps_gga_latitude AS \"LATITUDE\", gps_gga_longitude AS \"LONGITUDE\" FROM sensor_readings",
+          "rawSql": "SELECT\n  gps_gga_latitude AS \"LATITUDE\",    -- Selects the latitude value from the GPS GGA sentence and renames it as \"LATITUDE\"\n  gps_gga_longitude AS \"LONGITUDE\"   -- Selects the longitude value from the GPS GGA sentence and renames it as \"LONGITUDE\"\nFROM\n  sensor_readings;                   -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1750,7 +1756,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT uva AS \"UV\", bmp_pressure AS \"BMP\", acelx AS \"IMU\", dallas_intern AS \"DS18B20\", gps_gga_latitude AS \"GPS\", system_temp_cpu_thermal AS \"SYSTEM\" FROM sensor_readings",
+          "rawSql": "SELECT\n  uva AS \"UV\",                          -- Selects the UVA value recorded by the sensor and renames it as \"UV\"\n  bmp_pressure AS \"BMP\",                -- Selects the pressure value from the BMP sensor and renames it as \"BMP\"\n  acelx AS \"IMU\",                       -- Selects the acceleration value along the X-axis from the IMU sensor and renames it as \"IMU\"\n  dallas_intern AS \"DS18B20\",           -- Selects the internal temperature value from the DS18B20 sensor and renames it as \"DS18B20\"\n  gps_gga_latitude AS \"GPS\",            -- Selects the latitude value from the GPS GGA sentence and renames it as \"GPS\"\n  system_temp_cpu_thermal AS \"SYSTEM\"   -- Selects the CPU temperature from the system sensor and renames it as \"SYSTEM\"\nFROM\n  sensor_readings;                      -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1918,7 +1924,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT gps_speed_mps AS \"Horizontal\", bmp_vertical_speed AS \"Vertical\", \"timestamp\" FROM sensor_readings",
+          "rawSql": "SELECT\n  gps_speed_mps AS \"Horizontal\",    -- Selects the horizontal speed measured by the GPS (in meters per second) and renames it as \"Horizontal\"\n  bmp_vertical_speed AS \"Vertical\", -- Selects the vertical speed measured by the BMP sensor and renames it as \"Vertical\"\n  \"timestamp\"                       -- Selects the timestamp to indicate when these speed readings were recorded\nFROM\n  sensor_readings;                  -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2031,7 +2037,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bmp_altitude AS \"BMP\", gps_altitude AS \"GPS\" FROM sensor_readings",
+          "rawSql": "SELECT\n  bmp_altitude AS \"BMP\",          -- Selects the altitude value measured by the BMP sensor and renames it as \"BMP\"\n  gps_altitude AS \"GPS\"           -- Selects the altitude value measured by the GPS and renames it as \"GPS\"\nFROM\n  sensor_readings;                -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2165,7 +2171,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n    bmp_pressure AS PRESSURE, \n    bmp_temperature AS BMP_TEMP, \n    bmp_altitude AS BMP_ALT, \n    bmp_vertical_speed AS VERTICAL_SPEED,\n    dallas_intern AS \"INTERN\", \n    dallas_extern AS \"EXTERN\",\n    gps_speed_mps AS SPEED_MPS, \n    gps_gga_latitude AS LATITUDE, \n    gps_gga_longitude AS LONGITUDE, \n    gps_altitude AS GPS_ALTITUDE, \n    gps_height_geoid AS HEIGHT_GEOID, \n    gps_satellites AS SATELLITES,\n    timestamp\nFROM sensor_readings;",
+          "rawSql": "SELECT\n    bmp_pressure AS PRESSURE,           -- Selects the pressure value from the BMP sensor and renames it as \"PRESSURE\"\n    bmp_temperature AS BMP_TEMP,        -- Selects the temperature value from the BMP sensor and renames it as \"BMP_TEMP\"\n    bmp_altitude AS BMP_ALT,            -- Selects the altitude value from the BMP sensor and renames it as \"BMP_ALT\"\n    bmp_vertical_speed AS VERTICAL_SPEED, -- Selects the vertical speed measured by the BMP sensor and renames it as \"VERTICAL_SPEED\"\n    dallas_intern AS \"INTERN\",          -- Selects the internal temperature value from the DS18B20 sensor and renames it as \"INTERN\"\n    dallas_extern AS \"EXTERN\",          -- Selects the external temperature value from the DS18B20 sensor and renames it as \"EXTERN\"\n    gps_speed_mps AS SPEED_MPS,         -- Selects the horizontal speed from the GPS in meters per second and renames it as \"SPEED_MPS\"\n    gps_gga_latitude AS LATITUDE,       -- Selects the latitude value from the GPS GGA sentence and renames it as \"LATITUDE\"\n    gps_gga_longitude AS LONGITUDE,     -- Selects the longitude value from the GPS GGA sentence and renames it as \"LONGITUDE\"\n    gps_altitude AS GPS_ALTITUDE,       -- Selects the altitude value from the GPS and renames it as \"GPS_ALTITUDE\"\n    gps_height_geoid AS HEIGHT_GEOID,   -- Selects the height above the geoid from the GPS and renames it as \"HEIGHT_GEOID\"\n    gps_satellites AS SATELLITES,       -- Selects the number of satellites detected by the GPS and renames it as \"SATELLITES\"\n    timestamp                           -- Selects the timestamp to indicate when these readings were recorded\nFROM \n    sensor_readings;                    -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2454,7 +2460,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n    gps_gga_latitude AS LATITUDEGGA, \r\n    gps_gga_longitude AS LONGITUDEGGA, \r\n    gps_distance AS DISTANCE,\r\n    gps_altitude AS ALTITUDE, \r\n    gps_satellites AS SATELLITES,\r\n    gps_pdop AS PDOP,\r\n    gps_hdop AS HDOP,\r\n    gps_vdop AS VDOP,\r\n\r\n    timestamp\r\n\r\nFROM sensor_readings;\r\n",
+          "rawSql": "SELECT \r\n    gps_gga_latitude AS LATITUDE,    -- Selects the latitude value from the GPS GGA sentence and renames it as \"LATITUDEGGA\"\r\n    gps_gga_longitude AS LONGITUDE,  -- Selects the longitude value from the GPS GGA sentence and renames it as \"LONGITUDEGGA\"\r\n    gps_distance AS DISTANCE,           -- Selects the calculated distance from the GPS and renames it as \"DISTANCE\"\r\n    gps_altitude AS ALTITUDE,           -- Selects the altitude value from the GPS and renames it as \"ALTITUDE\"\r\n    gps_satellites AS SATELLITES,       -- Selects the number of satellites detected by the GPS and renames it as \"SATELLITES\"\r\n    gps_pdop AS PDOP,                   -- Selects the Position Dilution of Precision (PDOP) value from the GPS and renames it as \"PDOP\"\r\n    gps_hdop AS HDOP,                   -- Selects the Horizontal Dilution of Precision (HDOP) value from the GPS and renames it as \"HDOP\"\r\n    gps_vdop AS VDOP,                   -- Selects the Vertical Dilution of Precision (VDOP) value from the GPS and renames it as \"VDOP\"\r\n\r\n    timestamp                           -- Selects the timestamp to indicate when these GPS readings were recorded\r\n\r\nFROM \r\n    sensor_readings;                    -- Specifies the table that stores the sensor readings\r\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2704,7 +2710,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \nacelx AS \"ACELX\", \nacely AS \"ACELY\", \nacelz AS \"ACELZ\", \ngirox AS \"GYROX\", \ngiroy AS \"GYROY\", \ngiroz AS \"GYROZ\", \nmagx AS \"MAGX\", \nmagy AS \"MAGY\", \nmagz AS \"MAGZ\", \n\"timestamp\" AS \"TIME\" \nFROM sensor_readings",
+          "rawSql": "SELECT \n    acelx AS \"ACELX\",         -- Selects the X-axis acceleration value from the IMU sensor and renames it as \"ACELX\"\n    acely AS \"ACELY\",         -- Selects the Y-axis acceleration value from the IMU sensor and renames it as \"ACELY\"\n    acelz AS \"ACELZ\",         -- Selects the Z-axis acceleration value from the IMU sensor and renames it as \"ACELZ\"\n    girox AS \"GYROX\",         -- Selects the X-axis gyroscope value from the IMU sensor and renames it as \"GYROX\"\n    giroy AS \"GYROY\",         -- Selects the Y-axis gyroscope value from the IMU sensor and renames it as \"GYROY\"\n    giroz AS \"GYROZ\",         -- Selects the Z-axis gyroscope value from the IMU sensor and renames it as \"GYROZ\"\n    magx AS \"MAGX\",           -- Selects the X-axis magnetometer value from the IMU sensor and renames it as \"MAGX\"\n    magy AS \"MAGY\",           -- Selects the Y-axis magnetometer value from the IMU sensor and renames it as \"MAGY\"\n    magz AS \"MAGZ\",           -- Selects the Z-axis magnetometer value from the IMU sensor and renames it as \"MAGZ\"\n    \"timestamp\" AS \"TIME\"     -- Selects the timestamp and renames it as \"TIME\" to indicate when these readings were recorded\nFROM \n    sensor_readings;          -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2957,7 +2963,7 @@
           "lat": 0,
           "layer": "Coordinates",
           "lon": 0,
-          "zoom": 12
+          "zoom": 10
         }
       },
       "pluginVersion": "11.2.2",
@@ -2971,7 +2977,7 @@
           "format": "table",
           "hide": false,
           "rawQuery": true,
-          "rawSql": "SELECT gps_gga_latitude AS \"LATITUDE\", gps_gga_longitude AS \"LONGITUDE\" FROM sensor_readings",
+          "rawSql": "SELECT\n  gps_gga_latitude AS \"LATITUDE\",    -- Selects the latitude value from the GPS GGA sentence and renames it as \"LATITUDE\"\n  gps_gga_longitude AS \"LONGITUDE\"   -- Selects the longitude value from the GPS GGA sentence and renames it as \"LONGITUDE\"\nFROM\n  sensor_readings;                   -- Specifies the table that stores the sensor readings\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -3021,7 +3027,7 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
@@ -3030,6 +3036,6 @@
   "timezone": "browser",
   "title": "UAXSAT IV VISUALIZATION",
   "uid": "bdrdn0a3mwzy8bdd",
-  "version": 32,
+  "version": 39,
   "weekStart": ""
 }

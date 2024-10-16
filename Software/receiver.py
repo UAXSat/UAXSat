@@ -1,15 +1,16 @@
-"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                                                                            *
-*                         Developed by Javier Bolanos                        *
-*                  https://github.com/javierbolanosllano                     *
-*                                                                            *
-*                      UAXSAT IV Project - 2024                              *
-*                   https://github.com/UAXSat/UAXSat                         *
-*                                                                            *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
+"""- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
+
+                         Developed by Javier Bolanos
+                    https://github.com/javierbolanosllano
+
+                           UAXSAT IV Project - 2024
+                       https://github.com/UAXSat/UAXSat
+
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - """
+
+#!/usr/bin/env python3
 
 # receiver.py
-
 import serial
 import time
 import json

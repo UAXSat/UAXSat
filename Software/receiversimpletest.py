@@ -13,7 +13,7 @@ M1_PIN = 27
 AUX_PIN = 22
 
 # Configuración del puerto serial
-SERIAL_PORT = '/dev/ttyUSB0'  # Ajusta según tu sistema
+SERIAL_PORT = '/dev/ttyS0'  # Ajusta según tu sistema
 BAUD_RATE = 9600  # Debe coincidir con la configuración del módulo LoRa
 
 # Inicialización de los pines GPIO
@@ -44,22 +44,27 @@ def enter_normal_mode():
     time.sleep(0.1)
     logger.debug("Módulo configurado en modo NORMAL.")
 
-def send_message(message):
-    """Envía un mensaje a través de LoRa."""
-    logger.debug(f"Enviando mensaje: {message}")
+def receive_message():
+    """Recibe mensajes a través de LoRa."""
     with serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1) as ser:
-        ser.write(message.encode('utf-8'))
-        wait_aux_low()
-        wait_aux_high()
-    logger.debug("Mensaje enviado.")
+        while True:
+            if ser.in_waiting > 0:
+                message = ser.readline()
+                try:
+                    decoded_message = message.decode('utf-8', errors='replace').strip()
+                    logger.info(f"Mensaje recibido: {decoded_message}")
+                except UnicodeDecodeError as e:
+                    logger.error(f"Error al decodificar el mensaje: {e}")
+                    logger.debug(f"Mensaje en bruto: {message}")
+                wait_aux_low()
+                wait_aux_high()
+            else:
+                time.sleep(0.1)
 
 def main():
     try:
         enter_normal_mode()
-        while True:
-            message = "Hola LoRa"
-            send_message(message)
-            time.sleep(5)
+        receive_message()
     except KeyboardInterrupt:
         logger.info("Programa interrumpido por el usuario.")
     finally:

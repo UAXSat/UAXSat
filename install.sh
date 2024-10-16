@@ -1,9 +1,12 @@
-# install_all.sh
-
 #!/bin/bash
 
 # Actualizar el sistema
 sudo apt-get update -y && sudo apt-get upgrade -y
+
+# Actualizar el firmware
+sudo apt-get install -y fwupd
+sudo fwupdmgr refresh
+sudo fwupdmgr update
 
 # Instalar PostgreSQL
 echo "Instalando PostgreSQL..."

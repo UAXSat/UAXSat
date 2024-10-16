@@ -1,5 +1,14 @@
-# db_functions.py
+"""- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
 
+                         Developed by Javier Bolanos
+                    https://github.com/javierbolanosllano
+
+                           UAXSAT IV Project - 2024
+                       https://github.com/UAXSat/UAXSat
+
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - """
+
+# db_functions.py
 import psycopg2
 import logging
 
@@ -7,7 +16,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 def connect_to_db():
+
     """Conecta a la base de datos y retorna la conexión y el cursor."""
+    
     try:
         logger.info("Conectando a la base de datos...")
         connection = psycopg2.connect(
@@ -25,7 +36,13 @@ def connect_to_db():
         return None, None
 
 def insert_data_to_db(cursor, connection, data):
-    """Inserta los datos recibidos en la base de datos."""
+
+    """Inserta los datos recibidos en la base de datos.
+    - data: Diccionario con los datos a insertar.
+    - cursor: Cursor de la base de datos.
+    - connection: Conexión a la base de datos.
+    - Si hay un error, se hace rollback de la transacción."""
+
     try:
         logger.info("Insertando datos en la base de datos...")
         insert_query = """
@@ -86,7 +103,7 @@ def insert_data_to_db(cursor, connection, data):
             'gps_distance': to_float(data.get('GPS', {}).get('distance')),
             'gps_altitude': to_float(data.get('GPS', {}).get('GGA', {}).get('altitude')),
             'gps_height_geoid': to_float(data.get('GPS', {}).get('GGA', {}).get('height_geoid')),
-            'gps_satellites': data.get('GPS', {}).get('GSV', {}).get('num_satellites'),
+            'gps_satellites': data.get('GPS', {}).get('GGA', {}).get('num_satellites'),
             'gps_pdop': to_float(data.get('GPS', {}).get('GSA', {}).get('pdop')),
             'gps_hdop': to_float(data.get('GPS', {}).get('GSA', {}).get('hdop')),
             'gps_vdop': to_float(data.get('GPS', {}).get('GSA', {}).get('vdop')),

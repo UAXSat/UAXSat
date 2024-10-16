@@ -1,13 +1,12 @@
-"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                                                                            *
-*               Developed by Javier Bolañs & Javier Lendinez                 *
-*                  https://github.com/javierbolanosllano                     *
-*                        https://github.com/JaviLendi                        *
-*                                                                            *
-*                      UAXSAT IV Project - 2024                              *
-*                   https://github.com/UAXSat/UAXSat                         *
-*                                                                            *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
+"""- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
+
+                         Developed by Javier Bolanos
+                    https://github.com/javierbolanosllano
+
+                           UAXSAT IV Project - 2024
+                       https://github.com/UAXSat/UAXSat
+
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - """
 
 # AS7331.py
 import time
@@ -882,3 +881,16 @@ def read_sensor_data(sensor):
 def get_UV_data():
     UV = initialize_sensor()
     return read_sensor_data(UV)  # Utilizamos la variable UV, no sensor
+
+def main():
+    sensor = initialize_sensor()
+    while True:
+        data = read_sensor_data(sensor)
+        if data:
+            print(f"UVA: {data['UVA']}, UVB: {data['UVB']}, UVC: {data['UVC']}, UV Temp: {data['UV Temp']}°C")
+        #else:
+            #print("Error al leer los datos del sensor.")
+        time.sleep(1)
+
+if __name__ == '__main__':
+    main()

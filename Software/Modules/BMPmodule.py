@@ -1,20 +1,19 @@
-"""* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                                                                            *
-*               Developed by Javier Bolañs & Javier Lendinez                 *
-*                  https://github.com/javierbolanosllano                     *
-*                        https://github.com/JaviLendi                        *
-*                                                                            *
-*                      UAXSAT IV Project - 2024                              *
-*                   https://github.com/UAXSat/UAXSat                         *
-*                                                                            *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"""
+"""- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
+
+                         Developed by Javier Bolanos
+                    https://github.com/javierbolanosllano
+
+                           UAXSAT IV Project - 2024
+                       https://github.com/UAXSat/UAXSat
+
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - """
 
 # BMPmodule.py
 import time
 import board
 import adafruit_bmp3xx
 
-# Función para inicializar el sensor BMP
+# Funci  n para inicializar el sensor BMP
 def initialize_sensor():
     i2c = board.I2C()
     bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c)
@@ -25,7 +24,7 @@ def initialize_sensor():
     
     return bmp
 
-# Función para obtener datos de presión, temperatura y altitud
+# Funcion para obtener datos de presion, temperatura y altitud
 def read_sensor_data(bmp):
     try:
         pressure, temperature, altitude = bmp.pressure, bmp.temperature, bmp.altitude
@@ -33,6 +32,11 @@ def read_sensor_data(bmp):
     except Exception as e:
         print(f"Error reading sensor data: {e}")
         return None
+
+# Funcion principal - inicializa el sensor y lee los datos
+def get_BMP_data():
+    BMP = initialize_sensor()
+    return read_sensor_data(BMP)
 
 # Función principal - inicializa el sensor y lee los datos
 def main():
@@ -47,4 +51,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

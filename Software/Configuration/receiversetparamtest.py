@@ -1,5 +1,16 @@
-# receiversetparamtest.py
+"""- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
 
+                         Developed by Javier Bolanos
+                    https://github.com/javierbolanosllano
+
+                           UAXSAT IV Project - 2024
+                       https://github.com/UAXSat/UAXSat
+
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - """
+
+#!/usr/bin/env python3
+
+# receiversetparamtest.py
 import E220900T30D as e220
 import RPi.GPIO as GPIO
 

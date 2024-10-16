@@ -1,5 +1,16 @@
-# emitersetparamtest.py
+"""- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
 
+                         Developed by Javier Bolanos
+                    https://github.com/javierbolanosllano
+
+                           UAXSAT IV Project - 2024
+                       https://github.com/UAXSat/UAXSat
+
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - """
+
+#!/usr/bin/env python3
+
+# emitersetparamtest.py
 import E220900T30D as e220
 import time
 import RPi.GPIO as GPIO
@@ -21,7 +32,7 @@ def main():
     except Exception as e:
         print(f"Error inesperado: {e}")
     finally:
-        lora.clean_gpio()  # Asegura liberar los pines GPIO
+        e220.clean_gpio()  # Asegura liberar los pines GPIO
 
 if __name__ == "__main__":
     main()
