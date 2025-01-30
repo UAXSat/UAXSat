@@ -28,10 +28,17 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### Organizers
 
 - Javier Bolaños ([GitHub](https://github.com/javierbolanosllano)) ([LinkedIn](https://www.linkedin.com/in/javierbolanosllano/))
-- Javier Lendínez ([GitHub](https://github.com/JaviLendi)) ([LinkedIn](https://www.linkedin.com/in/javierlendinez/))
+- Javier Lendínez Castillo ([GitHub](https://github.com/JaviLendi)) ([LinkedIn](https://www.linkedin.com/in/javierlendinez/))
 
-### Developers
+## Software Developers
 
+- Javier Bolaños Llano ([GitHub](https://github.com/javierbolanosllano)) ([LinkedIn](https://www.linkedin.com/in/javierbolanosllano/))
+- Javier Lendínez Castillo ([GitHub](https://github.com/JaviLendi)) ([LinkedIn](https://www.linkedin.com/in/javierlendinez/))
+- Alonso Lozano Garcia ([LinkedIn](https://www.linkedin.com/in/alonso-l-b75102254/))
+
+### Hardware Developers
+
+- Javier Lendínez Castillo ([GitHub](https://github.com/JaviLendi)) ([LinkedIn](https://www.linkedin.com/in/javierlendinez/))
 - Laura Rodriguez ([LinkedIn](https://www.linkedin.com/in/laura-rodr%C3%ADguez-sotillo-3711811a5/))
 - Alonso Lozano Garcia ([LinkedIn](https://www.linkedin.com/in/alonso-l-b75102254/))
 - Juan Coleto ([LinkedIn](https://www.linkedin.com/in/juan-coleto-arteche-4b2600309/))
