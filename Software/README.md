@@ -13,11 +13,11 @@ We have developed several scripts to verify the proper functioning of protocol c
 
 ### Configuration
 The configuration folder contains all the modules developed for the LoRa communication system.
-- E220900T30D Script – The main module for the LoRa module.
-- Set Param Script – A utility script for configuring specific parameters on the LoRa module.
+- `E220900T30D` Script – The main module for the LoRa module.
+- `set_param` Script – A utility script for configuring specific parameters on the LoRa module.
 
-### Utility Scripts
+### Utility Scripts
 Several additional scripts provide essential functions used in the main emitter and receiver codes:
-- db_function – Handles database-related operations.
-- lora_functions – Contains functions for LoRa communication.
-- constants – Stores predefined values and configurations used throughout the system.
+- `db_function` – Handles database-related operations.
+- `lora_functions` – Contains functions for LoRa communication.
+- `constants` – Stores predefined values and configurations used throughout the system.
