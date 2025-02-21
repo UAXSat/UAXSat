@@ -1,23 +1,27 @@
-## Software
+---
 
-The software is organized into separate modules for each sensor to improve code readability and maintainability.
+## 💾 Software  
 
-### Modules
-Each module follows a consistent structure:
-- Sensor Initialization – Setting up the sensor.
-- Data Acquisition – Retrieving data from the sensor.
-- Function for Main Code – A callable function for use in the main program.
+The software is **modularized** for better **readability and maintainability.**  
 
-### Check
-We have developed several scripts to verify the proper functioning of protocol connections, including I²C, Serial, SPI, and UART.
+### 🔹 **Modules**  
+Each module follows a structured pattern:  
+1️⃣ **Sensor Initialization** – Setting up the sensor.  
+2️⃣ **Data Acquisition** – Retrieving data from the sensor.  
+3️⃣ **Function for Main Code** – Callable functions for use in the main program.  
 
-### Configuration
-The configuration folder contains all the modules developed for the LoRa communication system.
-- `E220900T30D` Script – The main module for the LoRa module.
-- `set_param` Script – A utility script for configuring specific parameters on the LoRa module.
+### 🔍 **System Check**  
+We have developed scripts to verify protocol connections, including **I²C, Serial, SPI, and UART.**  
 
-### Utility Scripts
-Several additional scripts provide essential functions used in the main emitter and receiver codes:
-- `db_function` – Handles database-related operations.
-- `lora_functions` – Contains functions for LoRa communication.
-- `constants` – Stores predefined values and configurations used throughout the system.
+### ⚙️ **Configuration**  
+The `configuration` folder contains scripts for **LoRa communication**:  
+- **`E220900T30D.py`** – The main module for the LoRa module.  
+- **`set_param.py`** – A script for configuring specific LoRa parameters.  
+
+### 🛠️ **Utility Scripts**  
+Several additional scripts provide essential functions used in the **emitter and receiver** codes:  
+- **`db_function.py`** – Handles database operations.  
+- **`lora_functions.py`** – Contains functions for LoRa communication.  
+- **`constants.py`** – Stores predefined values and configurations.
+
+---
