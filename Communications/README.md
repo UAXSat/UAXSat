@@ -29,7 +29,7 @@ This guide explains how to:
 1. **Install and Set Up Grafana**  
 2. **Connect PostgreSQL as a Data Source**  
 3. **Create Dashboards and Visualizations**  
-4. **Import a Pre-Designed JSON Dashboard** (NEW ✅)  
+4. **Import a Pre-Designed JSON Dashboard**
 
 ---
 
@@ -64,37 +64,7 @@ The default login credentials are:
 
 ---
 
-## 2️⃣ Configuring PostgreSQL as a Data Source
-
-Now that Grafana is running, follow these steps to connect your PostgreSQL database as a data source:
-
-### Step 1: Access Data Sources
-
-1. In the Grafana dashboard, click on the gear icon ⚙️ on the left panel to open the Configuration menu.
-
-2. Select Data Sources.
-
-### Step 2: Add PostgreSQL Data Source
-
-1. Click the Add data source button.
-
-2. Scroll down or search for PostgreSQL and select it.
-
-3. Fill in the following details:
-
-- Host: localhost:5432 (or your PostgreSQL server address)
-- Database: cubesat_db (the database you created)
-- User: cubesat (the user you created)
-- Password: The password for the cubesat user
-- SSL Mode: Choose disable if SSL is not configured.
-
-Optionally, you can customize the Max Open Connections and Connection Max Lifetime settings based on your needs.
-
-4. Click Save & Test to verify the connection. If everything is configured correctly, you should see a message indicating that the database connection was successful.
-
----
-
-## 3️⃣ Creating Dashboards and Visualizations
+## 2️⃣ Creating Dashboards and Visualizations
 
 ### Step 1: Create a New Dashboard
 
@@ -124,7 +94,7 @@ LIMIT 100
 2. Customize the appearance, labels, and units as needed.
 3. Click Apply to save the panel to the dashboard.
 
-## 4️⃣ Importing a Pre-Designed JSON Dashboard
+## 3️⃣ Importing a Pre-Designed JSON Dashboard
 Follow these steps to upload it into Grafana instead of creating panels manually.
 
 ### Step 1: Open Import Section
