@@ -46,6 +46,19 @@ UAXSat IV is a **microsatellite project** developed by 2nd and 3rd-year Aerospac
 
 ---
 
+## Libraries
+You will need to have the following libraries installed:
+
+- board
+- busio
+- adafruit_icm20x
+- adafruit_bmp3xx
+- serial
+- ublox_gps
+- adafruit_bus_device
+
+---
+
 ## 🌍 Community  
 
 Join our **community discussions** to stay updated, collaborate, and contribute:  
