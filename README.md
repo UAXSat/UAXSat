@@ -9,11 +9,31 @@ UAXSat IV is a microsatellite project developed by the students of 2nd and 3rd y
 ## Features
 
 - GPS tracking
-- LORA comunnications
+- LoRa comunnications
 - Earth observation (forests)
-- Temperature and pressure measurements
+- Temperature measurements
+- Pressure measurements
 - UV measurements
-- ...
+- Inertial Measurements
+
+## Sensors
+
+- Sparkfun GPS NEO gps M9N SMA (GPS Sensor)
+- Ebyte E220 900T30D (LoRa Module)
+- DS18B20 (Temperature Sensor)
+- BMP390 (Pressure Sensor)
+- ICM 20948 (IMU Sensor)
+- AS7331 (UV Sensor)
+- GoPro Hero 11 (Camera Module)
+
+## On-Board Computer
+- Raspberry Pi 4
+
+## Ground Station
+- Raspberry Pi 3B
+- Ebyte E220 900T30D
+- Yagi Antenna
+The ground station utilizes a Raspberry Pi 3B as the main computer, running PostgreSQL and Grafana servers. It is connected to the LoRa module, which interfaces with the Yagi antenna for communication with the CubeSat.
 
 ## Community
 Join our community to stay updated and connect with other contributors:
