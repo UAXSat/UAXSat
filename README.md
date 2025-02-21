@@ -57,6 +57,28 @@ You will need to have the following libraries installed:
 - ublox_gps
 - adafruit_bus_device
 
+### 🔧 Installing Dependencies Automatically  
+
+To simplify the installation process, we have provided an **install script** that automatically installs all the necessary dependencies.  
+
+#### 📌 Steps to Run the Installation Script  
+
+1️⃣ Open a terminal and navigate to the **root folder of the repository**.  
+
+2️⃣ Run the following commands:  
+
+```bash
+# Grant execution permissions to the install script
+chmod +x install.sh  
+
+# Run the script to install all required dependencies
+./install.sh  
+```
+✅ This script will:
+- Install all necessary libraries
+- Set up required system dependencies
+- Ensure your environment is correctly configured for Grafana, PostgreSQL, and other tools
+
 ---
 
 ## 🌍 Community  
