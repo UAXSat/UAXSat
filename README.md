@@ -4,7 +4,7 @@ Welcome to the **UAXSat IV** project repository!
 
 ## 📖 About  
 
-UAXSat IV is a **microsatellite project** developed by 2nd and 3rd-year Aerospace Engineering students at **Universidad Alfonso X el Sabio (UAX).** The objective is to **design, build, and launch** a small satellite into the **stratosphere** for scientific research and Earth observation.  
+UAXSat IV is a **cubesat project** developed by 2nd and 3rd-year Aerospace Engineering students at **Universidad Alfonso X el Sabio (UAX).** The objective is to **design, build, and launch** a small satellite into the **stratosphere** for scientific research and Earth observation.  
 
 ---
 
